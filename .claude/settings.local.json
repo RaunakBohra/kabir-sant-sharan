@@ -30,7 +30,19 @@
       "Bash(env)",
       "Bash(node:*)",
       "Bash(git init:*)",
-      "Bash(gh secret set:*)"
+      "Bash(gh secret set:*)",
+      "Bash(__NEW_LINE__ echo \"1. Homepage:\")",
+      "Bash(__NEW_LINE__ echo \"2. Teachings:\")",
+      "Bash(__NEW_LINE__ echo \"3. Events:\")",
+      "Bash(__NEW_LINE__ echo \"4. Media:\")",
+      "Bash(__NEW_LINE__ echo \"5. Search:\")",
+      "Bash(__NEW_LINE__ echo \"6. Login:\")",
+      "Bash(for file in src/app/admin/page.tsx src/components/admin/{Settings,Newsletter,ContentManager,MediaManager,MediaUpload,AdminHeader,Analytics}.tsx)",
+      "Bash(do)",
+      "Bash(done)",
+      "Bash(wrangler:*)",
+      "Bash(npm run test:run:*)",
+      "Bash(echo \"$2b$12$NNnKjCgp2n1L2eYtLARZoOHYIrDfqMYyBgJFCFnTU6.zAlZsAGglO\")"
     ],
     "deny": [],
     "ask": []

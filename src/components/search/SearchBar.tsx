@@ -52,7 +52,7 @@ export function SearchBar({
           throw new Error('Search request failed');
         }
 
-        const data = await response.json();
+        const data = await response.json() as { results: any[] };
 
         // Transform API results to SearchResult format
         const transformedResults: SearchResult[] = data.results.map((item: any) => ({

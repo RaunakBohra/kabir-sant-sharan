@@ -41,9 +41,9 @@ export function Analytics() {
         fetch('/api/analytics/recent-activity?limit=10')
       ]);
 
-      const overview = await overviewRes.json();
-      const topPagesData = await topPagesRes.json();
-      const activityData = await activityRes.json();
+      const overview = await overviewRes.json() as AnalyticsData;
+      const topPagesData = await topPagesRes.json() as { topPages: TopPage[] };
+      const activityData = await activityRes.json() as { recentActivity: RecentActivity[] };
 
       setAnalyticsData(overview);
       setTopPages(topPagesData.topPages || []);

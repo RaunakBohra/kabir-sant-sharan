@@ -40,13 +40,12 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="flex justify-center">
-            <div className="w-16 h-16 bg-dark-900 rounded-full flex items-center justify-center">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-cream-50">
-                <path d="M12 2C10.9 2 10 2.9 10 4v1.2C8.8 5.7 8 6.8 8 8.1V10c0 1.3.8 2.4 2 2.9V22h4v-9.1c1.2-.5 2-1.6 2-2.9V8.1c0-1.3-.8-2.4-2-2.9V4c0-1.1-.9-2-2-2z"/>
-                <path d="M12 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
-                <path d="M8 16h8v2H8z"/>
-                <path d="M7 18h10v1H7z"/>
-              </svg>
+            <div className="w-16 h-16 bg-dark-900 rounded-full flex items-center justify-center p-2">
+              <img
+                src="/kabir-saheb-logo.webp"
+                alt="Kabir Saheb Logo"
+                className="w-full h-full object-contain brightness-0 invert"
+              />
             </div>
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold text-dark-900">

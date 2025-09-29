@@ -6,7 +6,7 @@ import { validateRequest, RefreshTokenSchema } from '@/lib/validation-schemas';
 import { getAdminUser } from '@/lib/db-seed';
 import { createId } from '@paralleldrive/cuid2';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   const traceId = createId();

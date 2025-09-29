@@ -1,16 +1,16 @@
 {
-  "name": "Kabir Sant Sharan",
-  "short_name": "Kabir Sharan",
-  "description": "Discover the timeless wisdom and divine teachings of Sant Kabir Das. Join our spiritual community for teachings, events, and meditation.",
+  "name": "Kabir Sant Sharan - Divine Teachings & Community",
+  "short_name": "Kabir Sant Sharan",
+  "description": "Experience the profound wisdom of Sant Kabir through teachings, community events, and spiritual guidance. Join our sacred journey of devotion and self-realization.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#1f2937",
+  "background_color": "#f7f6f3",
   "theme_color": "#059669",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en",
   "dir": "ltr",
-  "categories": ["education", "lifestyle", "meditation", "spirituality"],
+  "categories": ["lifestyle", "education", "books", "spirituality", "meditation"],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -32,31 +32,72 @@
   ],
   "shortcuts": [
     {
-      "name": "Daily Teachings",
+      "name": "Teachings",
       "short_name": "Teachings",
-      "description": "Read daily spiritual teachings from Sant Kabir",
+      "description": "Browse spiritual teachings and dohas",
       "url": "/teachings",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Events & Satsang",
+      "name": "Events",
       "short_name": "Events",
-      "description": "Join upcoming spiritual events and satsangs",
+      "description": "View upcoming satsang and community events",
       "url": "/events",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Media & Bhajans",
+      "name": "Media",
       "short_name": "Media",
-      "description": "Listen to spiritual music and teachings",
+      "description": "Listen to spiritual audio and video content",
       "url": "/media",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Search",
+      "short_name": "Search",
+      "description": "Search spiritual content",
+      "url": "/search",
       "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ],
-  "related_applications": [],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://kabirsantsharan.com/manifest.json"
+    }
+  ],
   "prefer_related_applications": false,
   "display_override": ["window-controls-overlay"],
   "edge_side_panel": {
-    "preferred_width": 480
-  }
+    "preferred_width": 400
+  },
+  "handle_links": "preferred",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Home page showcasing spiritual teachings"
+    },
+    {
+      "src": "/screenshots/mobile-teachings.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Browse spiritual teachings on mobile"
+    }
+  ]
 }

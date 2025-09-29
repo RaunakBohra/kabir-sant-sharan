@@ -49,8 +49,8 @@ export function Newsletter() {
         fetch('/api/newsletter/campaigns?limit=50')
       ]);
 
-      const subscribersData = await subscribersRes.json();
-      const campaignsData = await campaignsRes.json();
+      const subscribersData = await subscribersRes.json() as { subscribers: NewsletterSubscriber[] };
+      const campaignsData = await campaignsRes.json() as { campaigns: NewsletterCampaign[] };
 
       setSubscribers(subscribersData.subscribers || []);
       setCampaigns(campaignsData.campaigns || []);
@@ -85,7 +85,7 @@ export function Newsletter() {
         throw new Error('Failed to send newsletter');
       }
 
-      const data = await response.json();
+      const data = await response.json() as { campaign: NewsletterCampaign };
 
       setCampaigns(prev => [data.campaign, ...prev]);
       setEmailSubject('');

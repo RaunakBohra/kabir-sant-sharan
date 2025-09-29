@@ -17,7 +17,7 @@ export function DailyQuote() {
     const loadDailyQuote = async () => {
       try {
         const response = await fetch('/api/quotes/daily')
-        const data = await response.json()
+        const data = await response.json() as { quote: Quote }
         setCurrentQuote(data.quote)
       } catch (error) {
         console.error('Failed to load daily quote:', error)

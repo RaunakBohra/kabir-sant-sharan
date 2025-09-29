@@ -2,17 +2,26 @@ import Link from 'next/link'
 
 export function HeroSection() {
   return (
-    <section className="relative py-20 md:py-32 bg-gradient-to-b from-cream-200 to-cream-100">
-      <div className="container mx-auto px-4">
+    <section className="relative py-20 md:py-32 bg-gradient-to-b from-cream-200 to-cream-100 overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-cream-200/90 to-cream-100/95 z-10"></div>
+        <img
+          src="https://images.unsplash.com/photo-1588392382834-a891154bca4d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3"
+          alt="Spiritual Background"
+          className="w-full h-full object-cover opacity-30"
+        />
+      </div>
+
+      <div className="container mx-auto px-4 relative z-20">
         <div className="max-w-4xl mx-auto text-center">
           <div className="mb-8">
-            <div className="w-20 h-20 md:w-28 md:h-28 mx-auto mb-4 text-dark-900">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                <path d="M12 2C10.9 2 10 2.9 10 4v1.2C8.8 5.7 8 6.8 8 8.1V10c0 1.3.8 2.4 2 2.9V22h4v-9.1c1.2-.5 2-1.6 2-2.9V8.1c0-1.3-.8-2.4-2-2.9V4c0-1.1-.9-2-2-2z"/>
-                <path d="M12 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
-                <path d="M8 16h8v2H8z"/>
-                <path d="M7 18h10v1H7z"/>
-              </svg>
+            <div className="w-20 h-20 md:w-28 md:h-28 mx-auto mb-4">
+              <img
+                src="/kabir-saheb-logo.webp"
+                alt="Kabir Saheb Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
 
@@ -46,12 +55,12 @@ export function HeroSection() {
             </Link>
 
             <Link
-              href={"/teachings"}
+              href={"/events"}
               className="inline-flex items-center px-8 py-4 border-2 border-dark-300 text-dark-800 font-semibold rounded-md hover:bg-cream-200 transition-colors duration-200 text-lg"
             >
-              Explore Teachings
+              Join Events
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </Link>
           </div>

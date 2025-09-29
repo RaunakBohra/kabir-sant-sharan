@@ -37,7 +37,7 @@ export function MediaManager() {
     try {
       const typeParam = selectedType !== 'all' ? `?type=${selectedType}` : '';
       const response = await fetch(`/api/media/upload${typeParam}`);
-      const data = await response.json();
+      const data = await response.json() as { files: MediaFile[] };
       setMediaFiles(data.files || []);
     } catch (error) {
       console.error('Failed to load media files:', error);

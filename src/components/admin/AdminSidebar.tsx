@@ -80,7 +80,7 @@ export function AdminSidebar() {
           {tabs.map((tab) => (
             <Link
               key={tab.id}
-              href={tab.href}
+              href={tab.href as any}
               className={`w-full flex items-center space-x-3 px-4 py-3 text-left rounded-md transition-colors duration-200 ${
                 pathname === tab.href
                   ? 'bg-dark-100 text-dark-900 border border-dark-200 shadow-sm'

@@ -25,7 +25,7 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
       ? segments.join('/')
       : `/${newLocale}${segments.join('/')}`;
 
-    router.push(newPath || '/');
+    router.push((newPath || '/') as any);
     setIsOpen(false);
   };
 

@@ -21,12 +21,11 @@ export function AdminHeader() {
         <div className="flex items-center space-x-4">
           <Link href="/" className="flex items-center space-x-2 text-dark-900">
             <div className="w-8 h-8">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
-                <path d="M12 2C10.9 2 10 2.9 10 4v1.2C8.8 5.7 8 6.8 8 8.1V10c0 1.3.8 2.4 2 2.9V22h4v-9.1c1.2-.5 2-1.6 2-2.9V8.1c0-1.3-.8-2.4-2-2.9V4c0-1.1-.9-2-2-2z"/>
-                <path d="M12 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
-                <path d="M8 16h8v2H8z"/>
-                <path d="M7 18h10v1H7z"/>
-              </svg>
+              <img
+                src="/kabir-saheb-logo.webp"
+                alt="Kabir Saheb Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <span className="font-semibold text-lg">Kabir Sant Sharan</span>
           </Link>

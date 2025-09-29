@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
 
           if (refreshResponse.ok) {
-            const refreshData = await refreshResponse.json();
+            const refreshData = await refreshResponse.json() as { accessToken: string; refreshToken: string; expiresAt: number };
             localStorage.setItem('access_token', refreshData.accessToken);
             localStorage.setItem('refresh_token', refreshData.refreshToken);
             localStorage.setItem('token_expires_at', refreshData.expiresAt.toString());
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as { user: User };
         setUser({
           ...data.user,
           isAuthenticated: true
@@ -117,7 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
+      const data = await response.json() as { accessToken: string; refreshToken: string; expiresAt: number; user: User; error?: string; detail?: string };
 
       if (response.ok) {
         // Store both access and refresh tokens

@@ -19,7 +19,7 @@ export function UpcomingEvents() {
     const loadEvents = async () => {
       try {
         const response = await fetch('/api/events?limit=3')
-        const data = await response.json()
+        const data = await response.json() as { events: Event[] }
         setEvents(data.events || [])
       } catch (error) {
         console.error('Failed to load events:', error)

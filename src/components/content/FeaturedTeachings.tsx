@@ -21,7 +21,7 @@ export function FeaturedTeachings() {
     const loadTeachings = async () => {
       try {
         const response = await fetch('/api/teachings?limit=3')
-        const data = await response.json()
+        const data = await response.json() as { teachings: Teaching[] }
         setTeachings(data.teachings || [])
       } catch (error) {
         console.error('Failed to load teachings:', error)
