@@ -6,40 +6,50 @@ interface Quote {
   text: string
   author: string
   language: string
+  category?: string
 }
 
-const sampleQuotes: Quote[] = [
-  {
-    text: "जो खोजा तिन पाइया, गहरे पानी पैठ। मैं बपुरा बूडन डरा, रहा किनारे बैठ।।",
-    author: "Sant Kabir Das",
-    language: "ne"
-  },
-  {
-    text: "माला फेरत जुग भया, फिरा न मन का फेर। कर का मन का डार दे, मन का मन का फेर।।",
-    author: "Sant Kabir Das",
-    language: "ne"
-  },
-  {
-    text: "The truth is one, but the wise call it by many names. Seek within yourself, for that is where the divine resides.",
-    author: "Sant Kabir Das",
-    language: "en"
-  },
-  {
-    text: "Love is the bridge between two hearts, and the divine is the river that flows beneath.",
-    author: "Sant Kabir Das",
-    language: "en"
-  }
-]
-
 export function DailyQuote() {
-  const [currentQuote, setCurrentQuote] = useState<Quote>(sampleQuotes[0])
+  const [currentQuote, setCurrentQuote] = useState<Quote | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Rotate quotes daily (or for demo, every few seconds)
-    const today = new Date().getDate()
-    const quoteIndex = today % sampleQuotes.length
-    setCurrentQuote(sampleQuotes[quoteIndex])
+    const loadDailyQuote = async () => {
+      try {
+        const response = await fetch('/api/quotes/daily')
+        const data = await response.json()
+        setCurrentQuote(data.quote)
+      } catch (error) {
+        console.error('Failed to load daily quote:', error)
+        // Fallback quote
+        setCurrentQuote({
+          text: "The truth is one, but the wise call it by many names.",
+          author: "Sant Kabir Das",
+          language: "en"
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadDailyQuote()
   }, [])
+
+  if (isLoading || !currentQuote) {
+    return (
+      <section className="py-16 bg-cream-100">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-cream-300 rounded w-1/3 mx-auto mb-8"></div>
+              <div className="h-24 bg-cream-300 rounded mb-6"></div>
+              <div className="h-4 bg-cream-300 rounded w-1/4 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-16 bg-cream-100">

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { NavBar } from '@/components/navigation/NavBar'
 import { Footer } from '@/components/layout/Footer'
+import { AuthProvider } from '@/contexts/AuthContext'
 import Script from 'next/script'
 
 export const metadata: Metadata = {
@@ -102,11 +103,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased bg-cream-500 text-dark-900 min-h-screen flex flex-col">
-        <NavBar />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Footer />
+        <AuthProvider>
+          <NavBar />
+          <main className="flex-1">
+            {children}
+          </main>
+          <Footer />
+        </AuthProvider>
 
         {/* Service Worker Registration */}
         <Script

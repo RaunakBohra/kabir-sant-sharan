@@ -1,0 +1,106 @@
+{
+  "navigation": {
+    "home": "Home",
+    "teachings": "Teachings",
+    "events": "Events",
+    "media": "Media",
+    "about": "About",
+    "search": "Search",
+    "language": "Language"
+  },
+  "home": {
+    "hero": {
+      "title": "Kabir Sant Sharan",
+      "subtitle": "Divine Teachings & Spiritual Community",
+      "description": "Experience the profound wisdom of Sant Kabir through teachings, community events, and spiritual guidance. Join our sacred journey of devotion and self-realization.",
+      "cta": "Explore Teachings",
+      "watchVideo": "Watch Video"
+    },
+    "features": {
+      "teachings": {
+        "title": "Sacred Teachings",
+        "description": "Discover timeless wisdom through Kabir's dohas and spiritual insights"
+      },
+      "community": {
+        "title": "Spiritual Community",
+        "description": "Connect with fellow seekers on the path of divine realization"
+      },
+      "events": {
+        "title": "Satsang Events",
+        "description": "Join our regular gatherings for collective prayer and meditation"
+      },
+      "meditation": {
+        "title": "Guided Meditation",
+        "description": "Experience inner peace through guided spiritual practices"
+      }
+    },
+    "quote": {
+      "text": "The path of love is the bridge to the Divine",
+      "author": "Sant Kabir"
+    }
+  },
+  "teachings": {
+    "title": "Sacred Teachings",
+    "description": "Explore the profound wisdom of Sant Kabir",
+    "readMore": "Read More",
+    "categories": {
+      "all": "All Teachings",
+      "doha": "Dohas",
+      "discourse": "Discourses",
+      "meditation": "Meditation"
+    }
+  },
+  "events": {
+    "title": "Upcoming Events",
+    "description": "Join our spiritual gatherings and community events",
+    "learnMore": "Learn More",
+    "register": "Register",
+    "categories": {
+      "all": "All Events",
+      "satsang": "Satsang",
+      "festival": "Festivals",
+      "workshop": "Workshops"
+    }
+  },
+  "media": {
+    "title": "Spiritual Media",
+    "description": "Audio and video content for spiritual growth",
+    "categories": {
+      "all": "All Media",
+      "audio": "Audio",
+      "video": "Video"
+    }
+  },
+  "footer": {
+    "about": {
+      "title": "About Kabir Sant Sharan",
+      "description": "A spiritual community dedicated to sharing the timeless wisdom of Sant Kabir through teachings, events, and fellowship."
+    },
+    "quickLinks": {
+      "title": "Quick Links",
+      "teachings": "Teachings",
+      "events": "Events",
+      "media": "Media",
+      "contact": "Contact"
+    },
+    "contact": {
+      "title": "Contact",
+      "email": "info@kabirsantsharan.com",
+      "address": "Spiritual Center, Divine Path"
+    },
+    "copyright": "© 2024 Kabir Sant Sharan. All rights reserved.",
+    "poweredBy": "Powered by Divine Grace"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "tryAgain": "Try Again",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "share": "Share",
+    "download": "Download"
+  }
+}

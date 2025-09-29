@@ -78,16 +78,27 @@ export function NewsletterSignup({ onSubmit, variant = 'card', className = '' }:
       if (onSubmit) {
         await onSubmit(formData)
       } else {
-        const response = await fetch('/api/newsletter/subscribe', {
+        const preferences = {
+          teachings: formData.interests.includes('teachings'),
+          events: formData.interests.includes('events'),
+          meditation: formData.interests.includes('meditation') || formData.interests.includes('media')
+        }
+
+        const response = await fetch('/api/newsletter/subscribers', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(formData),
+          body: JSON.stringify({
+            email: formData.email,
+            name: formData.name || undefined,
+            preferences
+          }),
         })
 
         if (!response.ok) {
-          throw new Error('Failed to subscribe to newsletter')
+          const error = await response.json()
+          throw new Error(error.error || 'Failed to subscribe to newsletter')
         }
       }
 

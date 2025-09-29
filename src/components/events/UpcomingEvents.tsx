@@ -1,44 +1,35 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+
 interface Event {
   id: string
   title: string
-  date: string
-  time: string
+  event_date: string
   location: string
-  type: string
+  event_type: string
   description: string
 }
 
-const sampleEvents: Event[] = [
-  {
-    id: '1',
-    title: 'Weekly Satsang',
-    date: '2024-10-05',
-    time: '6:00 PM',
-    location: 'Community Hall',
-    type: 'Satsang',
-    description: 'Join us for weekly spiritual discourse and devotional singing'
-  },
-  {
-    id: '2',
-    title: 'Kabir Jayanti Celebration',
-    date: '2024-10-15',
-    time: '10:00 AM',
-    location: 'Main Temple',
-    type: 'Festival',
-    description: 'Special celebration marking the birth anniversary of Sant Kabir Das'
-  },
-  {
-    id: '3',
-    title: 'Meditation Workshop',
-    date: '2024-10-12',
-    time: '7:00 AM',
-    location: 'Meditation Garden',
-    type: 'Workshop',
-    description: 'Learn traditional meditation techniques inspired by Kabir\'s teachings'
-  }
-]
-
 export function UpcomingEvents() {
+  const [events, setEvents] = useState<Event[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const response = await fetch('/api/events?limit=3')
+        const data = await response.json()
+        setEvents(data.events || [])
+      } catch (error) {
+        console.error('Failed to load events:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadEvents()
+  }, [])
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
@@ -47,6 +38,42 @@ export function UpcomingEvents() {
       month: 'long',
       day: 'numeric'
     })
+  }
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-cream-100">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-dark-900 mb-4">
+              Upcoming Events
+            </h2>
+            <p className="text-lg text-dark-600 max-w-2xl mx-auto">
+              Join our spiritual community in celebrating and learning
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-cream-50 rounded-lg shadow-lg p-6 animate-pulse">
+                <div className="h-6 bg-cream-300 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-cream-300 rounded w-1/2 mb-4"></div>
+                <div className="h-20 bg-cream-300 rounded mb-4"></div>
+                <div className="h-10 bg-cream-300 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
   }
 
   return (
@@ -62,15 +89,15 @@ export function UpcomingEvents() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sampleEvents.map((event) => (
+          {events.map((event) => (
             <div key={event.id} className="bg-cream-50 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-cream-200">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-dark-600 bg-cream-200 px-3 py-1 rounded-full">
-                    {event.type}
+                    {event.event_type}
                   </span>
                   <span className="text-sm text-dark-500">
-                    {event.time}
+                    {formatTime(event.event_date)}
                   </span>
                 </div>
 
@@ -83,7 +110,7 @@ export function UpcomingEvents() {
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    {formatDate(event.date)}
+                    {formatDate(event.event_date)}
                   </div>
                   <div className="flex items-center text-dark-700 text-sm">
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

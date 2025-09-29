@@ -1,39 +1,64 @@
+'use client'
+
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 interface Teaching {
   id: string
   title: string
   excerpt: string
   category: string
-  readTime: string
+  readTime?: string
   image?: string
+  content?: string
 }
 
-const sampleTeachings: Teaching[] = [
-  {
-    id: '1',
-    title: 'The Path of Inner Truth',
-    excerpt: 'Discover the journey within yourself through Kabir\'s timeless wisdom on self-realization and spiritual awakening.',
-    category: 'Philosophy',
-    readTime: '5 min read'
-  },
-  {
-    id: '2',
-    title: 'Unity in Diversity',
-    excerpt: 'Exploring Kabir\'s revolutionary teachings on the oneness of all religions and the universal nature of divine love.',
-    category: 'Unity',
-    readTime: '7 min read'
-  },
-  {
-    id: '3',
-    title: 'The Weaver\'s Wisdom',
-    excerpt: 'Life lessons from Kabir\'s humble profession as a weaver, teaching us about patience, dedication, and spiritual craft.',
-    category: 'Life Stories',
-    readTime: '4 min read'
-  }
-]
-
 export function FeaturedTeachings() {
+  const [teachings, setTeachings] = useState<Teaching[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const loadTeachings = async () => {
+      try {
+        const response = await fetch('/api/teachings?limit=3')
+        const data = await response.json()
+        setTeachings(data.teachings || [])
+      } catch (error) {
+        console.error('Failed to load teachings:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadTeachings()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-cream-500">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-dark-900 mb-4">
+              Featured Teachings
+            </h2>
+            <p className="text-lg text-dark-600 max-w-2xl mx-auto">
+              Explore the profound wisdom and spiritual insights of Sant Kabir Das
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-cream-100 rounded-lg shadow-lg p-6 animate-pulse">
+                <div className="h-6 bg-cream-300 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-cream-300 rounded w-1/2 mb-4"></div>
+                <div className="h-20 bg-cream-300 rounded mb-4"></div>
+                <div className="h-4 bg-cream-300 rounded w-1/4"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
   return (
     <section className="py-16 bg-cream-500">
       <div className="container mx-auto px-4">
@@ -47,7 +72,7 @@ export function FeaturedTeachings() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sampleTeachings.map((teaching) => (
+          {teachings.map((teaching) => (
             <div key={teaching.id} className="bg-cream-100 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-cream-200">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">
@@ -55,7 +80,7 @@ export function FeaturedTeachings() {
                     {teaching.category}
                   </span>
                   <span className="text-sm text-dark-500">
-                    {teaching.readTime}
+                    {teaching.readTime || '5 min read'}
                   </span>
                 </div>
 

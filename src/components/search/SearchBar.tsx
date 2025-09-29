@@ -45,40 +45,26 @@ export function SearchBar({
 
       setIsLoading(true);
       try {
-        // Mock search results for now
-        const mockResults: SearchResult[] = [
-          {
-            id: '1',
-            title: 'The Path of Divine Love',
-            content: 'Sant Kabir teaches us that the path to the divine is through pure love...',
-            type: 'teaching',
-            slug: 'path-of-divine-love',
-            url: '/teachings/1'
-          },
-          {
-            id: '2',
-            title: 'Daily Satsang - Morning Meditation',
-            content: 'Join us for daily morning meditation and spiritual discourse...',
-            type: 'event',
-            url: '/events'
-          },
-          {
-            id: '3',
-            title: 'Unity in Diversity',
-            content: 'All paths lead to the same divine source...',
-            type: 'teaching',
-            slug: 'unity-in-diversity',
-            url: '/teachings/2'
-          }
-        ];
+        // Use the actual search API
+        const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}&limit=10`);
 
-        // Filter results based on query
-        const filteredResults = mockResults.filter(result =>
-          result.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          result.content.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        if (!response.ok) {
+          throw new Error('Search request failed');
+        }
 
-        setResults(filteredResults);
+        const data = await response.json();
+
+        // Transform API results to SearchResult format
+        const transformedResults: SearchResult[] = data.results.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          content: item.content,
+          type: item.type,
+          slug: item.slug,
+          url: item.url
+        }));
+
+        setResults(transformedResults);
         setIsOpen(true);
       } catch (error) {
         console.error('Search error:', error);

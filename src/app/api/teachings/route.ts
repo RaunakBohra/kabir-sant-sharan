@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/db';
-import { eq, desc } from 'drizzle-orm';
+import { databaseService } from '@/lib/database-service';
 
 export const runtime = 'edge';
 
@@ -10,44 +9,12 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    // In production, this will use the actual D1 database
-    // For now, return mock data for the frontend to work
-    const mockTeachings = [
-      {
-        id: '1',
-        title: 'The Path of Divine Love',
-        content: 'Sant Kabir teaches us that the path to the divine is through pure love and devotion...',
-        excerpt: 'Discover the essence of divine love through Sant Kabir\'s timeless wisdom.',
-        author: 'Sant Kabir Das',
-        published_at: '2024-09-29T10:00:00Z',
-        category: 'Philosophy',
-        tags: ['love', 'devotion', 'spirituality'],
-        featured_image: '/images/divine-love.jpg',
-        slug: 'path-of-divine-love',
-        created_at: '2024-09-29T10:00:00Z',
-        updated_at: '2024-09-29T10:00:00Z'
-      },
-      {
-        id: '2',
-        title: 'Unity in Diversity',
-        content: 'All paths lead to the same divine source. Whether Hindu, Muslim, or any faith...',
-        excerpt: 'Understanding the universal message of unity beyond religious boundaries.',
-        author: 'Sant Kabir Das',
-        published_at: '2024-09-28T10:00:00Z',
-        category: 'Unity',
-        tags: ['unity', 'religion', 'peace'],
-        featured_image: '/images/unity.jpg',
-        slug: 'unity-in-diversity',
-        created_at: '2024-09-28T10:00:00Z',
-        updated_at: '2024-09-28T10:00:00Z'
-      }
-    ];
-
-    const paginatedTeachings = mockTeachings.slice(offset, offset + limit);
+    // Use the enhanced database service with rich spiritual content
+    const result = await databaseService.getTeachings(limit, offset);
 
     return NextResponse.json({
-      teachings: paginatedTeachings,
-      total: mockTeachings.length,
+      teachings: result.teachings,
+      total: result.total,
       limit,
       offset
     });
