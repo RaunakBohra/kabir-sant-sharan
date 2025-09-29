@@ -20,22 +20,24 @@ export function SupabaseTest() {
       try {
         const supabase = createClient()
 
-        // Test basic connection
-        const { data, error } = await supabase
-          .from('quotes')
-          .select('count(*)')
-          .single()
+        // Simple connection test - just check if we can reach Supabase
+        const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/`, {
+          headers: {
+            'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+            'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`
+          }
+        })
 
-        if (error) {
-          setStatus({
-            connected: false,
-            message: 'Connection failed',
-            error: error.message
-          })
-        } else {
+        if (response.ok) {
           setStatus({
             connected: true,
             message: 'Successfully connected to Supabase!'
+          })
+        } else {
+          setStatus({
+            connected: false,
+            message: 'Connection failed',
+            error: `HTTP ${response.status}: ${response.statusText}`
           })
         }
       } catch (err) {
@@ -68,7 +70,10 @@ export function SupabaseTest() {
       )}
       {status.connected && (
         <div className="mt-2 p-3 bg-green-50 rounded text-green-700 text-sm">
-          ✅ Ready to create database tables and start building features!
+          ✅ Supabase connection successful! Ready to start building the spiritual website.
+          <div className="mt-2 text-xs">
+            <strong>Next step:</strong> Create database tables by running database-setup.sql in Supabase SQL Editor when ready to add content.
+          </div>
         </div>
       )}
     </div>
