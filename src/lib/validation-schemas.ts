@@ -5,11 +5,15 @@
  */
 
 import { z } from 'zod';
+import { sanitizer } from './input-sanitizer';
 
 /**
- * Common validation utilities
+ * Common validation utilities with enhanced sanitization
  */
-const sanitizeString = (str: string) => str.trim().replace(/\s+/g, ' ');
+const sanitizeString = (str: string) => sanitizer.sanitizeText(str);
+const sanitizeHTML = (str: string) => sanitizer.sanitizeHTML(str);
+const sanitizeEmail = (str: string) => sanitizer.sanitizeEmail(str);
+const sanitizeURL = (str: string) => sanitizer.sanitizeURL(str);
 
 const createStringSchema = (minLength: number = 1, maxLength: number = 255) =>
   z.string()
@@ -30,10 +34,11 @@ export const LoginSchema = z.object({
   email: z.string()
     .email('Invalid email address')
     .max(255, 'Email must be no more than 255 characters')
-    .transform(str => str.toLowerCase().trim()),
+    .transform(sanitizeEmail),
   password: z.string()
     .min(1, 'Password is required')
     .max(128, 'Password must be no more than 128 characters')
+    .transform(str => str.trim()) // Don't sanitize passwords, just trim
 });
 
 export const RefreshTokenSchema = z.object({
