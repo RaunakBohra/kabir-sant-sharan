@@ -36,8 +36,9 @@ export async function POST(request: NextRequest) {
 
     const { refreshToken } = validation.data;
 
-    // Attempt to refresh the token
-    const refreshResult = refreshAccessToken(refreshToken);
+    // Attempt to refresh the session
+    const { refreshUserSession } = await import('@/lib/session-manager');
+    const refreshResult = await refreshUserSession(refreshToken);
 
     if (!refreshResult.success || !refreshResult.tokens) {
       return createErrorResponse('INVALID_TOKEN', {
@@ -47,12 +48,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Verify user still exists in database
-    const adminUser = await getAdminUser(process.env);
-    if (!adminUser) {
+    // Get user data from session
+    const userFromSession = refreshResult.session?.user;
+    if (!userFromSession) {
       return createErrorResponse('INVALID_TOKEN', {
         instance,
-        detail: 'User no longer exists',
+        detail: 'Session user data not found',
         metadata: { traceId }
       });
     }
@@ -69,12 +70,7 @@ export async function POST(request: NextRequest) {
       refreshToken: refreshResult.tokens.refreshToken,
       expiresAt: refreshResult.tokens.accessExpiresAt,
       refreshExpiresAt: refreshResult.tokens.refreshExpiresAt,
-      user: {
-        id: adminUser.id,
-        email: adminUser.email,
-        name: adminUser.name,
-        role: adminUser.role
-      },
+      user: userFromSession,
       message: 'Token refreshed successfully'
     }, { headers });
 
