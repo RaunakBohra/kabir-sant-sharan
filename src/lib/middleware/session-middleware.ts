@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sessionManager, type SessionValidationResult } from '../session-manager';
-import { createErrorResponse } from '../api/error-handler';
+import { createErrorResponse } from '../error-handler';
 import { logger } from '../logger';
 
 export interface SessionMiddlewareOptions {
@@ -67,10 +67,7 @@ export function withSessionValidation(
             component: 'session-middleware'
           });
 
-          return createErrorResponse({
-            title: 'Forbidden',
-            detail: 'Insufficient permissions to access this resource',
-            status: 403,
+          return createErrorResponse('INSUFFICIENT_PERMISSIONS', {
             instance: request.url
           });
         }
@@ -96,10 +93,8 @@ export function withSessionValidation(
         component: 'session-middleware'
       });
 
-      return createErrorResponse({
-        title: 'Authentication Error',
+      return createErrorResponse('INTERNAL_SERVER_ERROR', {
         detail: 'Failed to validate session',
-        status: 500,
         instance: request.url
       });
     }
@@ -122,25 +117,14 @@ function handleAuthenticationFailure(
 
   // Return JSON error response
   if (validation.needsRefresh) {
-    return createErrorResponse({
-      title: 'Token Expired',
-      detail: 'Access token has expired. Please refresh your token.',
-      status: 401,
-      instance: request?.url || '',
-      type: 'https://tools.ietf.org/html/rfc6750#section-3.1'
-    }, {
-      'WWW-Authenticate': 'Bearer error="invalid_token", error_description="Token expired"'
+    return createErrorResponse('EXPIRED_TOKEN', {
+      instance: request?.url || ''
     });
   }
 
-  return createErrorResponse({
-    title: 'Unauthorized',
+  return createErrorResponse('MISSING_AUTHORIZATION', {
     detail: validation.error || 'Authentication required',
-    status: 401,
-    instance: request?.url || '',
-    type: 'https://tools.ietf.org/html/rfc6750#section-3.1'
-  }, {
-    'WWW-Authenticate': 'Bearer'
+    instance: request?.url || ''
   });
 }
 
@@ -310,16 +294,9 @@ export function withSessionRateLimit(
         component: 'session-rate-limit'
       });
 
-      return createErrorResponse({
-        title: 'Too Many Requests',
+      return createErrorResponse('RATE_LIMIT_EXCEEDED', {
         detail: `Rate limit exceeded. Try again in ${retryAfter} seconds.`,
-        status: 429,
         instance: request.url
-      }, {
-        'Retry-After': String(retryAfter),
-        'X-RateLimit-Limit': String(maxRequests),
-        'X-RateLimit-Remaining': '0',
-        'X-RateLimit-Reset': String(userCount.resetTime)
       });
     }
 

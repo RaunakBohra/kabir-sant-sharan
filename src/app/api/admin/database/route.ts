@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAdminAuth, type AuthenticatedRequest } from '@/lib/middleware/session-middleware';
+import { withPerformanceTracking } from '@/lib/middleware/performance-middleware';
 import {
   initializeDatabase,
   checkDatabaseHealth,
@@ -160,7 +161,8 @@ async function getDatabaseStatusHandler(request: AuthenticatedRequest): Promise<
       userId: request.session?.userId,
       request: {
         method: request.method,
-        url: request.url
+        url: request.url,
+        headers: Object.fromEntries(request.headers.entries())
       }
     });
 
@@ -189,7 +191,7 @@ async function databaseOperationHandler(request: AuthenticatedRequest): Promise<
       });
     }
 
-    const { action, options = {} } = body;
+    const { action, options = {} } = body as { action?: string; options?: any };
 
     if (!action || typeof action !== 'string') {
       return createErrorResponse('VALIDATION_ERROR', {
@@ -276,7 +278,8 @@ async function databaseOperationHandler(request: AuthenticatedRequest): Promise<
       userId: request.session?.userId,
       request: {
         method: request.method,
-        url: request.url
+        url: request.url,
+        headers: Object.fromEntries(request.headers.entries())
       }
     });
 
@@ -288,6 +291,21 @@ async function databaseOperationHandler(request: AuthenticatedRequest): Promise<
   }
 }
 
-// Route handlers with admin authentication
-export const GET = withAdminAuth(getDatabaseStatusHandler);
-export const POST = withAdminAuth(databaseOperationHandler);
+// Route handlers with admin authentication and performance tracking
+export const GET = withAdminAuth(
+  withPerformanceTracking(getDatabaseStatusHandler, {
+    trackRequests: true,
+    trackDatabase: true,
+    logSlowRequests: true,
+    slowRequestThreshold: 1000
+  })
+);
+
+export const POST = withAdminAuth(
+  withPerformanceTracking(databaseOperationHandler, {
+    trackRequests: true,
+    trackDatabase: true,
+    logSlowRequests: true,
+    slowRequestThreshold: 5000 // Database operations can be slower
+  })
+);

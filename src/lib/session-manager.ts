@@ -4,7 +4,9 @@ import { eq, and, lt, desc } from 'drizzle-orm';
 import { sessions, users, type Session, type NewSession } from '../../drizzle/schema';
 import { generateTokenPair, validateAccessToken, validateRefreshToken, type TokenPair } from './jwt-auth';
 import { logger } from './logger';
+import { trackDatabaseOperation } from './middleware/performance-middleware';
 import { nanoid } from 'nanoid';
+import { getDatabase } from './db';
 
 export interface SessionData {
   id: string;
@@ -43,7 +45,7 @@ class SessionManager {
   private db: any;
 
   constructor(database?: any) {
-    this.db = database || (globalThis as any).db;
+    this.db = database || getDatabase();
   }
 
   /**
@@ -62,8 +64,30 @@ class SessionManager {
 
       const { userId, ipAddress, userAgent, rememberMe = false } = options;
 
-      // Generate JWT tokens
-      const tokenPair = generateTokenPair({ userId });
+      // Get user information first
+      const userResult = await this.db
+        .select({
+          id: users.id,
+          email: users.email,
+          name: users.name,
+          role: users.role
+        })
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
+
+      if (userResult.length === 0) {
+        throw new Error('User not found');
+      }
+
+      const user = userResult[0];
+
+      // Generate JWT tokens with user information
+      const tokenPair = generateTokenPair({
+        userId,
+        email: user.email,
+        role: user.role
+      });
 
       // Create session record
       const sessionId = nanoid();
@@ -84,8 +108,15 @@ class SessionManager {
         createdAt: now
       };
 
-      // Insert session into database
-      await this.db.insert(sessions).values(newSession);
+      // Insert session into database with performance tracking
+      const insertTracker = trackDatabaseOperation('INSERT', 'sessions');
+      try {
+        await this.db.insert(sessions).values(newSession);
+        insertTracker.complete({ rows: 1 });
+      } catch (error) {
+        insertTracker.complete({ rows: 0 });
+        throw error;
+      }
 
       // Cleanup old sessions for this user (keep last 5 sessions)
       await this.cleanupUserSessions(userId, 5);
@@ -248,8 +279,12 @@ class SessionManager {
         return { success: false, error: 'Refresh token expired' };
       }
 
-      // Generate new token pair
-      const newTokenPair = generateTokenPair({ userId: session.userId });
+      // Generate new token pair with user information
+      const newTokenPair = generateTokenPair({
+        userId: session.userId,
+        email: user?.email || '',
+        role: user?.role || 'member'
+      });
 
       // Update session with new tokens
       const newExpiresAt = new Date(newTokenPair.accessExpiresAt).toISOString();

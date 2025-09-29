@@ -30,9 +30,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuthStatus = async () => {
     try {
-      let accessToken = localStorage.getItem('access_token');
-      const refreshToken = localStorage.getItem('refresh_token');
-      const expiresAt = localStorage.getItem('token_expires_at');
+      let accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+      const expiresAt = localStorage.getItem('expiresAt');
 
       if (!accessToken || !refreshToken) {
         setIsLoading(false);
@@ -57,23 +57,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           if (refreshResponse.ok) {
             const refreshData = await refreshResponse.json() as { accessToken: string; refreshToken: string; expiresAt: number };
-            localStorage.setItem('access_token', refreshData.accessToken);
-            localStorage.setItem('refresh_token', refreshData.refreshToken);
-            localStorage.setItem('token_expires_at', refreshData.expiresAt.toString());
+            localStorage.setItem('accessToken', refreshData.accessToken);
+            localStorage.setItem('refreshToken', refreshData.refreshToken);
+            localStorage.setItem('expiresAt', refreshData.expiresAt.toString());
             accessToken = refreshData.accessToken;
           } else {
             // Refresh failed, clear tokens
-            localStorage.removeItem('access_token');
-            localStorage.removeItem('refresh_token');
-            localStorage.removeItem('token_expires_at');
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('expiresAt');
             setIsLoading(false);
             return;
           }
         } catch (refreshError) {
           console.error('Token refresh failed:', refreshError);
-          localStorage.removeItem('access_token');
-          localStorage.removeItem('refresh_token');
-          localStorage.removeItem('token_expires_at');
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('expiresAt');
           setIsLoading(false);
           return;
         }
@@ -93,15 +93,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           isAuthenticated: true
         });
       } else {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('token_expires_at');
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('expiresAt');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
-      localStorage.removeItem('token_expires_at');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('expiresAt');
     } finally {
       setIsLoading(false);
     }
@@ -121,9 +121,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response.ok) {
         // Store both access and refresh tokens
-        localStorage.setItem('access_token', data.accessToken);
-        localStorage.setItem('refresh_token', data.refreshToken);
-        localStorage.setItem('token_expires_at', data.expiresAt.toString());
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        localStorage.setItem('expiresAt', data.expiresAt.toString());
 
         setUser({
           ...data.user,
@@ -139,9 +139,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('token_expires_at');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('expiresAt');
     setUser(null);
   };
 

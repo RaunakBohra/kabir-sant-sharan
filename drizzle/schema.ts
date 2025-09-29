@@ -35,6 +35,7 @@ export const teachings = sqliteTable('teachings', {
   coverImage: text('cover_image'),
   readingTime: integer('reading_time'),
   publishedAt: text('published_at'),
+  deletedAt: text('deleted_at'),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
 }, (teachings) => ({
@@ -67,6 +68,7 @@ export const events = sqliteTable('events', {
   coverImage: text('cover_image'),
   organizer: text('organizer').notNull(),
   language: text('language').notNull().default('en'),
+  deletedAt: text('deleted_at'),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
 }, (events) => ({
@@ -116,6 +118,7 @@ export const media = sqliteTable('media', {
   language: text('language').notNull().default('en'),
   uploadedBy: text('uploaded_by').notNull().references(() => users.id),
   publishedAt: text('published_at'),
+  deletedAt: text('deleted_at'),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
 }, (media) => ({
@@ -278,3 +281,21 @@ export type Session = typeof sessions.$inferSelect
 export type NewSession = typeof sessions.$inferInsert
 export type Analytics = typeof analytics.$inferSelect
 export type NewAnalytics = typeof analytics.$inferInsert
+
+export const trash = sqliteTable('trash', {
+  id: text('id').primaryKey(),
+  contentType: text('content_type').notNull(),
+  contentId: text('content_id').notNull(),
+  contentData: text('content_data').notNull(),
+  deletedBy: text('deleted_by').notNull().references(() => users.id),
+  deletedAt: text('deleted_at').notNull(),
+  scheduledPurgeAt: text('scheduled_purge_at').notNull(),
+  restoredAt: text('restored_at'),
+  restoredBy: text('restored_by').references(() => users.id)
+}, (trash) => ({
+  scheduledPurgeIdx: uniqueIndex('trash_scheduled_purge_idx').on(trash.scheduledPurgeAt),
+  contentTypeIdIdx: uniqueIndex('trash_content_type_id_idx').on(trash.contentType, trash.contentId)
+}))
+
+export type Trash = typeof trash.$inferSelect
+export type NewTrash = typeof trash.$inferInsert

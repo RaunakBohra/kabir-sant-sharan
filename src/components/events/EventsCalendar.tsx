@@ -1,50 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface CalendarEvent {
   id: string
   title: string
-  date: string
-  time: string
+  startDate: string
+  startTime: string
   type: string
-  color: string
+  slug: string
+  featured: boolean
 }
 
-const sampleEvents: CalendarEvent[] = [
-  {
-    id: '1',
-    title: 'Weekly Satsang',
-    date: '2024-10-05',
-    time: '6:00 PM',
-    type: 'Satsang',
-    color: 'bg-blue-100 border-blue-300 text-blue-800'
-  },
-  {
-    id: '2',
-    title: 'Kabir Jayanti',
-    date: '2024-10-15',
-    time: '10:00 AM',
-    type: 'Festival',
-    color: 'bg-orange-100 border-orange-300 text-orange-800'
-  },
-  {
-    id: '3',
-    title: 'Meditation Workshop',
-    date: '2024-10-12',
-    time: '7:00 AM',
-    type: 'Workshop',
-    color: 'bg-green-100 border-green-300 text-green-800'
-  },
-  {
-    id: '4',
-    title: 'Community Satsang',
-    date: '2024-10-19',
-    time: '7:00 PM',
-    type: 'Satsang',
-    color: 'bg-blue-100 border-blue-300 text-blue-800'
+function getTypeColor(type: string) {
+  switch (type.toLowerCase()) {
+    case 'satsang':
+      return 'bg-blue-100 border-blue-300 text-blue-800'
+    case 'festival':
+      return 'bg-orange-100 border-orange-300 text-orange-800'
+    case 'workshop':
+      return 'bg-green-100 border-green-300 text-green-800'
+    case 'meditation':
+      return 'bg-purple-100 border-purple-300 text-purple-800'
+    default:
+      return 'bg-gray-100 border-gray-300 text-gray-800'
   }
-]
+}
 
 export function EventsCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -203,13 +184,32 @@ export function EventsCalendar() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>{selectedEvent.date} at {selectedEvent.time}</span>
+                <span>
+                  {calendarType === 'BS' ? (
+                    (() => {
+                      const adDate = new Date(selectedEvent.startDate)
+                      const bsDate = new NepaliDate(adDate)
+                      return `${bsDate.format('DD MMMM YYYY', 'np')} BS`
+                    })()
+                  ) : (
+                    new Date(selectedEvent.startDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
+                  )} at {selectedEvent.startTime}
+                </span>
               </div>
 
               <div className="flex items-center space-x-2">
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${selectedEvent.color}`}>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(selectedEvent.type)}`}>
                   {selectedEvent.type}
                 </span>
+                {selectedEvent.featured && (
+                  <span className="bg-amber-100 text-amber-800 text-xs font-medium px-2 py-1 rounded-full border border-amber-300">
+                    Featured
+                  </span>
+                )}
               </div>
             </div>
 

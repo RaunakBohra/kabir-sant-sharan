@@ -3,6 +3,7 @@ import './globals.css'
 import { NavBar } from '@/components/navigation/NavBar'
 import { Footer } from '@/components/layout/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { Toaster } from '@/components/ui/toast'
 import Script from 'next/script'
 
 export const metadata: Metadata = {
@@ -109,6 +110,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <Toaster />
         </AuthProvider>
 
         {/* Service Worker Registration */}

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateAccessToken, extractBearerToken, getUserFromToken, isTokenNearExpiry } from '@/lib/jwt-auth';
 import { createErrorResponse, getInstancePath, logError } from '@/lib/error-handler';
-import { getAdminUser } from '@/lib/db-seed';
+import { sessionManager } from '@/lib/session-manager';
 import { createId } from '@paralleldrive/cuid2';
 
 export const runtime = 'nodejs';
@@ -21,44 +21,39 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const validation = validateAccessToken(token);
+    // Validate session using session manager (includes JWT validation and database check)
+    const sessionValidation = await sessionManager.validateSession(token);
 
-    if (!validation.valid || !validation.payload) {
-      if (validation.expired) {
+    if (!sessionValidation.valid || !sessionValidation.session) {
+      if (sessionValidation.needsRefresh) {
         return createErrorResponse('EXPIRED_TOKEN', {
           instance,
+          detail: 'Session expired. Please refresh your token.',
           metadata: { traceId }
         });
       }
 
       return createErrorResponse('INVALID_TOKEN', {
         instance,
-        detail: validation.error || 'Token validation failed',
+        detail: sessionValidation.error || 'Session validation failed',
         metadata: { traceId }
       });
     }
 
-    // Get user details from database to ensure user still exists
-    const adminUser = await getAdminUser(process.env);
-
-    if (!adminUser || adminUser.id !== validation.payload.userId) {
-      return createErrorResponse('INVALID_TOKEN', {
-        instance,
-        detail: 'User no longer exists',
-        metadata: { traceId }
-      });
-    }
-
+    const session = sessionValidation.session;
     const user = {
-      id: adminUser.id,
-      email: adminUser.email,
-      name: adminUser.name,
-      role: adminUser.role,
-      sessionId: validation.payload.sessionId
+      id: session.userId,
+      email: session.user?.email || '',
+      name: session.user?.name || '',
+      role: session.user?.role || 'member',
+      sessionId: session.id
     };
 
-    // Check if token is near expiry (within 5 minutes)
-    const needsRefresh = isTokenNearExpiry(validation.payload);
+    // Validate the JWT payload to check for near expiry
+    const jwtValidation = validateAccessToken(token);
+    const needsRefresh = jwtValidation.valid && jwtValidation.payload
+      ? isTokenNearExpiry(jwtValidation.payload)
+      : false;
 
     const headers = {
       'Content-Type': 'application/json',
@@ -70,7 +65,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       user,
       tokenInfo: {
-        expiresAt: validation.payload.exp ? validation.payload.exp * 1000 : undefined,
+        expiresAt: jwtValidation.payload?.exp ? jwtValidation.payload.exp * 1000 : undefined,
         needsRefresh
       },
       message: 'Token verified successfully'

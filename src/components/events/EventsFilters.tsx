@@ -1,14 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-const eventTypes = [
-  { id: 'all', name: 'All Events', count: 15 },
-  { id: 'satsang', name: 'Satsang', count: 6 },
-  { id: 'festival', name: 'Festivals', count: 4 },
-  { id: 'workshop', name: 'Workshops', count: 3 },
-  { id: 'meditation', name: 'Meditation', count: 2 }
-]
+  const eventTypes = [
+    { id: 'all', name: 'All Events', count: eventCounts.all },
+    { id: 'satsang', name: 'Satsang', count: eventCounts.satsang },
+    { id: 'festival', name: 'Festivals', count: eventCounts.festival },
+    { id: 'workshop', name: 'Workshops', count: eventCounts.workshop },
+    { id: 'meditation', name: 'Meditation', count: eventCounts.meditation }
+  ]
 
 const timeFilters = [
   { id: 'upcoming', name: 'Upcoming' },
@@ -17,10 +17,46 @@ const timeFilters = [
   { id: 'past', name: 'Past Events' }
 ]
 
-export function EventsFilters() {
-  const [selectedType, setSelectedType] = useState('all')
-  const [selectedTime, setSelectedTime] = useState('upcoming')
-  const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar')
+interface EventsFiltersProps {
+  selectedType: string
+  selectedTime: string
+  viewMode: 'calendar' | 'list'
+  onFiltersChange: (filters: { type?: string, timeRange?: string, viewMode?: 'calendar' | 'list' }) => void
+}
+
+export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersChange }: EventsFiltersProps) {
+  const [eventCounts, setEventCounts] = useState({
+    all: 0,
+    satsang: 0,
+    festival: 0,
+    workshop: 0,
+    meditation: 0
+  })
+
+  // Fetch event counts for each type
+  useEffect(() => {
+    async function fetchEventCounts() {
+      try {
+        const response = await fetch('/api/events/counts')
+        if (response.ok) {
+          const counts = await response.json()
+          setEventCounts(counts)
+        }
+      } catch (error) {
+        console.error('Error fetching event counts:', error)
+        // Set default counts if API fails
+        setEventCounts({
+          all: 15,
+          satsang: 6,
+          festival: 4,
+          workshop: 3,
+          meditation: 2
+        })
+      }
+    }
+
+    fetchEventCounts()
+  }, [])
 
   return (
     <div className="mb-12">

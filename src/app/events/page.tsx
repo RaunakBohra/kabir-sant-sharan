@@ -1,8 +1,26 @@
+'use client'
+
+import { useState } from 'react'
 import { EventsCalendar } from '@/components/events/EventsCalendar'
 import { EventsList } from '@/components/events/EventsList'
 import { EventsFilters } from '@/components/events/EventsFilters'
 
+interface EventFilters {
+  type: string
+  timeRange: string
+  viewMode: 'calendar' | 'list'
+}
+
 export default function EventsPage() {
+  const [filters, setFilters] = useState<EventFilters>({
+    type: 'all',
+    timeRange: 'upcoming',
+    viewMode: 'calendar'
+  })
+
+  const handleFiltersChange = (newFilters: Partial<EventFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }))
+  }
   return (
     <div className="min-h-screen bg-cream-500">
       <div className="container mx-auto px-4 py-12">
@@ -18,15 +36,21 @@ export default function EventsPage() {
         </div>
 
         {/* Event Filters */}
-        <EventsFilters />
+        <EventsFilters
+          selectedType={filters.type}
+          selectedTime={filters.timeRange}
+          viewMode={filters.viewMode}
+          onFiltersChange={handleFiltersChange}
+        />
 
-        {/* Calendar View */}
-        <div className="mb-12">
-          <EventsCalendar />
-        </div>
-
-        {/* Events List */}
-        <EventsList />
+        {/* Conditional View Based on Filter */}
+        {filters.viewMode === 'calendar' ? (
+          <div className="mb-12">
+            <EventsCalendar filters={{ type: filters.type, timeRange: filters.timeRange }} />
+          </div>
+        ) : (
+          <EventsList filters={{ type: filters.type, timeRange: filters.timeRange }} />
+        )}
       </div>
     </div>
   )

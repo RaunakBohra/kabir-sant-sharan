@@ -3,7 +3,7 @@ import { healthMonitor } from '@/lib/monitoring/health-monitor';
 import { errorTracker } from '@/lib/monitoring/error-tracker';
 import { logger } from '@/lib/logger';
 import { withErrorTracking } from '@/lib/monitoring/error-tracker';
-import { createErrorResponse } from '@/lib/api/error-handler';
+import { createErrorResponse } from '@/lib/error-handler';
 
 async function metricsHandler(request: NextRequest): Promise<NextResponse> {
   const url = new URL(request.url);
