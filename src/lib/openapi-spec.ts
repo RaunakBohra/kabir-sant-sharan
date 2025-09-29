@@ -599,6 +599,10 @@ All errors follow RFC 9457 Problem Details format:
     {
       name: 'Media',
       description: 'Media file management and streaming'
+    },
+    {
+      name: 'Monitoring',
+      description: 'System health monitoring and metrics'
     }
   ]
 };

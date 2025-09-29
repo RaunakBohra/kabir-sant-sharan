@@ -97,7 +97,7 @@ export const TeachingQuerySchema = z.object({
 /**
  * Event Schemas
  */
-export const CreateEventSchema = z.object({
+const BaseEventSchema = z.object({
   title: createStringSchema(1, 200),
   description: createStringSchema(10, 2000),
   location: createStringSchema(1, 200),
@@ -130,7 +130,10 @@ export const CreateEventSchema = z.object({
   coverImage: createOptionalStringSchema(500),
   organizer: createStringSchema(1, 100).default('Kabir Sant Sharan'),
   language: z.enum(['en', 'hi', 'ne']).default('en')
-}).refine(data => {
+});
+
+// Add refinements to create the final schema
+export const CreateEventSchema = BaseEventSchema.refine(data => {
   const start = new Date(data.startDate);
   const end = new Date(data.endDate);
   return start < end;
@@ -147,7 +150,7 @@ export const CreateEventSchema = z.object({
   path: ["registrationDeadline"]
 });
 
-export const UpdateEventSchema = CreateEventSchema.partial().extend({
+export const UpdateEventSchema = BaseEventSchema.partial().extend({
   id: z.string().min(1, 'Event ID is required')
 });
 

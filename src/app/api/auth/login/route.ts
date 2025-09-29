@@ -100,12 +100,22 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Generate token pair (access + refresh tokens)
-    const tokenPair = generateTokenPair({
-      userId: adminUser.id,
-      email: adminUser.email,
-      role: adminUser.role
-    });
+    // Create session in database
+    const { createUserSession } = await import('@/lib/session-manager');
+    const sessionResult = await createUserSession(adminUser.id, request);
+
+    if (!sessionResult.success || !sessionResult.tokens) {
+      logError(new Error('Failed to create session'), {
+        traceId,
+        userId: adminUser.id,
+        error: sessionResult.error
+      });
+
+      return createErrorResponse('INTERNAL_SERVER_ERROR', {
+        instance,
+        metadata: { traceId }
+      });
+    }
 
     const user = {
       id: adminUser.id,
@@ -123,10 +133,10 @@ export async function POST(request: NextRequest) {
     };
 
     return NextResponse.json({
-      accessToken: tokenPair.accessToken,
-      refreshToken: tokenPair.refreshToken,
-      expiresAt: tokenPair.accessExpiresAt,
-      refreshExpiresAt: tokenPair.refreshExpiresAt,
+      accessToken: sessionResult.tokens.accessToken,
+      refreshToken: sessionResult.tokens.refreshToken,
+      expiresAt: sessionResult.tokens.accessExpiresAt,
+      refreshExpiresAt: sessionResult.tokens.refreshExpiresAt,
       user,
       message: 'Login successful'
     }, { headers });

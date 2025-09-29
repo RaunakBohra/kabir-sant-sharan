@@ -42,7 +42,9 @@
       "Bash(done)",
       "Bash(wrangler:*)",
       "Bash(npm run test:run:*)",
-      "Bash(echo \"$2b$12$NNnKjCgp2n1L2eYtLARZoOHYIrDfqMYyBgJFCFnTU6.zAlZsAGglO\")"
+      "Bash(echo \"$2b$12$NNnKjCgp2n1L2eYtLARZoOHYIrDfqMYyBgJFCFnTU6.zAlZsAGglO\")",
+      "Bash(chmod:*)",
+      "Bash(./e2e-test.sh:*)"
     ],
     "deny": [],
     "ask": []
