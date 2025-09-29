@@ -43,7 +43,7 @@
 - ❌ Initial overhead in component design
 
 ### D005: Free-Tier Technology Stack (2024-09-29)
-**Status**: Accepted
+**Status**: Superseded by D008
 **Context**: Budget constraint of $0-5/month for lifetime operation
 **Decision**: Use only free-tier services (Vercel, Railway, Cloudinary, Kit/ConvertKit)
 **Consequences**:
@@ -51,6 +51,7 @@
 - ✅ Professional-grade services
 - ❌ Usage limitations on free tiers
 - ❌ Potential migration needs if community grows significantly
+**Superseded By**: D008 - Cloudflare Full-Stack Migration provides better cost efficiency and performance
 
 ### D006: English/Nepali Bilingual Support (2024-09-29)
 **Status**: Accepted
@@ -71,6 +72,22 @@
 - ✅ Better performance on slower devices
 - ✅ Improved accessibility
 - ❌ Requires careful desktop optimization
+
+### D008: Cloudflare Full-Stack Migration (2024-09-29)
+**Status**: Accepted
+**Context**: Need cost-effective, scalable infrastructure for global spiritual community
+**Decision**: Migrate from Supabase/Vercel to full Cloudflare stack (Pages + D1 + Workers + R2)
+**Consequences**:
+- ✅ Zero operational cost ($0/month guaranteed)
+- ✅ Global CDN performance for worldwide access
+- ✅ Simplified single-vendor architecture
+- ✅ Built-in security (DDoS, WAF protection)
+- ✅ Edge computing for optimal performance
+- ❌ Learning curve for D1 (SQLite vs PostgreSQL)
+- ❌ Custom authentication implementation required
+- ❌ Limited to 5GB database on free tier
+**Alternatives Considered**: Supabase + Vercel, Railway, Netlify + Upstash
+**Review Date**: 2025-03-29
 
 ## Decision Categories
 

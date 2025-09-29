@@ -2,7 +2,7 @@
 
 A spiritual website dedicated to sharing the divine teachings of Sant Kabir Das and fostering a community of devotees and spiritual seekers.
 
-## 🕉️ Project Overview
+## Project Overview
 
 This website serves the Kabir Ashram community with:
 - **Teachings**: Blog posts, daily wisdom, and spiritual content
@@ -11,14 +11,15 @@ This website serves the Kabir Ashram community with:
 - **Community**: Member interaction and spiritual discussions
 - **Bilingual Support**: English and Nepali content
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS with custom teal/amber theme
-- **Deployment**: Vercel (free tier)
-- **Database**: Railway PostgreSQL (free tier)
-- **Media**: Cloudinary (free tier)
-- **Email**: Kit/ConvertKit (free tier)
+- **Styling**: Tailwind CSS with custom cream/black spiritual theme
+- **Hosting**: Cloudflare Pages (free tier)
+- **Database**: Cloudflare D1 SQLite (free tier)
+- **Functions**: Cloudflare Workers (free tier)
+- **Storage**: Cloudflare R2 (free tier)
+- **CDN**: Cloudflare Global Network (free tier)
 
 ## 📁 Project Structure
 
@@ -46,18 +47,18 @@ docs/
 └── AI-Guidelines/      # Development guidelines
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+
 - npm or yarn
-- Supabase account (free tier)
+- Cloudflare account (free tier)
 
 ### Installation
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/RaunakBohra/kabir-sant-sharan.git
 cd kabir-sant-sharan
 ```
 
@@ -66,34 +67,39 @@ cd kabir-sant-sharan
 npm install
 ```
 
-3. Set up Supabase:
-   - Create account at [supabase.com](https://supabase.com)
-   - Create new project: `kabir-sant-sharan`
-   - Copy your project credentials
+3. Set up Cloudflare:
+   - Create account at [cloudflare.com](https://cloudflare.com)
+   - Install Wrangler CLI: `npm install -g wrangler`
+   - Authenticate: `wrangler login`
 
 4. Set up environment variables:
 ```bash
 cp .env.example .env.local
-# Add your Supabase credentials to .env.local:
-# NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-# NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-# SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+# Add your Cloudflare credentials to .env.local:
+# CLOUDFLARE_API_TOKEN=your-api-token
+# CLOUDFLARE_ACCOUNT_ID=your-account-id
+# CLOUDFLARE_DATABASE_ID=your-d1-database-id
 ```
 
-5. Run the development server:
+5. Create Cloudflare D1 database:
+```bash
+wrangler d1 create kabir-sant-sharan
+# Copy the database ID to your .env.local
+```
+
+6. Run the development server:
 ```bash
 npm run dev
 ```
 
-6. Open [http://localhost:5002](http://localhost:5002) in your browser
-   - You should see ✅ "Successfully connected to Supabase!"
+7. Open [http://localhost:5002](http://localhost:5002) in your browser
 
-7. (Optional) Create database tables:
-   - Go to Supabase Dashboard → SQL Editor
-   - Copy & paste contents of `database-setup.sql`
-   - Click "Run" to create tables with sample spiritual content
+8. (Optional) Initialize database with spiritual content:
+```bash
+wrangler d1 execute kabir-sant-sharan --file=./database-setup.sql
+```
 
-## 🧪 Development Commands
+## Development Commands
 
 ```bash
 npm run dev          # Start development server
@@ -102,16 +108,18 @@ npm run start        # Start production server
 npm run lint         # Run ESLint
 npm run lint:fix     # Fix ESLint errors
 npm run type-check   # TypeScript type checking
-npm run test         # Run tests
-npm run test:watch   # Run tests in watch mode
+wrangler dev         # Start Cloudflare Workers development
+wrangler deploy      # Deploy to Cloudflare Workers
+wrangler d1 migrations apply kabir-sant-sharan  # Run database migrations
 ```
 
-## 🎨 Design System
+## Design System
 
 ### Colors
-- **Primary**: Teal (#14b8a6) - Spiritual serenity
-- **Accent**: Amber (#f59e0b) - Divine warmth
-- **Gray Scale**: Modern gray palette for text and backgrounds
+- **Primary**: Cream (#f9f9f9) - Pure spiritual light
+- **Accent**: Dark (#000000) - Grounded wisdom
+- **Cream Scale**: Light cream palette for backgrounds and cards
+- **Dark Scale**: Black to gray for text and emphasis
 
 ### Typography
 - System font stack for optimal performance
@@ -130,42 +138,55 @@ npm run test:watch   # Run tests in watch mode
 - **Patterns**: See `docs/AI-Guidelines/PATTERNS.md`
 - **Decisions**: See `docs/AI-Guidelines/DECISIONS.md`
 
-## 🌐 Deployment
+## Deployment
 
-This project is optimized for deployment on Vercel:
+This project is optimized for deployment on Cloudflare Pages:
 
-1. Connect your GitHub repository to Vercel
-2. Configure environment variables
-3. Deploy automatically on every push to main
+1. Connect your GitHub repository to Cloudflare Pages
+2. Configure build settings: `npm run build` with output directory `out`
+3. Set environment variables in Cloudflare dashboard
+4. Deploy automatically on every push to main
+5. Configure custom domain and SSL through Cloudflare
 
-## 🤝 Contributing
+### Manual Deployment
+```bash
+wrangler pages deploy out --project-name=kabir-sant-sharan
+```
 
-1. Follow the 11-Rule System in development guidelines
+## Contributing
+
+1. Follow component-first architecture patterns
 2. Check component inventory before creating new components
 3. Update documentation when adding new features
 4. Maintain mobile-first responsive design
 5. Ensure accessibility compliance
+6. Use professional SVG icons instead of emojis
+7. Follow cream/black spiritual theme consistently
 
-## 📊 Performance Targets
+## Performance Targets
 
-- **LCP**: < 2.5s (Largest Contentful Paint)
-- **FID**: < 100ms (First Input Delay)
+- **LCP**: < 1.5s (Largest Contentful Paint) - Enhanced by Cloudflare CDN
+- **FID**: < 50ms (First Input Delay) - Optimized with Workers
 - **CLS**: < 0.1 (Cumulative Layout Shift)
-- **Bundle Size**: Main < 200KB, Vendor < 500KB (gzipped)
+- **Bundle Size**: Main < 150KB, Vendor < 400KB (gzipped)
+- **Global Response Time**: < 200ms (Cloudflare edge network)
 
-## 🔒 Security
+## Security
 
-- HTTPS everywhere
-- Secure headers configured
+- HTTPS everywhere with Cloudflare SSL
+- DDoS protection included
+- WAF (Web Application Firewall) protection
 - Input validation and sanitization
-- No hardcoded secrets
+- Environment variables secured in Cloudflare
 
-## 💰 Budget Constraints
+## Budget & Cost
 
-- Total operational cost: $0-5/month
-- Free tier services only
-- No premium dependencies
-- Optimized for cost efficiency
+- **Total operational cost**: $0/month
+- **Cloudflare Pages**: Free tier (500 builds/month)
+- **Cloudflare D1**: Free tier (5GB storage, 25M reads/month)
+- **Cloudflare Workers**: Free tier (100k requests/day)
+- **Cloudflare R2**: Free tier (10GB storage)
+- **No premium dependencies required**
 
 ## 🌍 Accessibility
 
