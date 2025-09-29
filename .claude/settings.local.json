@@ -20,7 +20,9 @@
       "Bash(git commit:*)",
       "WebSearch",
       "Bash(lsof:*)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
