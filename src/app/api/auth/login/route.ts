@@ -5,11 +5,12 @@ import { generateTokenPair, createAuthMiddleware } from '@/lib/jwt-auth';
 import { checkRateLimit, createRateLimitHeaders } from '@/lib/rate-limiter';
 import { createErrorResponse, getInstancePath, logError } from '@/lib/error-handler';
 import { validateRequest, LoginSchema } from '@/lib/validation-schemas';
+import { withPerformanceTracking } from '@/lib/middleware/performance-middleware';
 import { createId } from '@paralleldrive/cuid2';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+async function loginHandler(request: NextRequest) {
   const traceId = createId();
   const instance = getInstancePath(request);
 
@@ -37,43 +38,19 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = validation.data;
 
-    // Get admin user from database (or create if doesn't exist)
-    let adminUser = await getAdminUser(process.env);
+    // Check if admin credentials match environment variables
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@kabirsantsharan.com';
+    const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
-    if (!adminUser) {
-      // Try to seed admin user if not found
-      const seedResult = await seedAdminUser(process.env);
-      if (!seedResult.success) {
-        logError(new Error('Failed to initialize admin user'), {
-          traceId,
-          request: {
-            method: request.method,
-            url: request.url,
-            headers: Object.fromEntries(request.headers.entries())
-          }
-        });
-
-        return createErrorResponse('CONFIGURATION_ERROR', {
-          instance,
-          detail: 'Authentication system not properly configured',
-          metadata: { traceId }
-        });
-      }
-
-      adminUser = await getAdminUser(process.env);
+    if (!adminPasswordHash) {
+      return createErrorResponse('CONFIGURATION_ERROR', {
+        instance,
+        detail: 'Admin credentials not configured',
+        metadata: { traceId }
+      });
     }
 
-    if (!adminUser || email !== adminUser.email) {
-      // Log failed attempt for monitoring
-      logError(new Error('Invalid login attempt'), {
-        traceId,
-        request: {
-          method: request.method,
-          url: request.url,
-          headers: Object.fromEntries(request.headers.entries())
-        }
-      });
-
+    if (email !== adminEmail) {
       return createErrorResponse('INVALID_CREDENTIALS', {
         instance,
         metadata: { traceId }
@@ -81,47 +58,24 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
-    const isValidPassword = await bcrypt.compare(password, adminUser.password_hash);
+    const isValidPassword = await bcrypt.compare(password, adminPasswordHash);
 
     if (!isValidPassword) {
-      logError(new Error('Invalid password attempt'), {
-        traceId,
-        userId: adminUser.id,
-        request: {
-          method: request.method,
-          url: request.url,
-          headers: Object.fromEntries(request.headers.entries())
-        }
-      });
-
       return createErrorResponse('INVALID_CREDENTIALS', {
         instance,
         metadata: { traceId }
       });
     }
 
-    // Create session in database
-    const { createUserSession } = await import('@/lib/session-manager');
-    const sessionResult = await createUserSession(adminUser.id, request);
-
-    if (!sessionResult.success || !sessionResult.tokens) {
-      logError(new Error('Failed to create session'), {
-        traceId,
-        userId: adminUser.id,
-        error: sessionResult.error
-      });
-
-      return createErrorResponse('INTERNAL_SERVER_ERROR', {
-        instance,
-        metadata: { traceId }
-      });
-    }
+    // Generate JWT tokens (no database session for now)
+    const userId = 'admin-' + createId();
+    const tokenPair = generateTokenPair({ userId });
 
     const user = {
-      id: adminUser.id,
-      email: adminUser.email,
-      name: adminUser.name,
-      role: adminUser.role
+      id: userId,
+      email: adminEmail,
+      name: 'Admin',
+      role: 'admin'
     };
 
     // Add security headers
@@ -133,10 +87,10 @@ export async function POST(request: NextRequest) {
     };
 
     return NextResponse.json({
-      accessToken: sessionResult.tokens.accessToken,
-      refreshToken: sessionResult.tokens.refreshToken,
-      expiresAt: sessionResult.tokens.accessExpiresAt,
-      refreshExpiresAt: sessionResult.tokens.refreshExpiresAt,
+      accessToken: tokenPair.accessToken,
+      refreshToken: tokenPair.refreshToken,
+      expiresAt: tokenPair.accessExpiresAt,
+      refreshExpiresAt: tokenPair.refreshExpiresAt,
       user,
       message: 'Login successful'
     }, { headers });
@@ -157,3 +111,11 @@ export async function POST(request: NextRequest) {
     });
   }
 }
+
+// Export with performance tracking
+export const POST = withPerformanceTracking(loginHandler, {
+  trackRequests: true,
+  trackDatabase: true,
+  logSlowRequests: true,
+  slowRequestThreshold: 2000 // Auth should be fast
+});

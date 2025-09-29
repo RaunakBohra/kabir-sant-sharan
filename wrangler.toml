@@ -2,6 +2,12 @@ name = "kabir-sant-sharan"
 compatibility_date = "2024-09-29"
 pages_build_output_dir = "out"
 
+# Local development D1 binding
+[[d1_databases]]
+binding = "DB"
+database_name = "kabir-sant-sharan"
+database_id = "cf50986b-cc78-4c0c-b6bd-268e6b8c44c5"
+
 [env.production]
 name = "kabir-sant-sharan"
 

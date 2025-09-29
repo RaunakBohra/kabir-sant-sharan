@@ -1,24 +1,38 @@
-# Kabir Sant Sharan
+# Kabir Sant Sharan 🕉️
 
-A spiritual website dedicated to sharing the divine teachings of Sant Kabir Das and fostering a community of devotees and spiritual seekers.
+A modern, secure spiritual platform dedicated to sharing the divine teachings of Sant Kabir Das and fostering a community of devotees and spiritual seekers. Built with enterprise-grade security and comprehensive monitoring.
 
-## Project Overview
+## ✨ Project Overview
 
-This website serves the Kabir Ashram community with:
-- **Teachings**: Blog posts, daily wisdom, and spiritual content
-- **Events**: Satsang schedules, festivals, and community gatherings
-- **Media**: Audio teachings, bhajans, and video content
-- **Community**: Member interaction and spiritual discussions
-- **Bilingual Support**: English and Nepali content
+This platform serves the Kabir Ashram community with:
+- **📖 Teachings**: Searchable repository of Sant Kabir's wisdom and daily spiritual insights
+- **🎪 Events**: Satsang schedules, festivals, and community gatherings with registration
+- **🎵 Media**: Audio teachings, bhajans, video content, and image galleries
+- **👥 Community**: Member interaction, spiritual discussions, and newsletter system
+- **🌐 Bilingual Support**: English and Nepali content with i18n
+- **🔐 Admin Panel**: Comprehensive content management and analytics dashboard
+- **📊 Performance Monitoring**: Real-time system monitoring and metrics
 
-## Technology Stack
+## 🛠️ Technology Stack
 
-- **Frontend**: Next.js 14, React 18, TypeScript
+### Core Technologies
+- **Frontend**: Next.js 14 with App Router, React 18, TypeScript
 - **Styling**: Tailwind CSS with custom cream/black spiritual theme
-- **Hosting**: Cloudflare Pages (free tier)
-- **Database**: Cloudflare D1 SQLite (free tier)
-- **Functions**: Cloudflare Workers (free tier)
-- **Storage**: Cloudflare R2 (free tier)
+- **Database**: SQLite (development) / PostgreSQL (production) with Drizzle ORM
+- **Authentication**: JWT with secure refresh token rotation
+- **Hosting**: Cloudflare Pages (free tier) / Vercel (recommended)
+
+### Security & Monitoring
+- **🔒 Enterprise Security**: JWT auth, RBAC, rate limiting, input sanitization
+- **📈 Performance Monitoring**: Real-time metrics, alerts, Prometheus integration
+- **🛡️ Security Headers**: CSRF protection, XSS prevention, content security policy
+- **📝 Structured Logging**: Request tracing, error tracking, performance insights
+- **✅ Input Validation**: Comprehensive Zod schemas for all endpoints
+
+### Infrastructure
+- **Database**: Cloudflare D1 SQLite (free tier) / PostgreSQL (production)
+- **Functions**: Cloudflare Workers (free tier) / Serverless functions
+- **Storage**: Cloudflare R2 (free tier) / AWS S3
 - **CDN**: Cloudflare Global Network (free tier)
 
 ## 📁 Project Structure
@@ -99,17 +113,49 @@ npm run dev
 wrangler d1 execute kabir-sant-sharan --file=./database-setup.sql
 ```
 
-## Development Commands
+## 🚀 Development Commands
 
+### Core Development
 ```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run lint:fix     # Fix ESLint errors
-npm run type-check   # TypeScript type checking
-wrangler dev         # Start Cloudflare Workers development
-wrangler deploy      # Deploy to Cloudflare Workers
+npm run dev              # Start development server
+npm run build           # Build for production
+npm run start           # Start production server
+npm run lint            # Run ESLint
+npm run lint:fix        # Fix ESLint errors
+npm run type-check      # TypeScript type checking
+```
+
+### Database Management
+```bash
+npm run db:init         # Initialize database (migrate + seed)
+npm run db:migrate      # Run pending migrations
+npm run db:seed         # Seed database with sample data
+npm run db:status       # Show migration status
+npm run db:validate     # Validate migration integrity
+npm run db:rollback     # Rollback last migration (with --force)
+npm run db:health       # Check database health
+npm run db:stats        # Show database statistics
+```
+
+### Environment Setup
+```bash
+npm run setup:env       # Interactive environment configuration
+npm run setup:admin     # Create admin user
+npm run setup:security  # Generate security keys
+```
+
+### Testing & Quality
+```bash
+npm run test            # Run unit tests
+npm run test:watch      # Run tests in watch mode
+npm run test:e2e        # Run end-to-end tests
+npm run test:coverage   # Generate coverage report
+```
+
+### Cloudflare (if using)
+```bash
+wrangler dev            # Start Cloudflare Workers development
+wrangler deploy         # Deploy to Cloudflare Workers
 wrangler d1 migrations apply kabir-sant-sharan  # Run database migrations
 ```
 
@@ -131,8 +177,79 @@ wrangler d1 migrations apply kabir-sant-sharan  # Run database migrations
 - Consistent spacing and typography
 - Reusable component library
 
+## 🔐 Security Features
+
+This platform implements enterprise-grade security:
+
+### Authentication & Authorization
+- **JWT Tokens**: Secure authentication with refresh token rotation
+- **Role-Based Access Control**: Admin and user role separation
+- **Session Management**: Database-backed session persistence
+- **Multi-Factor Ready**: Extensible for 2FA implementation
+
+### API Security
+- **Rate Limiting**: Configurable limits per endpoint and user
+- **Input Validation**: Comprehensive Zod schemas for all inputs
+- **XSS Protection**: Input sanitization and CSP headers
+- **CSRF Protection**: Built-in Next.js CSRF protection
+- **Error Handling**: Secure error responses (RFC 9457 compliant)
+
+### Security Headers
+- Content Security Policy (CSP)
+- X-Frame-Options (clickjacking protection)
+- X-Content-Type-Options (MIME sniffing protection)
+- Referrer-Policy (referrer information control)
+- Permissions-Policy (feature access control)
+
+## 📊 Performance Monitoring
+
+Comprehensive real-time monitoring system:
+
+### Request Monitoring
+- **Response Times**: Track P50, P90, P95, P99 percentiles
+- **Error Rates**: Monitor HTTP error rates and patterns
+- **Throughput**: Requests per second tracking
+- **Slow Request Detection**: Automatic alerts for performance issues
+
+### Database Performance
+- **Query Performance**: Track slow queries and optimization opportunities
+- **Cache Hit Rates**: Monitor database query caching effectiveness
+- **Connection Pooling**: Active connection monitoring
+
+### System Metrics
+- **Memory Usage**: Heap and process memory tracking
+- **CPU Usage**: Process CPU utilization monitoring
+- **Resource Alerts**: Automatic warnings for resource constraints
+
+### Admin Dashboard
+- **Real-time Metrics**: Live performance data with auto-refresh
+- **Performance Alerts**: Visual indicators for critical issues
+- **Historical Analysis**: Configurable time windows (5min to 24hrs)
+- **Prometheus Export**: Metrics export for external monitoring tools
+
+### API Endpoints
+- `GET /api/v1/performance` - Comprehensive performance metrics
+- `GET /api/v1/performance/live` - Real-time performance data
+- `GET /api/v1/health` - System health checks
+- `GET /api/v1/metrics` - Prometheus format metrics
+
 ## 📚 Documentation
 
+### Technical Documentation
+- **[Performance Monitoring](./docs/performance-monitoring.md)**: Complete performance monitoring guide
+- **[API Documentation](./docs/api-documentation.md)**: Comprehensive API reference
+- **[Security Guide](./docs/security-guide.md)**: Security implementation details
+- **[Database Guide](./docs/database-guide.md)**: Database schema and migrations
+- **[Development Setup](./docs/development-setup.md)**: Detailed development environment setup
+- **[Deployment Guide](./docs/deployment-guide.md)**: Production deployment instructions
+- **[Environment Configuration](./docs/environment-configuration.md)**: Environment variables reference
+
+### Architecture Documentation
+- **[System Architecture](./docs/architecture.md)**: System design and components
+- **[Error Handling](./docs/error-handling.md)**: Error management strategy
+- **[Monitoring & Logging](./docs/monitoring-logging.md)**: Observability setup
+
+### Legacy Documentation
 - **Component Inventory**: See `docs/AI-Guidelines/COMPONENT_INVENTORY.md`
 - **Service Inventory**: See `docs/AI-Guidelines/SERVICE_INVENTORY.md`
 - **Patterns**: See `docs/AI-Guidelines/PATTERNS.md`

@@ -63,9 +63,9 @@ function addSecurityHeaders(response: NextResponse, request: NextRequest): NextR
   const csp = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Note: unsafe-* needed for Next.js dev
-    "style-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https:",
-    "font-src 'self' https:",
+    "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https:",
     "media-src 'self' https:",
     "object-src 'none'",

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 // Simple debounce function to avoid lodash dependency
 function debounce<T extends (...args: any[]) => any>(func: T, delay: number): T {
   let timeoutId: NodeJS.Timeout;
@@ -34,6 +34,8 @@ export function SearchBar({
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const performSearch = useCallback(
     debounce(async (searchQuery: string) => {
@@ -82,6 +84,7 @@ export function SearchBar({
 
   const handleResultClick = (result: SearchResult) => {
     setIsOpen(false);
+    setIsModalOpen(false);
     setQuery('');
     if (onResultSelect) {
       onResultSelect(result);
@@ -89,6 +92,31 @@ export function SearchBar({
       window.location.href = result.url;
     }
   };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setQuery('');
+    setResults([]);
+    setIsOpen(false);
+  };
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        closeModal();
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [isModalOpen]);
 
   const getTypeIcon = (type: SearchResult['type']) => {
     switch (type) {
@@ -116,67 +144,127 @@ export function SearchBar({
   };
 
   return (
-    <div className={`relative ${className}`}>
-      <div className="relative">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={placeholder}
-          className="w-full px-4 py-3 pl-10 pr-4 text-dark-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all duration-200"
-        />
-        <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-          {isLoading ? (
-            <svg className="w-5 h-5 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          )}
-        </div>
-      </div>
+    <>
+      {/* Search Icon Button */}
+      <button
+        onClick={openModal}
+        className={`p-2 text-dark-900 hover:bg-gray-100 rounded-lg transition-colors ${className}`}
+        aria-label="Search"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
 
-      {/* Search Results Dropdown */}
-      {isOpen && results.length > 0 && (
-        <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto">
-          {results.map((result) => (
-            <button
-              key={result.id}
-              onClick={() => handleResultClick(result)}
-              className="w-full px-4 py-3 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none border-b border-gray-100 last:border-b-0"
-            >
-              <div className="flex items-start space-x-3">
-                <div className="flex-shrink-0 mt-1">
-                  {getTypeIcon(result.type)}
+      {/* Search Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+            onClick={closeModal}
+          />
+
+          {/* Modal Content */}
+          <div className="flex min-h-full items-start justify-center p-4 sm:p-6 md:p-20">
+            <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl transform transition-all">
+              {/* Search Input */}
+              <div className="relative border-b border-gray-200">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={placeholder}
+                  className="w-full px-6 py-5 pl-14 pr-14 text-lg text-dark-900 bg-transparent focus:outline-none"
+                />
+                <div className="absolute inset-y-0 left-0 flex items-center pl-5">
+                  {isLoading ? (
+                    <svg className="w-6 h-6 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-dark-900 truncate">
-                    {result.title}
-                  </p>
-                  <p className="text-xs text-gray-600 line-clamp-2 mt-1">
-                    {result.content}
-                  </p>
-                  <span className="inline-block px-2 py-1 mt-2 text-xs font-medium text-primary-700 bg-primary-100 rounded">
-                    {result.type}
-                  </span>
-                </div>
+                <button
+                  onClick={closeModal}
+                  className="absolute inset-y-0 right-0 flex items-center pr-5 text-gray-400 hover:text-dark-900"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
               </div>
-            </button>
-          ))}
-        </div>
-      )}
 
-      {/* No Results */}
-      {isOpen && query && results.length === 0 && !isLoading && (
-        <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-          <p className="text-sm text-gray-600 text-center">
-            No results found for "{query}"
-          </p>
+              {/* Search Results */}
+              <div className="max-h-[60vh] overflow-y-auto">
+                {isOpen && results.length > 0 && (
+                  <div className="py-2">
+                    {results.map((result) => (
+                      <button
+                        key={result.id}
+                        onClick={() => handleResultClick(result)}
+                        className="w-full px-6 py-4 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className="flex-shrink-0 mt-1">
+                            {getTypeIcon(result.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-base font-medium text-dark-900 truncate">
+                              {result.title}
+                            </p>
+                            <p className="text-sm text-gray-600 line-clamp-2 mt-1">
+                              {result.content}
+                            </p>
+                            <span className="inline-block px-2 py-1 mt-2 text-xs font-medium text-primary-700 bg-primary-100 rounded">
+                              {result.type}
+                            </span>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* No Results */}
+                {isOpen && query && results.length === 0 && !isLoading && (
+                  <div className="py-12 px-6 text-center">
+                    <svg className="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M12 12h.01M12 12h.01M12 12h.01M12 12h.01" />
+                    </svg>
+                    <p className="text-base text-gray-600">
+                      No results found for <span className="font-medium">"{query}"</span>
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Try different keywords or check your spelling
+                    </p>
+                  </div>
+                )}
+
+                {/* Empty State */}
+                {!query && (
+                  <div className="py-12 px-6 text-center">
+                    <svg className="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <p className="text-base text-gray-600">
+                      Search for teachings, events, and media
+                    </p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Start typing to see results
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
