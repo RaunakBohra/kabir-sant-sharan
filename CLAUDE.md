@@ -1,0 +1,1 @@
+- never use emojis no verbose contents
