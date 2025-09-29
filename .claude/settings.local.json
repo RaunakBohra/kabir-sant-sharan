@@ -29,7 +29,8 @@
       "Bash(unset:*)",
       "Bash(env)",
       "Bash(node:*)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(gh secret set:*)"
     ],
     "deny": [],
     "ask": []

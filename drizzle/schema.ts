@@ -166,14 +166,14 @@ export const newsletters = sqliteTable('newsletters', {
   tokenIdx: uniqueIndex('newsletter_token_idx').on(newsletters.unsubscribeToken)
 }))
 
-export const comments = sqliteTable('comments', {
+export const comments: any = sqliteTable('comments', {
   id: text('id').primaryKey(),
   content: text('content').notNull(),
   authorName: text('author_name').notNull(),
   authorEmail: text('author_email').notNull(),
   authorWebsite: text('author_website'),
   userId: text('user_id').references(() => users.id, { onDelete: 'cascade' }),
-  parentId: text('parent_id').references(() => comments.id, { onDelete: 'cascade' }),
+  parentId: text('parent_id'),
   resourceType: text('resource_type').notNull(),
   resourceId: text('resource_id').notNull(),
   status: text('status').notNull().default('pending'),

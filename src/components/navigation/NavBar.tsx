@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { SearchBar } from '@/components/search/SearchBar'
 
 interface NavItem {
   label: string
@@ -38,6 +39,11 @@ export function NavBar() {
               Kabir Sant Sharan
             </span>
           </Link>
+
+          {/* Search Bar - Desktop */}
+          <div className="hidden md:flex items-center flex-1 max-w-md mx-8">
+            <SearchBar className="w-full" />
+          </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">

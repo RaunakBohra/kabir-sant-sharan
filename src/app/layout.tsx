@@ -129,13 +129,15 @@ export default function RootLayout({
           }}
         />
 
-        {/* Cloudflare Web Analytics */}
-        <Script
-          defer
-          src="https://static.cloudflareinsights.com/beacon.min.js"
-          data-cf-beacon='{"token": "your-cf-analytics-token"}'
-          strategy="afterInteractive"
-        />
+        {/* Cloudflare Web Analytics - Production Only */}
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon='{"token": "your-cf-analytics-token"}'
+            strategy="afterInteractive"
+          />
+        )}
 
         {/* Structured Data */}
         <Script
