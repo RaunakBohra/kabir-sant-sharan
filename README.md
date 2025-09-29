@@ -51,6 +51,7 @@ docs/
 ### Prerequisites
 - Node.js 18+
 - npm or yarn
+- Supabase account (free tier)
 
 ### Installation
 
@@ -65,18 +66,32 @@ cd kabir-sant-sharan
 npm install
 ```
 
-3. Set up environment variables:
+3. Set up Supabase:
+   - Create account at [supabase.com](https://supabase.com)
+   - Create new project: `kabir-sant-sharan`
+   - Copy your project credentials
+
+4. Set up environment variables:
 ```bash
 cp .env.example .env.local
-# Edit .env.local with your configuration
+# Add your Supabase credentials to .env.local:
+# NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+# SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 ```
 
-4. Run the development server:
+5. Run the development server:
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+6. Open [http://localhost:5002](http://localhost:5002) in your browser
+   - You should see ✅ "Successfully connected to Supabase!"
+
+7. (Optional) Create database tables:
+   - Go to Supabase Dashboard → SQL Editor
+   - Copy & paste contents of `database-setup.sql`
+   - Click "Run" to create tables with sample spiritual content
 
 ## 🧪 Development Commands
 
