@@ -9,16 +9,16 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          50: '#fefdf8',
-          100: '#fdfbf0',
-          200: '#faf7e1',
-          300: '#f6f0c2',
-          400: '#f0e68c',
-          500: '#f5f5dc', // Main cream
-          600: '#e6d5a3',
-          700: '#d4c377',
-          800: '#c2b04d',
-          900: '#b19f2a',
+          50: '#fefefe',
+          100: '#fdfdfd',
+          200: '#fbfbfb',
+          300: '#f8f8f8',
+          400: '#f5f5f5',
+          500: '#f9f9f9', // Main cream (very light, almost white)
+          600: '#f0f0f0',
+          700: '#e8e8e8',
+          800: '#d1d1d1',
+          900: '#b8b8b8',
         },
         accent: {
           50: '#f8f8f8',
@@ -33,16 +33,16 @@ module.exports = {
           900: '#3b3b3b',
         },
         cream: {
-          50: '#fefdf8',
-          100: '#fdfbf0',
-          200: '#faf7e1',
-          300: '#f6f0c2',
-          400: '#f0e68c',
-          500: '#f5f5dc', // Main cream
-          600: '#e6d5a3',
-          700: '#d4c377',
-          800: '#c2b04d',
-          900: '#b19f2a',
+          50: '#fefefe',
+          100: '#fdfdfd',
+          200: '#fbfbfb',
+          300: '#f8f8f8',
+          400: '#f5f5f5',
+          500: '#f9f9f9', // Main cream (very light, almost white)
+          600: '#f0f0f0',
+          700: '#e8e8e8',
+          800: '#d1d1d1',
+          900: '#b8b8b8',
         },
         dark: {
           50: '#f6f6f6',
