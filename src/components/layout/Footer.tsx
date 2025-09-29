@@ -33,28 +33,28 @@ export function Footer() {
             <h3 className="font-semibold text-cream-100 mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href={"/about" as any} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
-                  About Kabir
-                </Link>
-              </li>
-              <li>
-                <Link href={"/teachings" as any} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
-                  Teachings
-                </Link>
-              </li>
-              <li>
-                <Link href={"/events" as any} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link href={"/media" as any} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                <Link href={"/media"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
                   Media
                 </Link>
               </li>
               <li>
-                <Link href={"/community" as any} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
-                  Community
+                <Link href={"/teachings"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                  Teachings
+                </Link>
+              </li>
+              <li>
+                <Link href={"/events"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link href={"/media"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                  Media
+                </Link>
+              </li>
+              <li>
+                <Link href={"/events"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                  Community Events
                 </Link>
               </li>
             </ul>
@@ -65,17 +65,17 @@ export function Footer() {
             <h3 className="font-semibold text-cream-100 mb-4">Connect</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href={"/contact" as any} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                <a href="mailto:info@kabirsantsharan.org" className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
                   Contact Us
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href={"/events/satsang" as any} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                <Link href={"/events"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
                   Join Satsang
                 </Link>
               </li>
               <li>
-                <Link href={"/community" as any} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                <Link href={"/teachings"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
                   Community Forum
                 </Link>
               </li>
@@ -94,12 +94,8 @@ export function Footer() {
             © 2024 Kabir Sant Sharan. All rights reserved. | Built with devotion and technology.
           </div>
           <div className="flex space-x-6 text-sm">
-            <Link href={"/privacy" as any} className="text-cream-300 hover:text-cream-100 transition-colors duration-200">
-              Privacy Policy
-            </Link>
-            <Link href={"/terms" as any} className="text-cream-300 hover:text-cream-100 transition-colors duration-200">
-              Terms of Service
-            </Link>
+            <span className="text-cream-300">Privacy Policy</span>
+            <span className="text-cream-300">Terms of Service</span>
           </div>
         </div>
       </div>

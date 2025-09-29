@@ -22,7 +22,14 @@
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
       "Bash(gh repo create:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(find:*)",
+      "Bash(npm audit fix:*)",
+      "Bash(npx wrangler:*)",
+      "Bash(unset:*)",
+      "Bash(env)",
+      "Bash(node:*)",
+      "Bash(git init:*)"
     ],
     "deny": [],
     "ask": []

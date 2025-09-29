@@ -36,7 +36,7 @@ export function HeroSection() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
-              href={"/teachings" as any}
+              href={"/teachings"}
               className="inline-flex items-center px-8 py-4 bg-dark-900 text-cream-50 font-semibold rounded-md hover:bg-dark-800 transition-colors duration-200 text-lg"
             >
               Explore Teachings
@@ -46,10 +46,10 @@ export function HeroSection() {
             </Link>
 
             <Link
-              href={"/about" as any}
+              href={"/teachings"}
               className="inline-flex items-center px-8 py-4 border-2 border-dark-300 text-dark-800 font-semibold rounded-md hover:bg-cream-200 transition-colors duration-200 text-lg"
             >
-              About Sant Kabir
+              Explore Teachings
               <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>

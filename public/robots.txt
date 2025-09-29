@@ -1,0 +1,33 @@
+# robots.txt for Kabir Sant Sharan
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://kabirsantsharan.com/sitemap.xml
+
+# Allow all major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+# Block unnecessary crawling of API endpoints (when added later)
+Disallow: /api/
+
+# Allow caching of static assets
+Allow: /_next/static/
+Allow: /images/
+Allow: /icons/
+
+# Crawl-delay for courtesy (optional)
+Crawl-delay: 1

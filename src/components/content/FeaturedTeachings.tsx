@@ -85,7 +85,7 @@ export function FeaturedTeachings() {
 
         <div className="text-center mt-12">
           <Link
-            href={"/teachings" as any}
+            href={"/teachings"}
             className="inline-flex items-center px-8 py-3 bg-dark-900 text-cream-50 font-medium rounded-md hover:bg-dark-800 transition-colors duration-200"
           >
             View All Teachings

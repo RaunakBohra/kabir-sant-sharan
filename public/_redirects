@@ -1,0 +1,17 @@
+# Redirect HTTP to HTTPS
+http://kabirsantsharan.com/* https://kabirsantsharan.com/:splat 301!
+http://www.kabirsantsharan.com/* https://kabirsantsharan.com/:splat 301!
+
+# Redirect www to non-www (if using custom domain)
+https://www.kabirsantsharan.com/* https://kabirsantsharan.com/:splat 301!
+
+# SPA fallback - ensure all routes go to index.html for client-side routing
+/* /index.html 200
+
+# API routes (if you add them later)
+/api/* /api/:splat 200
+
+# Legacy redirects (if migrating from old site)
+/about-kabir /teachings 301
+/satsang /events 301
+/blog/* /teachings/:splat 301

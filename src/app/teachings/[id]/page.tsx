@@ -198,6 +198,12 @@ function formatDate(dateString: string) {
   })
 }
 
+export async function generateStaticParams() {
+  return Object.keys(samplePosts).map((id) => ({
+    id,
+  }))
+}
+
 export default function BlogPostPage({ params }: { params: { id: string } }) {
   const post = samplePosts[params.id]
 

@@ -11,45 +11,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Home', href: '/' },
-  {
-    label: 'About Kabir',
-    href: '/about',
-    children: [
-      { label: 'Life & Teachings', href: '/about/life-teachings' },
-      { label: 'Philosophy', href: '/about/philosophy' },
-      { label: 'Historical Context', href: '/about/history' },
-    ]
-  },
-  {
-    label: 'Teachings',
-    href: '/teachings',
-    children: [
-      { label: 'Daily Wisdom', href: '/teachings/daily-wisdom' },
-      { label: 'Dohas & Poetry', href: '/teachings/dohas' },
-      { label: 'Spiritual Insights', href: '/teachings/insights' },
-      { label: 'Community Stories', href: '/teachings/stories' },
-    ]
-  },
-  {
-    label: 'Events',
-    href: '/events',
-    children: [
-      { label: 'Satsang Schedule', href: '/events/satsang' },
-      { label: 'Festivals', href: '/events/festivals' },
-      { label: 'Workshops', href: '/events/workshops' },
-    ]
-  },
-  {
-    label: 'Media',
-    href: '/media',
-    children: [
-      { label: 'Audio Teachings', href: '/media/audio' },
-      { label: 'Video Satsangs', href: '/media/video' },
-      { label: 'Bhajans', href: '/media/bhajans' },
-    ]
-  },
-  { label: 'Community', href: '/community' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Teachings', href: '/teachings' },
+  { label: 'Events', href: '/events' },
+  { label: 'Media', href: '/media' },
 ]
 
 export function NavBar() {
