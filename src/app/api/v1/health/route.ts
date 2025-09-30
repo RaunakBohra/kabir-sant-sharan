@@ -4,6 +4,8 @@ import { errorTracker } from '@/lib/monitoring/error-tracker';
 import { logger } from '@/lib/logger';
 import { withErrorTracking } from '@/lib/monitoring/error-tracker';
 
+export const runtime = 'edge';
+
 async function healthHandler(request: NextRequest): Promise<NextResponse> {
   try {
     // Get detailed health information

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken } from '@/lib/jwt-auth';
 
+export const runtime = 'edge';
+
 export async function GET(request: NextRequest) {
   try {
     // Try Bearer token first (primary method for localStorage-based auth)

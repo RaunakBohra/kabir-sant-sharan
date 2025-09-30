@@ -125,7 +125,7 @@ class SessionManager {
         ...newSession,
         lastActivity: now,
         createdAt: now
-      };
+      } as SessionData;
 
       logger.info('Session created successfully', {
         sessionId,
@@ -410,7 +410,7 @@ class SessionManager {
         .from(sessions)
         .where(and(
           eq(sessions.userId, userId),
-          lt(new Date().toISOString(), sessions.expiresAt)
+          lt(sessions.expiresAt, new Date().toISOString())
         ))
         .orderBy(desc(sessions.lastActivity));
 
@@ -469,7 +469,7 @@ class SessionManager {
       // If we have more sessions than we want to keep, delete the oldest ones
       if (userSessions.length > keepCount) {
         const sessionsToDelete = userSessions.slice(keepCount);
-        const sessionIdsToDelete = sessionsToDelete.map(s => s.id);
+        const sessionIdsToDelete = sessionsToDelete.map((s: any) => s.id);
 
         for (const sessionId of sessionIdsToDelete) {
           await this.db

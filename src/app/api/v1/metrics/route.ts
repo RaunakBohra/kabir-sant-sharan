@@ -5,6 +5,8 @@ import { logger } from '@/lib/logger';
 import { withErrorTracking } from '@/lib/monitoring/error-tracker';
 import { createErrorResponse } from '@/lib/error-handler';
 
+export const runtime = 'edge';
+
 async function metricsHandler(request: NextRequest): Promise<NextResponse> {
   const url = new URL(request.url);
   const format = url.searchParams.get('format') || 'json';

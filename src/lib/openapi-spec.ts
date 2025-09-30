@@ -3,6 +3,7 @@
  * Auto-generated documentation with Swagger UI integration
  */
 
+// @ts-ignore
 import swaggerJSDoc from 'swagger-jsdoc';
 
 const swaggerDefinition = {

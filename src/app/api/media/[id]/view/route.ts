@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { databaseService } from '@/lib/database-service';
 
+export const runtime = 'edge';
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

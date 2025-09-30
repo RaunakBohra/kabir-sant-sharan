@@ -529,8 +529,8 @@ class PerformanceMonitor {
   getPerformanceReport(timeWindow: number = 60 * 60 * 1000): {
     period: string;
     timestamp: string;
-    requests: ReturnType<typeof this.getRequestStats>;
-    database: ReturnType<typeof this.getDatabaseStats>;
+    requests: any;
+    database: any;
     system: SystemPerformanceData | null;
     alerts: Array<{
       level: 'info' | 'warning' | 'critical';
