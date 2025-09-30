@@ -1,39 +1,40 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Only use export mode for production builds
-  ...(process.env.NODE_ENV === 'production' && { output: 'export' }),
+  // Configure for Cloudflare Pages with full-stack support
   trailingSlash: true,
   experimental: {
     typedRoutes: true,
   },
   images: {
     unoptimized: true,
-    domains: ['res.cloudinary.com'],
+    domains: ['res.cloudinary.com', 'media.kabirsantsharan.com'],
   },
-  // Only add headers in production (export mode doesn't support them)
-  ...(process.env.NODE_ENV === 'production' && {
-    async headers() {
-      return [
-        {
-          source: '/(.*)',
-          headers: [
-            {
-              key: 'X-Frame-Options',
-              value: 'DENY',
-            },
-            {
-              key: 'X-Content-Type-Options',
-              value: 'nosniff',
-            },
-            {
-              key: 'Referrer-Policy',
-              value: 'origin-when-cross-origin',
-            },
-          ],
-        },
-      ]
-    },
-  }),
+  // Security headers for all environments
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

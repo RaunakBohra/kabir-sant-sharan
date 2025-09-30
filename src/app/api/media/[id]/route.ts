@@ -2,6 +2,39 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/db';
 import Database from 'better-sqlite3';
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = params;
+
+    const Database = require('better-sqlite3');
+    const path = require('path');
+    const dbPath = path.join(process.cwd(), 'local.db');
+    const db = new Database(dbPath);
+
+    try {
+      const selectStmt = db.prepare(`SELECT * FROM media WHERE id = ? AND deleted_at IS NULL`);
+      const media = selectStmt.get(id);
+
+      if (!media) {
+        return NextResponse.json({ error: 'Media not found' }, { status: 404 });
+      }
+
+      return NextResponse.json(media);
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    } finally {
+      db.close();
+    }
+  } catch (error) {
+    console.error('Error fetching media:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -15,7 +48,7 @@ export async function PUT(
 
     const { id } = params;
     const body = await request.json();
-    const { title, description, author, category, tags, featured, published } = body;
+    const { title, description, author, category, tags, language, featured, published } = body;
 
     // Use direct SQLite connection (not Drizzle ORM)
     const Database = require('better-sqlite3');
@@ -28,11 +61,21 @@ export async function PUT(
       const updateStmt = db.prepare(`
         UPDATE media
         SET title = ?, description = ?, author = ?, category = ?, tags = ?,
-            featured = ?, published = ?, updated_at = CURRENT_TIMESTAMP
+            language = ?, featured = ?, published = ?, updated_at = CURRENT_TIMESTAMP
         WHERE id = ?
       `);
 
-      const result = updateStmt.run(title, description, author, category, tags, featured ? 1 : 0, published ? 1 : 0, id);
+      const result = updateStmt.run(
+        title,
+        description,
+        author,
+        category,
+        tags || '',
+        language || 'en',
+        featured ? 1 : 0,
+        published ? 1 : 0,
+        id
+      );
 
       if (result.changes === 0) {
         return NextResponse.json({ error: 'Media not found' }, { status: 404 });
@@ -42,9 +85,13 @@ export async function PUT(
       const selectStmt = db.prepare(`SELECT * FROM media WHERE id = ?`);
       const updatedMedia = selectStmt.get(id);
 
+      return NextResponse.json(updatedMedia);
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    } finally {
       db.close();
-
-    return NextResponse.json(updatedMedia);
+    }
   } catch (error) {
     console.error('Error updating media:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
