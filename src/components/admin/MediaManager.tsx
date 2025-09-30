@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { MediaUpload } from './MediaUpload';
+import { UploadMediaDialog } from './MediaManager/UploadMediaDialog';
 import { MediaPreviewDialog } from './MediaManager/MediaPreviewDialog';
 import { EditMediaDialog } from './MediaManager/EditMediaDialog';
 import { toast } from '@/components/ui/toast';
@@ -42,8 +42,7 @@ export function MediaManager() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedType, setSelectedType] = useState<'all' | 'audio' | 'video' | 'image' | 'document'>('all');
-  const [isUploading, setIsUploading] = useState(false);
-  const [showUpload, setShowUpload] = useState(false);
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [previewMedia, setPreviewMedia] = useState<MediaFile | null>(null);
   const [editMedia, setEditMedia] = useState<MediaFile | null>(null);
 
@@ -119,26 +118,15 @@ export function MediaManager() {
           <p className="text-sm sm:text-base text-dark-600 mt-1">Upload and manage spiritual content media files</p>
         </div>
         <button
-          onClick={() => setShowUpload(!showUpload)}
+          onClick={() => setUploadDialogOpen(true)}
           className="bg-dark-900 text-white px-4 py-3 rounded-lg hover:bg-dark-800 transition-colors duration-200 flex items-center justify-center space-x-2 touch-manipulation sm:w-auto w-full"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
           </svg>
-          <span>{showUpload ? 'Hide Upload' : 'Upload Media'}</span>
+          <span>Upload Media</span>
         </button>
       </div>
-
-      {/* Upload Interface */}
-      {showUpload && (
-        <div className="bg-cream-50 rounded-lg shadow-sm border border-cream-200 p-6">
-          <MediaUpload
-            onUploadSuccess={loadMediaFiles}
-            onUploadStart={() => setIsUploading(true)}
-            onUploadEnd={() => setIsUploading(false)}
-          />
-        </div>
-      )}
 
       {/* Filter Tabs */}
       <div className="bg-cream-50 rounded-lg shadow-lg border border-cream-200">
@@ -302,6 +290,12 @@ export function MediaManager() {
       </div>
 
       {/* Dialogs */}
+      <UploadMediaDialog
+        open={uploadDialogOpen}
+        onOpenChange={setUploadDialogOpen}
+        onUploadSuccess={loadMediaFiles}
+      />
+
       <MediaPreviewDialog
         open={!!previewMedia}
         onOpenChange={(open) => !open && setPreviewMedia(null)}
