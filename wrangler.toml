@@ -1,0 +1,44 @@
+name = "kabir-sant-sharan"
+compatibility_date = "2024-09-30"
+pages_build_output_dir = ".next"
+
+# D1 Database bindings
+[[d1_databases]]
+binding = "DB"
+database_name = "kabir-sant-sharan-db"
+database_id = "7d3419c9-e12a-4fda-a712-fd79e0334182"
+
+# R2 Bucket bindings
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "kabir-media"
+
+# Environment variables for production
+[env.production.vars]
+NODE_ENV = "production"
+DATABASE_URL = ""
+JWT_SECRET = "your-production-jwt-secret-key"
+ENCRYPTION_KEY = "your-production-encryption-key"
+ADMIN_EMAIL = "admin@kabirsantsharan.com"
+ADMIN_PASSWORD_HASH = "$2b$12$NNnKjCgp2n1L2eYtLARZoOHYIrDfqMYyBgJFCFnTU6.zAlZsAGglO"
+
+# Environment variables for development (using local SQLite)
+[env.development.vars]
+NODE_ENV = "development"
+DATABASE_URL = "local.db"
+JWT_SECRET = "dev-jwt-secret-key"
+ENCRYPTION_KEY = "dev-encryption-key"
+ADMIN_EMAIL = "admin@dev.local"
+ADMIN_PASSWORD_HASH = "$2b$12$NNnKjCgp2n1L2eYtLARZoOHYIrDfqMYyBgJFCFnTU6.zAlZsAGglO"
+
+# Development D1 database (you can create a separate dev DB if needed)
+[env.development]
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "kabir-sant-sharan-db"
+database_id = "7d3419c9-e12a-4fda-a712-fd79e0334182"
+
+# Development R2 bucket
+[[env.development.r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "kabir-media"

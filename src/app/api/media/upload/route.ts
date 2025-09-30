@@ -3,7 +3,7 @@ import { createR2UploadService } from '@/lib/r2-upload';
 import { databaseService } from '@/lib/database-service';
 import { validateAccessToken } from '@/lib/jwt-auth';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {

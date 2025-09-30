@@ -3,7 +3,7 @@ import { getDatabase } from '@/lib/db';
 import { events } from '@/../drizzle/schema';
 import { eq } from 'drizzle-orm';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function GET(
   request: NextRequest,

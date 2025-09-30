@@ -4,7 +4,7 @@ import { createId } from '@paralleldrive/cuid2';
 import { getDatabase } from '@/lib/db';
 import { events } from '@/drizzle/schema';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   const traceId = createId();

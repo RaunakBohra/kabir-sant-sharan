@@ -6,7 +6,7 @@ import { createErrorResponse, getInstancePath, logError } from '@/lib/error-hand
 import { logger } from '@/lib/logger';
 import { createId } from '@paralleldrive/cuid2';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 async function getLivePerformanceHandler(request: AuthenticatedRequest): Promise<NextResponse> {
   const traceId = createId();
