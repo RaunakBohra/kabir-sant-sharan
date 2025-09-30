@@ -59,7 +59,7 @@ async function logoutHandler(request: AuthenticatedRequest): Promise<NextRespons
     const userId = request.session?.userId;
 
     if (!sessionId || !userId) {
-      return createErrorResponse('UNAUTHORIZED', {
+      return createErrorResponse('INVALID_TOKEN', {
         instance,
         detail: 'No active session found',
         metadata: { traceId }

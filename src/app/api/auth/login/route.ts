@@ -41,7 +41,13 @@ async function loginHandler(request: NextRequest): Promise<NextResponse> {
     // Check rate limiting first
     const rateLimitResponse = await checkRateLimit(request, 'auth');
     if (rateLimitResponse) {
-      return rateLimitResponse;
+      return NextResponse.json(
+        { error: 'Rate limit exceeded' },
+        {
+          status: rateLimitResponse.status,
+          headers: rateLimitResponse.headers
+        }
+      );
     }
 
     // Parse and validate request body
@@ -119,8 +125,7 @@ async function loginHandler(request: NextRequest): Promise<NextResponse> {
       }
     } catch (userError) {
       logError(userError as Error, {
-        traceId,
-        detail: 'Failed to ensure admin user exists'
+        traceId
       });
 
       return createErrorResponse('INTERNAL_SERVER_ERROR', {

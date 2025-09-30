@@ -32,13 +32,10 @@ function getTypeColor(type: string) {
 }
 
 interface EventsCalendarProps {
-  filters?: {
-    type?: string
-    timeRange?: string
-  }
+  // No filters needed - show all events
 }
 
-export function EventsCalendar({ filters }: EventsCalendarProps) {
+export function EventsCalendar({}: EventsCalendarProps = {}) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [events, setEvents] = useState<CalendarEvent[]>([])
@@ -65,11 +62,7 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
     async function fetchEvents() {
       try {
         setLoading(true)
-        const params = new URLSearchParams()
-        if (filters?.type && filters.type !== 'all') {
-          params.append('type', filters.type)
-        }
-        const url = `/api/events/${params.toString() ? `?${params.toString()}` : ''}`
+        const url = `/api/events/`
         const response = await fetch(url)
         if (response.ok) {
           const data = await response.json()
@@ -95,7 +88,7 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
       }
     }
     fetchEvents()
-  }, [filters])
+  }, [])
 
   // Previous and next month navigation
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -160,7 +153,7 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
     <div className="space-y-6">
       {/* Featured Events Carousel */}
       {featuredEvents.length > 0 && (
-        <div className="bg-gradient-to-br from-teal-50 to-amber-50 rounded-lg shadow-lg p-4 sm:p-6 border border-teal-200">
+        <div className="bg-gradient-to-br from-cream-100 to-amber-50 rounded-lg shadow-md p-4 sm:p-6 border border-cream-300">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg sm:text-xl font-bold text-dark-900 flex items-center">
               <svg className="w-5 h-5 mr-2 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
@@ -179,7 +172,7 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
                 <div
                   key={event.id}
                   onClick={() => setSelectedEvent(event)}
-                  className="bg-white rounded-lg p-4 border border-teal-200 hover:shadow-md transition-all duration-200 cursor-pointer group"
+                  className="bg-cream-50 rounded-lg p-4 border border-cream-300 hover:shadow-md hover:border-teal-400 transition-all duration-200 cursor-pointer group"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <span className={`px-2 py-1 rounded text-xs font-medium ${getTypeColor(event.type)}`}>
@@ -229,7 +222,7 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
 
       {/* Calendar */}
       <div
-        className="bg-cream-100 rounded-lg shadow-lg p-4 sm:p-6 border border-cream-200"
+        className="bg-cream-50 rounded-lg shadow-md p-4 sm:p-6 border border-cream-300"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -239,10 +232,10 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
         <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-start">
           <button
             onClick={() => navigateMonth('prev')}
-            className="p-2 hover:bg-cream-200 rounded-md transition-colors duration-200 touch-manipulation"
+            className="p-2 hover:bg-cream-100 rounded-md transition-colors duration-200 touch-manipulation"
             aria-label="Previous month"
           >
-            <svg className="w-5 h-5 text-dark-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-dark-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
@@ -253,24 +246,24 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
 
           <button
             onClick={() => setCurrentDate(new Date())}
-            className="hidden sm:block text-xs px-3 py-1 bg-cream-200 hover:bg-cream-300 rounded-md text-dark-700 font-medium transition-colors"
+            className="hidden sm:block text-xs px-3 py-1 bg-cream-100 hover:bg-cream-200 rounded-md text-dark-700 font-medium transition-colors"
           >
             Today
           </button>
 
           <button
             onClick={() => navigateMonth('next')}
-            className="p-2 hover:bg-cream-200 rounded-md transition-colors duration-200 touch-manipulation"
+            className="p-2 hover:bg-cream-100 rounded-md transition-colors duration-200 touch-manipulation"
             aria-label="Next month"
           >
-            <svg className="w-5 h-5 text-dark-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-dark-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
 
         {/* AD/BS Toggle */}
-        <div className="flex items-center bg-cream-200 rounded-lg p-1">
+        <div className="flex items-center bg-cream-100 rounded-lg p-1 border border-cream-300">
           <button
             onClick={() => setCalendarType('AD')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
@@ -298,7 +291,7 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
       <div className="grid grid-cols-7 gap-1">
         {/* Day Headers */}
         {dayNames.map((day) => (
-          <div key={day} className="p-2 text-center text-sm font-semibold text-dark-600 bg-cream-200 rounded">
+          <div key={day} className="p-2 text-center text-sm font-semibold text-dark-700 bg-cream-100 rounded">
             {day}
           </div>
         ))}
@@ -319,8 +312,8 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
           return (
             <div
               key={day}
-              className={`p-2 h-24 border border-cream-200 hover:bg-cream-50 cursor-pointer transition-colors duration-200 ${
-                isToday ? 'bg-dark-100 border-dark-300' : 'bg-cream-50'
+              className={`p-2 h-24 border rounded transition-colors duration-200 ${
+                isToday ? 'bg-teal-50 border-teal-400 shadow-sm' : 'bg-white border-cream-200 hover:bg-cream-50'
               }`}
             >
               <div className={`text-sm font-medium mb-1 ${isToday ? 'text-dark-900 font-bold' : 'text-dark-700'}`}>
@@ -373,19 +366,23 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
 
       {/* Legend */}
       <div className="mt-6 pt-4 border-t border-cream-300">
-        <h3 className="text-sm font-semibold text-dark-700 mb-3">Event Types</h3>
-        <div className="flex flex-wrap gap-4">
+        <h3 className="text-sm font-semibold text-dark-800 mb-3">Event Types</h3>
+        <div className="flex flex-wrap gap-3 sm:gap-4">
           <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-blue-100 border border-blue-300 rounded"></div>
-            <span className="text-sm text-dark-700">Satsang</span>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-blue-100 border border-blue-300 rounded"></div>
+            <span className="text-xs sm:text-sm text-dark-700">Satsang</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-orange-100 border border-orange-300 rounded"></div>
-            <span className="text-sm text-dark-700">Festival</span>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-orange-100 border border-orange-300 rounded"></div>
+            <span className="text-xs sm:text-sm text-dark-700">Festival</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
-            <span className="text-sm text-dark-700">Workshop</span>
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-100 border border-green-300 rounded"></div>
+            <span className="text-xs sm:text-sm text-dark-700">Workshop</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 bg-purple-100 border border-purple-300 rounded"></div>
+            <span className="text-xs sm:text-sm text-dark-700">Meditation</span>
           </div>
         </div>
       </div>

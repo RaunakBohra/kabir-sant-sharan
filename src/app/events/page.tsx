@@ -1,17 +1,8 @@
 'use client'
 
-import { useState } from 'react'
 import { EventsCalendar } from '@/components/events/EventsCalendar'
-import { EventsList } from '@/components/events/EventsList'
-import { EventsFilters } from '@/components/events/EventsFilters'
 import { SectionErrorBoundary } from '@/components/ui/error-boundary'
 import { BottomNav, NavItem } from '@/components/ui/BottomNav'
-
-interface EventFilters {
-  type: string
-  timeRange: string
-  viewMode: 'calendar' | 'list'
-}
 
 const navItems: NavItem[] = [
   {
@@ -78,50 +69,23 @@ const navItems: NavItem[] = [
 ]
 
 export default function EventsPage() {
-  const [filters, setFilters] = useState<EventFilters>({
-    type: 'all',
-    timeRange: 'upcoming',
-    viewMode: 'calendar'
-  })
-
-  const handleFiltersChange = (newFilters: Partial<EventFilters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }))
-  }
   return (
-    <div className="min-h-screen bg-cream-500 pb-16 lg:pb-0">
-      <div className="container mx-auto px-4 py-12">
+    <div className="min-h-screen bg-cream-50 pb-16 lg:pb-0">
+      <div className="container mx-auto px-4 py-8 sm:py-12">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-dark-900 mb-6">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-dark-900 mb-4 sm:mb-6">
             Spiritual Events & Gatherings
           </h1>
-          <p className="text-lg text-dark-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg text-dark-600 max-w-3xl mx-auto leading-relaxed">
             Join our spiritual community in various events, satsangs, and celebrations.
             Experience the divine teachings of Sant Kabir Das through collective worship and learning.
           </p>
         </div>
 
-        {/* Event Filters */}
+        {/* Calendar View */}
         <SectionErrorBoundary>
-          <EventsFilters
-            selectedType={filters.type}
-            selectedTime={filters.timeRange}
-            viewMode={filters.viewMode}
-            onFiltersChange={handleFiltersChange}
-          />
-        </SectionErrorBoundary>
-
-        {/* Conditional View Based on Filter */}
-        <SectionErrorBoundary>
-          {filters.viewMode === 'calendar' ? (
-            <div className="mb-12" id="events-display">
-              <EventsCalendar filters={{ type: filters.type, timeRange: filters.timeRange }} />
-            </div>
-          ) : (
-            <div id="events-display">
-              <EventsList filters={{ type: filters.type, timeRange: filters.timeRange }} />
-            </div>
-          )}
+          <EventsCalendar />
         </SectionErrorBoundary>
       </div>
       <BottomNav items={navItems} />
