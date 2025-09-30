@@ -124,61 +124,24 @@ export function ContentManager() {
         </button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-dark-100 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-dark-600">Total Teachings</p>
-              <p className="text-2xl font-bold text-dark-900">{contentStats.teachings}</p>
-            </div>
+      {/* Stats - Compact Single Line */}
+      <div className="bg-cream-50 p-3 rounded-lg shadow-sm border border-cream-200">
+        <div className="flex items-center justify-around text-center divide-x divide-cream-200">
+          <div className="flex-1 px-4">
+            <p className="text-xs text-dark-600">Teachings</p>
+            <p className="text-lg font-bold text-dark-900">{contentStats.teachings}</p>
           </div>
-        </div>
-
-        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-dark-100 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-dark-600">Total Events</p>
-              <p className="text-2xl font-bold text-dark-900">{contentStats.events}</p>
-            </div>
+          <div className="flex-1 px-4">
+            <p className="text-xs text-dark-600">Events</p>
+            <p className="text-lg font-bold text-dark-900">{contentStats.events}</p>
           </div>
-        </div>
-
-        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-dark-100 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-dark-600">Published</p>
-              <p className="text-2xl font-bold text-dark-900">{contentStats.published}</p>
-            </div>
+          <div className="flex-1 px-4">
+            <p className="text-xs text-dark-600">Published</p>
+            <p className="text-lg font-bold text-dark-900">{contentStats.published}</p>
           </div>
-        </div>
-
-        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-dark-600">Upcoming Events</p>
-              <p className="text-2xl font-bold text-dark-900">{contentStats.upcoming}</p>
-            </div>
+          <div className="flex-1 px-4">
+            <p className="text-xs text-dark-600">Upcoming</p>
+            <p className="text-lg font-bold text-dark-900">{contentStats.upcoming}</p>
           </div>
         </div>
       </div>
