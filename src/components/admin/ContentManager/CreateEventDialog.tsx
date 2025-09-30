@@ -156,7 +156,7 @@ export function CreateEventDialog({ open, onOpenChange, onSuccess }: CreateEvent
           throw new Error('Failed to upload image');
         }
 
-        const uploadData = await uploadResponse.json();
+        const uploadData = await uploadResponse.json() as { url: string };
         imageUrl = uploadData.url;
       }
 

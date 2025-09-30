@@ -54,7 +54,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
           throw new Error('Failed to fetch events')
         }
 
-        const data = await response.json()
+        const data = await response.json() as { events?: Event[] }
         const events = data.events || []
         const foundEvent = events.find((e: Event) => e.slug === slug)
 
@@ -71,7 +71,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
     }
 
     fetchEvent()
-  }, [params.slug])
+  }, [params])
 
   const handleRegisterClick = () => {
     setIsRegistrationModalOpen(true)
@@ -237,11 +237,11 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                 <div className="bg-cream-50 rounded-lg p-4 border border-cream-200" role="group" aria-labelledby="location-heading">
                   <div className="flex items-center mb-3">
                     {event.virtualLink ? (
-                      <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" title="Virtual event icon">
+                      <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
                       </svg>
                     ) : (
-                      <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" title="Physical location icon">
+                      <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
@@ -261,7 +261,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                 {/* Organizer */}
                 <div className="bg-cream-50 rounded-lg p-4 border border-cream-200" role="group" aria-labelledby="organizer-heading">
                   <div className="flex items-center mb-3">
-                    <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" title="Organizer icon">
+                    <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                     <h3 id="organizer-heading" className="text-lg font-semibold text-dark-900">Organizer</h3>
@@ -274,7 +274,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
                 {event.registrationRequired && (
                   <div className="bg-cream-50 rounded-lg p-4 border border-cream-200" role="group" aria-labelledby="registration-heading">
                     <div className="flex items-center mb-3">
-                      <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" title="Registration icon">
+                      <svg className="w-5 h-5 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
                       <h3 id="registration-heading" className="text-lg font-semibold text-dark-900">Registration</h3>

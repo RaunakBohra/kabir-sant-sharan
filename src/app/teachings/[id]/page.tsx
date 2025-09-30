@@ -50,7 +50,7 @@ export default function TeachingDetailPage({ params }: { params: Promise<{ id: s
           throw new Error('Teaching not found')
         }
 
-        const data = await response.json()
+        const data = await response.json() as Teaching
         setTeaching(data)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load teaching')

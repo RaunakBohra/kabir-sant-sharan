@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       title,
       description: description || '',
       type,
-      duration: duration || null,
+      duration: duration ? duration.toString() : undefined,
       r2Key,
       streamingUrl,
       tags: tags || '',

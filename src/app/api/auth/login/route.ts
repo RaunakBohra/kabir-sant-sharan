@@ -30,7 +30,7 @@ function getClientIP(request: NextRequest): string {
     return cfConnectingIP;
   }
 
-  return request.ip || 'unknown';
+  return (request as any).ip || 'unknown';
 }
 
 async function loginHandler(request: NextRequest): Promise<NextResponse> {

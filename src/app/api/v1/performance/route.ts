@@ -115,7 +115,7 @@ async function getPerformanceMetricsHandler(request: AuthenticatedRequest): Prom
     if (specificMetric) {
       metricStats = performanceMonitor.getMetricStats(specificMetric, timeWindow);
       if (!metricStats) {
-        return createErrorResponse('NOT_FOUND', {
+        return createErrorResponse('RESOURCE_NOT_FOUND', {
           instance,
           detail: `Metric '${specificMetric}' not found or has no data in the specified time window`,
           metadata: { traceId }
@@ -154,7 +154,8 @@ async function getPerformanceMetricsHandler(request: AuthenticatedRequest): Prom
       userId: request.session?.userId,
       request: {
         method: request.method,
-        url: request.url
+        url: request.url,
+        headers: Object.fromEntries(request.headers.entries())
       }
     });
 

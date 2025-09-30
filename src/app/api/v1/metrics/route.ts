@@ -77,10 +77,8 @@ async function metricsHandler(request: NextRequest): Promise<NextResponse> {
       component: 'metrics-endpoint'
     });
 
-    return createErrorResponse({
-      title: 'Metrics Unavailable',
+    return createErrorResponse('INTERNAL_SERVER_ERROR', {
       detail: 'Failed to retrieve system metrics',
-      status: 500,
       instance: request.url
     });
   }
@@ -187,10 +185,8 @@ async function metricsSummaryHandler(request: NextRequest): Promise<NextResponse
     });
 
   } catch (error) {
-    return createErrorResponse({
-      title: 'Metrics Summary Unavailable',
+    return createErrorResponse('INTERNAL_SERVER_ERROR', {
       detail: 'Failed to retrieve metrics summary',
-      status: 500,
       instance: request.url
     });
   }

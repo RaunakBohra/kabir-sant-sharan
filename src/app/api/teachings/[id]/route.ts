@@ -62,7 +62,18 @@ export async function PUT(
   try {
     const { id } = await params;
     const db = getDatabase();
-    const body = await request.json();
+    const body = await request.json() as {
+      title?: string;
+      content?: string;
+      excerpt?: string;
+      category?: string;
+      tags?: string | string[];
+      author?: string;
+      published?: boolean;
+      featured?: boolean;
+      language?: string;
+      coverImage?: string;
+    };
 
     // Validate required fields
     const { title, content, excerpt, category } = body;
