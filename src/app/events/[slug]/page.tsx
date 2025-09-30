@@ -34,7 +34,7 @@ interface Event {
 }
 
 interface EventDetailPageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export default function EventDetailPage({ params }: EventDetailPageProps) {
@@ -47,6 +47,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
     async function fetchEvent() {
       try {
         setLoading(true)
+        const { slug } = await params
         // First get all events and find the one with matching slug
         const response = await fetch('/api/events/')
         if (!response.ok) {
@@ -55,7 +56,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
 
         const data = await response.json()
         const events = data.events || []
-        const foundEvent = events.find((e: Event) => e.slug === params.slug)
+        const foundEvent = events.find((e: Event) => e.slug === slug)
 
         if (!foundEvent) {
           throw new Error('Event not found')

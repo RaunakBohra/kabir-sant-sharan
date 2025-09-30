@@ -3,7 +3,7 @@ import { generateSignedStreamingUrl, getObjectMetadata } from '@/lib/r2-streamin
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const Database = require('better-sqlite3');
   const path = require('path');
@@ -11,8 +11,9 @@ export async function GET(
   let db;
 
   try {
+    const { id } = await params;
     db = new Database(dbPath);
-    const media = db.prepare('SELECT * FROM media WHERE id = ?').get(params.id);
+    const media = db.prepare('SELECT * FROM media WHERE id = ?').get(id);
 
     if (!media) {
       db.close();

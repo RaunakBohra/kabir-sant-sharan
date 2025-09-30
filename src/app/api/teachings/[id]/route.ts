@@ -7,16 +7,17 @@ export const runtime = 'nodejs';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const db = getDatabase();
 
     const results = await db
       .select()
       .from(teachings)
       .where(and(
-        eq(teachings.id, params.id),
+        eq(teachings.id, id),
         isNull(teachings.deletedAt)
       ))
       .limit(1);
@@ -56,9 +57,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const db = getDatabase();
     const body = await request.json();
 
@@ -76,7 +78,7 @@ export async function PUT(
       .select()
       .from(teachings)
       .where(and(
-        eq(teachings.id, params.id),
+        eq(teachings.id, id),
         isNull(teachings.deletedAt)
       ))
       .limit(1);
@@ -130,13 +132,13 @@ export async function PUT(
     await db
       .update(teachings)
       .set(updateData)
-      .where(eq(teachings.id, params.id));
+      .where(eq(teachings.id, id));
 
     // Fetch updated teaching
     const updated = await db
       .select()
       .from(teachings)
-      .where(eq(teachings.id, params.id))
+      .where(eq(teachings.id, id))
       .limit(1);
 
     const teaching = updated[0];
@@ -169,9 +171,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const db = getDatabase();
 
     // Check if teaching exists first
@@ -179,7 +182,7 @@ export async function DELETE(
       .select()
       .from(teachings)
       .where(and(
-        eq(teachings.id, params.id),
+        eq(teachings.id, id),
         isNull(teachings.deletedAt)
       ))
       .limit(1);
@@ -198,11 +201,11 @@ export async function DELETE(
         deletedAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       })
-      .where(eq(teachings.id, params.id));
+      .where(eq(teachings.id, id));
 
     return NextResponse.json({
       message: 'Teaching deleted successfully',
-      id: params.id
+      id: id
     });
   } catch (error) {
     console.error('Error deleting teaching:', error);

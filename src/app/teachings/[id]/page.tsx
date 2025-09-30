@@ -34,7 +34,7 @@ function formatDate(dateString: string) {
   })
 }
 
-export default function TeachingDetailPage({ params }: { params: { id: string } }) {
+export default function TeachingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [teaching, setTeaching] = useState<Teaching | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -43,7 +43,8 @@ export default function TeachingDetailPage({ params }: { params: { id: string } 
     async function fetchTeaching() {
       try {
         setLoading(true)
-        const response = await fetch(`/api/teachings/${params.id}/`)
+        const resolvedParams = await params
+        const response = await fetch(`/api/teachings/${resolvedParams.id}/`)
 
         if (!response.ok) {
           throw new Error('Teaching not found')
@@ -59,7 +60,7 @@ export default function TeachingDetailPage({ params }: { params: { id: string } 
     }
 
     fetchTeaching()
-  }, [params.id])
+  }, [params])
 
   if (loading) {
     return (
