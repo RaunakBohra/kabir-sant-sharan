@@ -49,7 +49,11 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
     artist: '',
     description: '',
     altText: '',
-    tags: ''
+    tags: '',
+    category: '',
+    language: 'en',
+    featured: false,
+    published: true
   });
 
   useEffect(() => {
@@ -59,7 +63,11 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
         artist: media.author || '',
         description: media.description || '',
         altText: '',
-        tags: media.tags || ''
+        tags: media.tags || '',
+        category: media.category || '',
+        language: media.language || 'en',
+        featured: media.featured || false,
+        published: media.published !== undefined ? media.published : true
       });
     }
   }, [media]);
@@ -84,10 +92,11 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
           title: formData.title,
           description: formData.description,
           author: formData.artist || 'Sant Kabir Das',
-          category: media.type,
+          category: formData.category,
           tags: formData.tags,
-          featured: media.featured,
-          published: media.published
+          language: formData.language,
+          featured: formData.featured,
+          published: formData.published
         })
       });
 
@@ -105,7 +114,7 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
     }
   };
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -219,6 +228,60 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
               placeholder="meditation, spiritual, kabir"
               className="w-full px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
+          </div>
+
+          {/* Category & Language */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="category" className="text-dark-900 font-medium">
+                Category
+              </Label>
+              <input
+                id="category"
+                type="text"
+                value={formData.category}
+                onChange={(e) => handleChange('category', e.target.value)}
+                placeholder="spiritual, meditation"
+                className="w-full px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="language" className="text-dark-900 font-medium">
+                Language
+              </Label>
+              <select
+                id="language"
+                value={formData.language}
+                onChange={(e) => handleChange('language', e.target.value)}
+                className="w-full px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="ne">Nepali</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Status Toggles */}
+          <div className="flex items-center justify-between p-3 bg-cream-50 rounded-lg">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.published}
+                onChange={(e) => handleChange('published', e.target.checked)}
+                className="w-4 h-4 rounded border-cream-300 text-teal-600 focus:ring-teal-500"
+              />
+              <span className="text-sm font-medium text-dark-900">Published</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.featured}
+                onChange={(e) => handleChange('featured', e.target.checked)}
+                className="w-4 h-4 rounded border-cream-300 text-teal-600 focus:ring-teal-500"
+              />
+              <span className="text-sm font-medium text-dark-900">Featured</span>
+            </label>
           </div>
 
           {/* File Info - Compact */}

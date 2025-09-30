@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import NepaliDate from 'nepali-date-converter'
 
 interface CalendarEvent {
   id: string
@@ -42,10 +43,16 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [loading, setLoading] = useState(true)
+  const [calendarType, setCalendarType] = useState<'AD' | 'BS'>('AD')
 
-  // Get current month and year
+  // Get current month and year based on calendar type
   const currentMonth = currentDate.getMonth()
   const currentYear = currentDate.getFullYear()
+
+  // Convert to Nepali date if BS is selected
+  const nepaliDate = calendarType === 'BS' ? new NepaliDate(currentDate) : null
+  const displayMonth = calendarType === 'BS' ? nepaliDate?.getMonth() || 0 : currentMonth
+  const displayYear = calendarType === 'BS' ? nepaliDate?.getYear() || currentYear : currentYear
 
   // Get first day of the month and number of days
   const firstDay = new Date(currentYear, currentMonth, 1).getDay()
@@ -105,12 +112,19 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
     return events.filter(event => event.startDate && event.startDate.startsWith(dateString))
   }
 
-  const monthNames = [
+  const monthNamesAD = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ]
 
+  const monthNamesBS = [
+    'Baisakh', 'Jestha', 'Ashadh', 'Shrawan', 'Bhadra', 'Ashwin',
+    'Kartik', 'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra'
+  ]
+
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+
+  const currentMonthName = calendarType === 'BS' ? monthNamesBS[displayMonth] : monthNamesAD[displayMonth]
 
   return (
     <div className="bg-cream-100 rounded-lg shadow-lg p-6 border border-cream-200">
