@@ -66,7 +66,8 @@
       "Bash(grep:*)",
       "Bash(npm update:*)",
       "Bash(awk:*)",
-      "WebFetch(domain:orm.drizzle.team)"
+      "WebFetch(domain:orm.drizzle.team)",
+      "Bash(npm view:*)"
     ],
     "deny": [],
     "ask": []

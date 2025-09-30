@@ -7,11 +7,12 @@ export const runtime = 'nodejs';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const db = getDatabase();
-    const event = await db.select().from(events).where(eq(events.id, params.id)).limit(1);
+    const event = await db.select().from(events).where(eq(events.id, id)).limit(1);
 
     if (event.length === 0) {
       return NextResponse.json(
@@ -32,9 +33,10 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const db = getDatabase();
 
@@ -53,10 +55,10 @@ export async function PUT(
 
     await db.update(events)
       .set(updateData)
-      .where(eq(events.id, params.id));
+      .where(eq(events.id, id));
 
     // Fetch updated event
-    const updatedEvent = await db.select().from(events).where(eq(events.id, params.id)).limit(1);
+    const updatedEvent = await db.select().from(events).where(eq(events.id, id)).limit(1);
 
     return NextResponse.json({
       success: true,
@@ -74,13 +76,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const db = getDatabase();
 
     // Check if event exists
-    const existingEvent = await db.select().from(events).where(eq(events.id, params.id)).limit(1);
+    const existingEvent = await db.select().from(events).where(eq(events.id, id)).limit(1);
 
     if (existingEvent.length === 0) {
       return NextResponse.json(
@@ -90,11 +93,11 @@ export async function DELETE(
     }
 
     // Soft delete by moving to trash
-    await db.delete(events).where(eq(events.id, params.id));
+    await db.delete(events).where(eq(events.id, id));
 
     return NextResponse.json({
       message: 'Event deleted successfully',
-      id: params.id
+      id: id
     });
   } catch (error) {
     console.error('Error deleting event:', error);

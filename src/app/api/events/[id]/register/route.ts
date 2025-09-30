@@ -16,9 +16,10 @@ interface RegistrationData {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json() as RegistrationData;
 
     // Validate required fields
@@ -41,7 +42,7 @@ export async function POST(
 
     // Check if event exists
     const eventsResult = await databaseService.getEvents();
-    const event = eventsResult.events.find((e) => e.id === params.id);
+    const event = eventsResult.events.find((e) => e.id === id);
 
     if (!event) {
       return NextResponse.json(
@@ -81,7 +82,7 @@ export async function POST(
     }
 
     // Check if user is already registered
-    const existingRegistrations = await getEventRegistrations(params.id);
+    const existingRegistrations = await getEventRegistrations(id);
     const existingRegistration = existingRegistrations.find(
       reg => reg.email.toLowerCase() === email.toLowerCase()
     );
@@ -99,7 +100,7 @@ export async function POST(
     // Create registration
     const registration = {
       id: Date.now().toString(),
-      eventId: params.id,
+      eventId: id,
       fullName,
       email: email.toLowerCase(),
       phone,
@@ -149,10 +150,11 @@ export async function POST(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const registrations = await getEventRegistrations(params.id);
+    const { id } = await params;
+    const registrations = await getEventRegistrations(id);
 
     // Return summary information without personal details
     const summary = {
@@ -179,9 +181,10 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { searchParams } = new URL(request.url);
     const email = searchParams.get('email');
     const confirmationCode = searchParams.get('confirmationCode');
@@ -193,7 +196,7 @@ export async function DELETE(
       );
     }
 
-    const registrations = await getEventRegistrations(params.id);
+    const registrations = await getEventRegistrations(id);
     const registration = registrations.find(
       reg => (email && reg.email.toLowerCase() === email.toLowerCase()) ||
              (confirmationCode && reg.confirmationCode === confirmationCode)
