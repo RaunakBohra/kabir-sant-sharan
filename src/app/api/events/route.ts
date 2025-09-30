@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     // Save to database
     const { getDatabase } = await import('@/lib/db');
-    const { events } = await import('@/../drizzle/schema');
+    const { events } = await import('@/drizzle/schema');
     const db = getDatabase();
 
     await db.insert(events).values(newEvent);
