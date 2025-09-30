@@ -114,11 +114,6 @@ export function Newsletter() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-dark-900">Newsletter Management</h1>
-        <p className="text-dark-600 mt-1">Manage subscribers and send spiritual newsletters</p>
-      </div>
-
       {/* Tabs */}
       <div className="bg-cream-50 rounded-lg shadow-lg border border-cream-200">
         <div className="border-b border-cream-200">

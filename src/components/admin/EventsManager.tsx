@@ -1,0 +1,219 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { DeleteConfirmDialog } from './ContentManager/DeleteConfirmDialog';
+import { toast } from '@/components/ui/toast';
+
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  event_date: string;
+  event_type: string;
+  is_featured: boolean;
+  registration_required: boolean;
+  current_attendees: number;
+}
+
+export function EventsManager() {
+  const router = useRouter();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{ id: string; title: string } | null>(null);
+
+  const loadEvents = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/events/?limit=50');
+      const data = await response.json() as { events: Event[] };
+      setEvents(data.events || []);
+    } catch (error) {
+      console.error('Failed to load events:', error);
+      toast.error('Failed to load events');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadEvents();
+  }, [loadEvents]);
+
+  const handleAddEvent = () => {
+    router.push('/admin/events/new');
+  };
+
+  const handleEditEvent = (id: string) => {
+    router.push(`/admin/events/${id}/edit`);
+  };
+
+  const handleDeleteClick = (id: string, title: string) => {
+    setItemToDelete({ id, title });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!itemToDelete) return;
+
+    const response = await fetch(`/api/events/${itemToDelete.id}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete');
+    }
+
+    await loadEvents();
+  };
+
+  const upcomingCount = events.filter(e => new Date(e.event_date) > new Date()).length;
+  const pastCount = events.filter(e => new Date(e.event_date) <= new Date()).length;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-dark-900">Events Management</h1>
+          <p className="text-dark-600 mt-1">Manage spiritual events and gatherings</p>
+        </div>
+        <button
+          onClick={handleAddEvent}
+          className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors duration-200 flex items-center space-x-2"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
+          </svg>
+          <span>Add Event</span>
+        </button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-dark-600">Total Events</p>
+              <p className="text-2xl font-bold text-dark-900">{events.length}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-dark-600">Upcoming</p>
+              <p className="text-2xl font-bold text-dark-900">{upcomingCount}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-dark-600">Past Events</p>
+              <p className="text-2xl font-bold text-dark-900">{pastCount}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Events List */}
+      <div className="bg-cream-50 rounded-lg shadow-lg border border-cream-200">
+        <div className="p-6">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {events.length > 0 ? (
+                events.map((event) => (
+                  <div key={event.id} className="flex items-center justify-between p-4 border border-cream-200 rounded-lg hover:bg-cream-100 transition-colors duration-200">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h3 className="font-medium text-dark-900">{event.title}</h3>
+                        {event.is_featured && (
+                          <span className="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full">Featured</span>
+                        )}
+                      </div>
+                      <p className="text-sm text-dark-600 mt-1">{event.description}</p>
+                      <div className="flex items-center space-x-4 mt-2 text-xs text-dark-500">
+                        <span>{event.location}</span>
+                        <span>•</span>
+                        <span>{event.event_type}</span>
+                        <span>•</span>
+                        <span>{new Date(event.event_date).toLocaleDateString()}</span>
+                        {event.registration_required && (
+                          <>
+                            <span>•</span>
+                            <span>{event.current_attendees} attending</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2 ml-4">
+                      <button
+                        onClick={() => handleEditEvent(event.id)}
+                        className="p-2 text-dark-400 hover:text-teal-600 transition-colors"
+                        title="Edit event"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(event.id, event.title)}
+                        className="p-2 text-red-400 hover:text-red-600 transition-colors"
+                        title="Delete event"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <svg className="w-12 h-12 text-dark-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <h3 className="text-lg font-medium text-dark-900 mb-2">No events yet</h3>
+                  <p className="text-dark-600">Start by creating your first spiritual event.</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Delete Dialog */}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        itemType="event"
+        itemTitle={itemToDelete?.title || ''}
+      />
+    </div>
+  );
+}

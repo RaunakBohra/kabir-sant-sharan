@@ -2,7 +2,6 @@
 
 import { Suspense, lazy } from 'react';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { AdminHeader } from '@/components/admin/AdminHeader';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { SectionErrorBoundary } from '@/components/ui/error-boundary';
 
@@ -12,9 +11,6 @@ export default function AdminAnalyticsPage() {
   return (
     <ProtectedRoute requireAdmin={true}>
       <div className="min-h-screen bg-cream-100">
-        <SectionErrorBoundary>
-          <AdminHeader />
-        </SectionErrorBoundary>
         <div className="flex">
           <SectionErrorBoundary>
             <AdminSidebar />

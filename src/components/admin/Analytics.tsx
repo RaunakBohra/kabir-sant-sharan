@@ -65,11 +65,6 @@ export function Analytics() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-dark-900">Analytics Dashboard</h1>
-        <p className="text-dark-600 mt-1">Website traffic and user engagement metrics</p>
-      </div>
-
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">

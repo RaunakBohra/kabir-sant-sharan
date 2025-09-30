@@ -219,11 +219,7 @@ export default function PerformanceMonitor() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Performance Monitor</h2>
-          <p className="text-gray-600">Real-time application performance metrics</p>
-        </div>
+      <div className="flex items-center justify-end">
         <div className="flex items-center gap-4">
           <Select value={timeWindow} onValueChange={setTimeWindow}>
             <SelectTrigger className="w-40">

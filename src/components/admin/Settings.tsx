@@ -74,11 +74,7 @@ export function Settings() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-dark-900">Settings</h1>
-          <p className="text-dark-600 mt-1">Configure your website preferences and features</p>
-        </div>
+      <div className="flex justify-end">
         <button
           onClick={saveSettings}
           className="bg-dark-900 text-white px-4 py-2 rounded-md hover:bg-dark-800 transition-colors duration-200"
