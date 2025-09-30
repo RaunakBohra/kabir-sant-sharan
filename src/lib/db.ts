@@ -1,25 +1,26 @@
 import { drizzle } from 'drizzle-orm/d1';
-import { drizzle as drizzleBetterSqlite } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
 import * as schema from '@/drizzle/schema';
-import path from 'path';
 
-let localDb: ReturnType<typeof drizzleBetterSqlite> | null = null;
-let sqliteInstance: Database.Database | null = null;
+let localDb: any = null;
 
-function getLocalDatabase() {
+async function getLocalDatabase() {
   if (!localDb) {
+    // Dynamic import for Node.js-only dependencies
+    const { drizzle: drizzleBetterSqlite } = await import('drizzle-orm/better-sqlite3');
+    const Database = (await import('better-sqlite3')).default;
+    const path = await import('path');
+
     const dbPath = path.join(process.cwd(), 'local.db');
-    sqliteInstance = new Database(dbPath);
+    const sqliteInstance = new Database(dbPath);
     localDb = drizzleBetterSqlite(sqliteInstance, { schema });
 
     // Initialize tables if they don't exist
-    initializeTables();
+    await initializeTables(sqliteInstance);
   }
   return localDb;
 }
 
-function initializeTables() {
+async function initializeTables(sqliteInstance: any) {
   if (!sqliteInstance) return;
 
   try {
@@ -68,7 +69,7 @@ function initializeTables() {
   }
 }
 
-export function getDatabase(env?: any) {
+export async function getDatabase(env?: any) {
   // Check if we're in Cloudflare Workers/Pages environment with D1 binding
   if (env?.DB) {
     console.log('Using Cloudflare D1 database');
@@ -86,13 +87,8 @@ export function getDatabase(env?: any) {
 
   // Fall back to local SQLite for development
   console.log('Using local SQLite database');
-  return getLocalDatabase();
+  return await getLocalDatabase();
 }
 
-// Initialize global database for session manager
-if (typeof globalThis !== 'undefined') {
-  (globalThis as any).db = getDatabase();
-}
-
-export type Database = ReturnType<typeof getDatabase>;
+export type Database = Awaited<ReturnType<typeof getDatabase>>;
 export { schema };

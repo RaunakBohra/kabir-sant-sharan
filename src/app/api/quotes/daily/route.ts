@@ -7,7 +7,7 @@ export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
   try {
-    const db = getDatabase();
+    const db = await await getDatabase();
 
     // Get all active quotes from database
     const allQuotes = await db

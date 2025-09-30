@@ -106,7 +106,7 @@ async function loginHandler(request: NextRequest): Promise<NextResponse> {
 
     // Ensure admin user exists in database
     try {
-      const db = getDatabase();
+      const db = await await getDatabase();
 
       // Check if admin user already exists
       const existingUser = await db.select().from(users).where(eq(users.id, adminUserId)).limit(1);

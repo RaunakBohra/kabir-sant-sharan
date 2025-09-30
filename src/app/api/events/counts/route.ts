@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const instance = getInstancePath(request);
 
   try {
-    const db = getDatabase();
+    const db = await await getDatabase();
 
     // Get total events count using simple approach
     const allEvents = await db

@@ -7,18 +7,17 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const Database = require('better-sqlite3');
-  const path = require('path');
-  const dbPath = path.join(process.cwd(), 'local.db');
-  let db;
-
   try {
     const { id } = await params;
-    db = new Database(dbPath);
-    const media = db.prepare('SELECT * FROM media WHERE id = ?').get(id);
+    const { getDatabase } = await import('@/lib/db');
+    const { media: mediaSchema } = await import('@/drizzle/schema');
+    const { eq } = await import('drizzle-orm');
+
+    const db = await getDatabase((globalThis as any).cloudflare?.env);
+    const result = await db.select().from(mediaSchema).where(eq(mediaSchema.id, id)).limit(1);
+    const media = result[0];
 
     if (!media) {
-      db.close();
       return NextResponse.json({ error: 'Media not found' }, { status: 404 });
     }
 
@@ -28,10 +27,9 @@ export async function GET(
     // For R2, you'd fetch the file and proxy it
     // This is a simplified example - you'd need R2 SDK integration
 
-    if (media.r2_key.startsWith('sample/')) {
-      db.close();
+    if (media.r2Key.startsWith('sample/')) {
       // Local files - serve directly
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/media/${media.r2_key}`);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/media/${media.r2Key}`);
 
       if (!response.ok) {
         return NextResponse.json({ error: 'File not found' }, { status: 404 });
@@ -68,8 +66,7 @@ export async function GET(
 
     // For R2 files, check if R2 is configured
     if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID) {
-      console.error('R2 not configured, cannot stream:', media.r2_key);
-      db.close();
+      console.error('R2 not configured, cannot stream:', media.r2Key);
       return NextResponse.json(
         { error: 'R2 storage not configured. Please configure Cloudflare R2 credentials.' },
         { status: 503 }
@@ -78,7 +75,7 @@ export async function GET(
 
     // For R2 files, generate signed streaming URL
     try {
-      const streamingUrl = await generateSignedStreamingUrl(media.r2_key);
+      const streamingUrl = await generateSignedStreamingUrl(media.r2Key);
 
       // Fetch the file from R2 using signed URL
       const response = await fetch(streamingUrl, {
@@ -87,13 +84,11 @@ export async function GET(
 
       if (!response.ok) {
         console.error('R2 fetch failed:', response.status, response.statusText);
-        db.close();
         return NextResponse.json({ error: 'File not found in R2 storage' }, { status: 404 });
       }
 
       const contentType = response.headers.get('content-type') || 'application/octet-stream';
 
-      db.close();
 
       // Handle range requests for media streaming
       if (range && response.status === 206) {
@@ -129,13 +124,5 @@ export async function GET(
       { error: 'Streaming failed: ' + (error instanceof Error ? error.message : 'Unknown error') },
       { status: 500 }
     );
-  } finally {
-    if (db) {
-      try {
-        db.close();
-      } catch (e) {
-        console.error('Error closing database:', e);
-      }
-    }
   }
 }

@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const db = getDatabase();
+    const db = await await getDatabase();
 
     const results = await db
       .select()
@@ -61,7 +61,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const db = getDatabase();
+    const db = await await getDatabase();
     const body = await request.json() as {
       title?: string;
       content?: string;
@@ -186,7 +186,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const db = getDatabase();
+    const db = await await getDatabase();
 
     // Check if teaching exists first
     const existing = await db

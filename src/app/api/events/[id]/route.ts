@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const db = getDatabase();
+    const db = await await getDatabase();
     const event = await db.select().from(events).where(eq(events.id, id)).limit(1);
 
     if (event.length === 0) {
@@ -38,7 +38,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const db = getDatabase();
+    const db = await await getDatabase();
 
     // Only update provided fields
     const updateData: any = {};
@@ -80,7 +80,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const db = getDatabase();
+    const db = await await getDatabase();
 
     // Check if event exists
     const existingEvent = await db.select().from(events).where(eq(events.id, id)).limit(1);

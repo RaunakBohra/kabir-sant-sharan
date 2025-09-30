@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
     const { media } = await import('@/drizzle/schema');
     const { eq, isNull, and, desc } = await import('drizzle-orm');
 
-    const db = getDatabase();
+    const db = await await getDatabase();
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
     const limit = parseInt(searchParams.get('limit') || '20');

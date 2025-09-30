@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = getDatabase();
+    const db = await await getDatabase();
 
     // Generate slug from title
     const baseSlug = title
