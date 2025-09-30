@@ -1,47 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/db';
-import { teachings } from '../../../drizzle/schema';
-import { eq } from 'drizzle-orm';
-import { createId } from '@paralleldrive/cuid2';
+import { databaseService } from '@/lib/database-service';
 
 export const runtime = 'nodejs';
-
-// Helper to generate unique slug
-async function generateUniqueSlug(db: any, baseSlug: string): Promise<string> {
-  let slug = baseSlug;
-  let counter = 1;
-
-  while (true) {
-    const existing = await db.select().from(teachings).where(eq(teachings.slug, slug)).limit(1);
-    if (existing.length === 0) return slug;
-    slug = `${baseSlug}-${counter}`;
-    counter++;
-  }
-}
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = parseInt(searchParams.get('offset') || '0');
-    const status = searchParams.get('status'); // 'published', 'draft', 'all'
+    const category = searchParams.get('category');
+    const search = searchParams.get('search');
+    const featured = searchParams.get('featured') === 'true';
 
-    const db = getDatabase();
+    // Use the enhanced database service with rich spiritual content
+    const result = await databaseService.getTeachings(limit, offset);
 
-    let query = db.select().from(teachings);
+    // Apply client-side filtering for now
+    let filteredTeachings = result.teachings;
 
-    if (status === 'published') {
-      query = query.where(eq(teachings.published, true));
-    } else if (status === 'draft') {
-      query = query.where(eq(teachings.published, false));
+    if (category && category !== 'all') {
+      filteredTeachings = filteredTeachings.filter(t =>
+        t.category.toLowerCase() === category.toLowerCase()
+      );
     }
 
-    const results = await query.limit(limit).offset(offset);
-    const totalCount = await db.select().from(teachings);
+    if (search) {
+      const searchLower = search.toLowerCase();
+      filteredTeachings = filteredTeachings.filter(t =>
+        t.title.toLowerCase().includes(searchLower) ||
+        t.content.toLowerCase().includes(searchLower) ||
+        t.excerpt.toLowerCase().includes(searchLower)
+      );
+    }
+
+    if (featured) {
+      // Assuming first 2 teachings are featured for now
+      filteredTeachings = filteredTeachings.slice(0, 2);
+    }
 
     return NextResponse.json({
-      teachings: results,
-      total: totalCount.length,
+      teachings: filteredTeachings,
+      total: filteredTeachings.length,
       limit,
       offset
     });
@@ -68,8 +67,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = getDatabase();
-
     // Generate slug from title
     const baseSlug = title
       .toLowerCase()
@@ -78,18 +75,16 @@ export async function POST(request: NextRequest) {
       .replace(/-+/g, '-')
       .trim();
 
-    const slug = await generateUniqueSlug(db, baseSlug);
-
     // Calculate reading time (words per minute: 200)
     const wordCount = content.split(/\s+/).length;
     const readingTime = Math.ceil(wordCount / 200);
 
     const newTeaching = {
-      id: createId(),
+      id: Date.now().toString(),
       title,
       content,
       excerpt,
-      slug,
+      slug: baseSlug,
       category,
       tags: body.tags || null,
       author: body.author || 'Sant Kabir Das',
@@ -101,13 +96,9 @@ export async function POST(request: NextRequest) {
       publishedAt: body.published ? new Date().toISOString() : null,
       views: 0,
       likes: 0,
-      translationOf: body.translationOf || null,
-      deletedAt: null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-
-    await db.insert(teachings).values(newTeaching);
 
     return NextResponse.json({
       message: 'Teaching created successfully',

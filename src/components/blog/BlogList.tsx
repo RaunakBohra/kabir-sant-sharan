@@ -1,6 +1,46 @@
+'use client'
+
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
 interface BlogPost {
+  id: string
+  title: string
+  content: string
+  excerpt: string
+  slug: string
+  category: string
+  tags: string | null
+  coverImage: string | null
+  author: string
+  published: boolean
+  featured: boolean
+  publishedAt: string
+  createdAt: string
+  updatedAt: string
+}
+
+interface BlogPostDisplay {
+  id: string
+  title: string
+  excerpt: string
+  category: string
+  author: string
+  publishedAt: string
+  readTime: string
+  tags: string[]
+  featured: boolean
+}
+
+interface BlogListProps {
+  filters?: {
+    category?: string
+    search?: string
+  }
+}
+
+// Legacy interface for display purposes
+interface LegacyBlogPost {
   id: string
   title: string
   excerpt: string
@@ -14,7 +54,36 @@ interface BlogPost {
   featured: boolean
 }
 
-const samplePosts: BlogPost[] = [
+// Helper function to calculate read time
+function calculateReadTime(content: string): string {
+  const wordsPerMinute = 200
+  const words = content.split(' ').length
+  const minutes = Math.ceil(words / wordsPerMinute)
+  return `${minutes} min read`
+}
+
+// Helper function to parse tags
+function parseTags(tags: string | null): string[] {
+  if (!tags) return []
+  return tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+}
+
+// Convert API response to display format
+function convertToDisplayFormat(post: BlogPost): BlogPostDisplay {
+  return {
+    id: post.id,
+    title: post.title,
+    excerpt: post.excerpt || post.content.substring(0, 200) + '...',
+    category: post.category,
+    author: post.author,
+    publishedAt: post.publishedAt,
+    readTime: calculateReadTime(post.content),
+    tags: parseTags(post.tags),
+    featured: post.featured
+  }
+}
+
+const samplePosts: LegacyBlogPost[] = [
   {
     id: '1',
     title: 'The Path of Inner Truth: Understanding Kabir\'s Philosophy',
@@ -98,14 +167,120 @@ function formatDate(dateString: string) {
   })
 }
 
-export function BlogList() {
+export function BlogList({ filters }: BlogListProps) {
+  const [posts, setPosts] = useState<BlogPostDisplay[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        setLoading(true)
+
+        // Build query parameters
+        const params = new URLSearchParams()
+        if (filters?.category && filters.category !== 'all') {
+          params.append('category', filters.category)
+        }
+        if (filters?.search) {
+          params.append('search', filters.search)
+        }
+        params.append('limit', '50') // Get more posts for pagination
+
+        const url = `/api/teachings${params.toString() ? `?${params.toString()}` : ''}`
+        const response = await fetch(url)
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch teachings')
+        }
+
+        const data = await response.json()
+        const teachings = data.teachings || []
+
+        // Convert to display format
+        const displayPosts = teachings.map(convertToDisplayFormat)
+        setPosts(displayPosts)
+
+      } catch (err) {
+        console.error('Error fetching teachings:', err)
+        setError(err instanceof Error ? err.message : 'Failed to load teachings')
+        // Fallback to sample data on error
+        const fallbackPosts = samplePosts.map(post => ({
+          ...post,
+          tags: typeof post.tags === 'string' ? post.tags.split(',') : post.tags
+        }))
+        setPosts(fallbackPosts as BlogPostDisplay[])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPosts()
+  }, [filters])
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div className="mb-12">
+          <div className="h-8 bg-cream-200 rounded w-48 mb-6 animate-pulse"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {Array.from({ length: 2 }).map((_, index) => (
+              <div key={index} className="bg-cream-100 rounded-lg p-6 animate-pulse">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="w-20 h-6 bg-cream-200 rounded-full"></div>
+                  <div className="w-16 h-4 bg-cream-200 rounded"></div>
+                </div>
+                <div className="w-full h-6 bg-cream-200 rounded mb-4"></div>
+                <div className="w-full h-4 bg-cream-200 rounded mb-2"></div>
+                <div className="w-3/4 h-4 bg-cream-200 rounded mb-4"></div>
+                <div className="flex justify-between items-center mb-4">
+                  <div className="w-24 h-4 bg-cream-200 rounded"></div>
+                  <div className="w-20 h-4 bg-cream-200 rounded"></div>
+                </div>
+                <div className="flex gap-2 mb-4">
+                  <div className="w-12 h-4 bg-cream-200 rounded"></div>
+                  <div className="w-16 h-4 bg-cream-200 rounded"></div>
+                </div>
+                <div className="w-32 h-4 bg-cream-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error && posts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+          <div className="text-red-600 mb-2">
+            <svg className="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-semibold text-red-800 mb-2">Failed to load teachings</h3>
+          <p className="text-red-700">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const featuredPosts = posts.filter(post => post.featured)
+  const regularPosts = posts.filter(post => !post.featured)
   return (
     <div className="space-y-8">
       {/* Featured Posts */}
       <div className="mb-12">
         <h2 className="text-2xl font-bold text-dark-900 mb-6">Featured Teachings</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {samplePosts.filter(post => post.featured).map((post) => (
+          {featuredPosts.map((post) => (
             <article key={post.id} className="bg-cream-100 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-cream-200">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">
@@ -159,7 +334,7 @@ export function BlogList() {
       <div>
         <h2 className="text-2xl font-bold text-dark-900 mb-6">All Teachings</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {samplePosts.map((post) => (
+          {regularPosts.map((post) => (
             <article key={post.id} className="bg-cream-100 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-cream-200">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">

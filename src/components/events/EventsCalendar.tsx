@@ -27,9 +27,18 @@ function getTypeColor(type: string) {
   }
 }
 
-export function EventsCalendar() {
+interface EventsCalendarProps {
+  filters?: {
+    type?: string
+    timeRange?: string
+  }
+}
+
+export function EventsCalendar({ filters }: EventsCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
+  const [events, setEvents] = useState<CalendarEvent[]>([])
+  const [loading, setLoading] = useState(true)
 
   // Get current month and year
   const currentMonth = currentDate.getMonth()
@@ -38,6 +47,30 @@ export function EventsCalendar() {
   // Get first day of the month and number of days
   const firstDay = new Date(currentYear, currentMonth, 1).getDay()
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
+
+  // Fetch events
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        setLoading(true)
+        const params = new URLSearchParams()
+        if (filters?.type && filters.type !== 'all') {
+          params.append('type', filters.type)
+        }
+        const url = `/api/events${params.toString() ? `?${params.toString()}` : ''}`
+        const response = await fetch(url)
+        if (response.ok) {
+          const data = await response.json()
+          setEvents(data.events || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch events:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchEvents()
+  }, [filters])
 
   // Previous and next month navigation
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -53,7 +86,7 @@ export function EventsCalendar() {
   // Get events for a specific date
   const getEventsForDate = (day: number): CalendarEvent[] => {
     const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    return sampleEvents.filter(event => event.date === dateString)
+    return events.filter(event => event.startDate.startsWith(dateString))
   }
 
   const monthNames = [
@@ -127,10 +160,10 @@ export function EventsCalendar() {
                   <div
                     key={event.id}
                     onClick={() => setSelectedEvent(event)}
-                    className={`text-xs p-1 rounded border cursor-pointer hover:opacity-80 transition-opacity duration-200 ${event.color}`}
+                    className={`text-xs p-1 rounded border cursor-pointer hover:opacity-80 transition-opacity duration-200 ${getTypeColor(event.type)}`}
                   >
                     <div className="truncate font-medium">{event.title}</div>
-                    <div className="truncate">{event.time}</div>
+                    <div className="truncate">{event.startTime}</div>
                   </div>
                 ))}
                 {events.length > 2 && (
@@ -185,19 +218,11 @@ export function EventsCalendar() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <span>
-                  {calendarType === 'BS' ? (
-                    (() => {
-                      const adDate = new Date(selectedEvent.startDate)
-                      const bsDate = new NepaliDate(adDate)
-                      return `${bsDate.format('DD MMMM YYYY', 'np')} BS`
-                    })()
-                  ) : (
-                    new Date(selectedEvent.startDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })
-                  )} at {selectedEvent.startTime}
+                  {new Date(selectedEvent.startDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })} at {selectedEvent.startTime}
                 </span>
               </div>
 

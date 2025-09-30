@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { drizzle } from 'drizzle-orm/d1';
 import { eq, and, lt, desc } from 'drizzle-orm';
-import { sessions, users, type Session, type NewSession } from '../../drizzle/schema';
+import { sessions, users, type Session, type NewSession } from '@/drizzle/schema';
 import { generateTokenPair, validateAccessToken, validateRefreshToken, type TokenPair } from './jwt-auth';
 import { logger } from './logger';
 import { trackDatabaseOperation } from './middleware/performance-middleware';

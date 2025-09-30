@@ -18,11 +18,8 @@ interface RichTextEditorProps {
 }
 
 const MenuBar = ({ editor }: { editor: Editor | null }) => {
-  if (!editor) {
-    return null;
-  }
-
   const addLink = useCallback(() => {
+    if (!editor) return;
     const url = window.prompt('Enter URL:');
     if (url) {
       editor.chain().focus().setLink({ href: url }).run();
@@ -30,11 +27,16 @@ const MenuBar = ({ editor }: { editor: Editor | null }) => {
   }, [editor]);
 
   const addImage = useCallback(() => {
+    if (!editor) return;
     const url = window.prompt('Enter image URL:');
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
     }
   }, [editor]);
+
+  if (!editor) {
+    return null;
+  }
 
   return (
     <div className="border-b border-cream-300 bg-cream-100 p-2 flex flex-wrap gap-1">

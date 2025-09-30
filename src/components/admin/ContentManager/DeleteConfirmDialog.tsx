@@ -66,39 +66,41 @@ export function DeleteConfirmDialog({
             </svg>
             <span>Confirm Deletion</span>
           </AlertDialogTitle>
-          <AlertDialogDescription className="space-y-3 pt-2">
-            <p className="text-dark-900 font-medium">
-              Are you sure you want to delete this {itemType}?
-            </p>
-            <div className="bg-cream-100 p-3 rounded-lg border border-cream-300">
-              <p className="text-sm font-medium text-dark-900">{itemTitle}</p>
-            </div>
-            <div className="bg-teal-50 p-3 rounded-lg border border-teal-200">
-              <div className="flex items-start space-x-2">
-                <svg className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <div className="text-sm text-teal-900">
-                  <p className="font-medium mb-1">30-Day Recovery Period</p>
-                  <p className="text-teal-700">
-                    This item will be moved to trash and can be recovered for the next 30 days.
-                    After 30 days, it will be permanently deleted.
-                  </p>
+          <AlertDialogDescription asChild>
+            <div className="space-y-3 pt-2">
+              <p className="text-dark-900 font-medium">
+                Are you sure you want to delete this {itemType}?
+              </p>
+              <div className="bg-cream-100 p-3 rounded-lg border border-cream-300">
+                <p className="text-sm font-medium text-dark-900">{itemTitle}</p>
+              </div>
+              <div className="bg-teal-50 p-3 rounded-lg border border-teal-200">
+                <div className="flex items-start space-x-2">
+                  <svg className="w-5 h-5 text-teal-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <div className="text-sm text-teal-900">
+                    <p className="font-medium mb-1">30-Day Recovery Period</p>
+                    <p className="text-teal-700">
+                      This item will be moved to trash and can be recovered for the next 30 days.
+                      After 30 days, it will be permanently deleted.
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="pt-2">
-              <label className="block text-sm font-medium text-dark-900 mb-2">
-                Type <span className="font-mono bg-cream-200 px-2 py-1 rounded">DELETE</span> to confirm:
-              </label>
-              <input
-                type="text"
-                value={confirmText}
-                onChange={(e) => setConfirmText(e.target.value)}
-                placeholder="DELETE"
-                className="w-full px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-400 focus:border-transparent font-mono"
-                autoFocus
-              />
+              <div className="pt-2">
+                <label className="block text-sm font-medium text-dark-900 mb-2">
+                  Type <span className="font-mono bg-cream-200 px-2 py-1 rounded">DELETE</span> to confirm:
+                </label>
+                <input
+                  type="text"
+                  value={confirmText}
+                  onChange={(e) => setConfirmText(e.target.value)}
+                  placeholder="DELETE"
+                  className="w-full px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-400 focus:border-transparent font-mono"
+                  autoFocus
+                />
+              </div>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>

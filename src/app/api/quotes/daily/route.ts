@@ -1,62 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getDatabase } from '@/lib/db';
+import { quotes } from '@/drizzle/schema';
+import { eq, isNull, and } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
 
-// Mock quotes - in production, fetch from D1 database
-const quotes = [
-  {
-    id: '1',
-    text: 'जो खोजा तिन पाइया, गहरे पानी पैठ। मैं बपुरा बूडन डरा, रहा किनारे बैठ।',
-    author: 'Sant Kabir Das',
-    language: 'ne',
-    category: 'wisdom'
-  },
-  {
-    id: '2',
-    text: 'माला फेरत जुग भया, फिरा न मन का फेर। कर का मन का डार दे, मन का मन का फेर।',
-    author: 'Sant Kabir Das',
-    language: 'ne',
-    category: 'meditation'
-  },
-  {
-    id: '3',
-    text: 'The truth is one, but the wise call it by many names. Seek within yourself, for that is where the divine resides.',
-    author: 'Sant Kabir Das',
-    language: 'en',
-    category: 'truth'
-  },
-  {
-    id: '4',
-    text: 'Love is the bridge between two hearts, and the divine is the river that flows beneath.',
-    author: 'Sant Kabir Das',
-    language: 'en',
-    category: 'devotion'
-  },
-  {
-    id: '5',
-    text: 'दो कोस प्यार के, ना मिल तो क्या गम? मन दीपक जलाइए, यदि सुमिरन केर नाम।',
-    author: 'Sant Kabir Das',
-    language: 'ne',
-    category: 'devotion'
-  },
-  {
-    id: '6',
-    text: 'प्रेम गली अति सांकरी, ता में दो न समाहिं। जब मैं था तब हरि नहीं, अब हरि हैं मैं नाहिं॥',
-    author: 'Sant Kabir Das',
-    language: 'ne',
-    category: 'wisdom'
-  }
-];
-
 export async function GET(request: NextRequest) {
   try {
+    const db = getDatabase();
+
+    // Get all active quotes from database
+    const allQuotes = await db
+      .select()
+      .from(quotes)
+      .where(and(
+        eq(quotes.active, true),
+        isNull(quotes.deletedAt)
+      ));
+
+    if (allQuotes.length === 0) {
+      return NextResponse.json(
+        { error: 'No quotes available' },
+        { status: 404 }
+      );
+    }
+
     // Get current date to select quote
     const today = new Date();
     const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
 
-    // Rotate quotes daily
-    const quoteIndex = dayOfYear % quotes.length;
-    const dailyQuote = quotes[quoteIndex];
+    // Rotate quotes daily based on day of year
+    const quoteIndex = dayOfYear % allQuotes.length;
+    const selectedQuote = allQuotes[quoteIndex];
+
+    // Transform to match expected format
+    const dailyQuote = {
+      id: selectedQuote.id,
+      text: selectedQuote.content,
+      translation: selectedQuote.translation || undefined,
+      author: selectedQuote.author,
+      language: selectedQuote.language,
+      category: selectedQuote.category,
+      source: selectedQuote.source || undefined
+    };
 
     return NextResponse.json({
       quote: dailyQuote,

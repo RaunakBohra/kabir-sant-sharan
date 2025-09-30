@@ -1,7 +1,23 @@
+'use client'
+
+import { useState } from 'react'
 import { BlogList } from '@/components/blog/BlogList'
 import { BlogFilters } from '@/components/blog/BlogFilters'
 
+interface TeachingFilters {
+  category: string
+  search: string
+}
+
 export default function TeachingsPage() {
+  const [filters, setFilters] = useState<TeachingFilters>({
+    category: 'all',
+    search: ''
+  })
+
+  const handleFiltersChange = (newFilters: Partial<TeachingFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }))
+  }
   return (
     <div className="min-h-screen bg-cream-500">
       <div className="container mx-auto px-4 py-12">
@@ -17,10 +33,14 @@ export default function TeachingsPage() {
         </div>
 
         {/* Filters and Search */}
-        <BlogFilters />
+        <BlogFilters
+          selectedCategory={filters.category}
+          searchQuery={filters.search}
+          onFiltersChange={handleFiltersChange}
+        />
 
         {/* Blog Posts List */}
-        <BlogList />
+        <BlogList filters={filters} />
       </div>
     </div>
   )

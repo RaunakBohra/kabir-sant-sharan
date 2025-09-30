@@ -1,5 +1,7 @@
 // Database service for connecting to D1 and managing data
 import { getDatabase } from './db';
+import { eq, desc, gte, isNull, and } from 'drizzle-orm';
+import { teachings, events, newsletters } from '@/drizzle/schema';
 
 export interface Teaching {
   id: string;
@@ -92,151 +94,151 @@ export class DatabaseService {
 
   // Teachings CRUD operations
   async getTeachings(limit = 10, offset = 0): Promise<{ teachings: Teaching[]; total: number }> {
-    // For now, return enhanced mock data with more spiritual content
-    const mockTeachings: Teaching[] = [
-      {
-        id: '1',
-        title: 'The Path of Divine Love (प्रेम का मार्ग)',
-        content: `Sant Kabir teaches us that the path to the divine is through pure love and devotion.
+    try {
+      const db = getDatabase(this.env);
 
-        "प्रेम गली अति सांकरी, ता में दो न समाहिं।
-        जब मैं था तब हरि नहीं, अब हरि हैं मैं नाहिं॥"
+      // Query published teachings that are not soft-deleted
+      const results = await db
+        .select()
+        .from(teachings)
+        .where(and(
+          eq(teachings.published, true),
+          isNull(teachings.deletedAt)
+        ))
+        .orderBy(desc(teachings.publishedAt))
+        .limit(limit)
+        .offset(offset);
 
-        The lane of love is very narrow, two cannot walk together. When I existed, God was not there; now God exists, I am not there. This beautiful doha explains that divine love requires complete surrender of the ego.`,
-        excerpt: 'Discover the essence of divine love through Sant Kabir\'s timeless wisdom and the path of selfless devotion.',
-        author: 'Sant Kabir Das',
-        published_at: '2024-09-29T10:00:00Z',
-        category: 'Philosophy',
-        tags: ['love', 'devotion', 'spirituality', 'ego', 'surrender'],
-        featured_image: '/images/divine-love.jpg',
-        slug: 'path-of-divine-love',
-        created_at: '2024-09-29T10:00:00Z',
-        updated_at: '2024-09-29T10:00:00Z'
-      },
-      {
-        id: '2',
-        title: 'Unity in Diversity (एकता में अनेकता)',
-        content: `Sant Kabir's message transcends all religious boundaries. He believed all paths lead to the same divine source.
+      // Get total count
+      const countResult = await db
+        .select()
+        .from(teachings)
+        .where(and(
+          eq(teachings.published, true),
+          isNull(teachings.deletedAt)
+        ));
 
-        "कस्तूरी कुंडल बसे, मृग ढूंढे बन माहि।
-        ऐसे घट घट राम है, दुनिया देखे नाहि॥"
+      // Transform database results to Teaching interface
+      const transformedTeachings: Teaching[] = results.map(t => ({
+        id: t.id,
+        title: t.title,
+        content: t.content,
+        excerpt: t.excerpt,
+        author: t.author,
+        published_at: t.publishedAt || t.createdAt || '',
+        category: t.category,
+        tags: t.tags ? t.tags.split(',').map(tag => tag.trim()) : [],
+        featured_image: t.coverImage || undefined,
+        slug: t.slug,
+        created_at: t.createdAt || '',
+        updated_at: t.updatedAt || ''
+      }));
 
-        The musk is in the deer's own navel, but it searches for it in the forest. Similarly, God resides in every heart, but the world fails to see this truth. Whether Hindu, Muslim, or any faith - the divine essence is one.`,
-        excerpt: 'Understanding the universal message of unity beyond religious boundaries and finding the divine within.',
-        author: 'Sant Kabir Das',
-        published_at: '2024-09-28T10:00:00Z',
-        category: 'Unity',
-        tags: ['unity', 'religion', 'peace', 'universality', 'inner-divine'],
-        featured_image: '/images/unity.jpg',
-        slug: 'unity-in-diversity',
-        created_at: '2024-09-28T10:00:00Z',
-        updated_at: '2024-09-28T10:00:00Z'
-      },
-      {
-        id: '3',
-        title: 'The Illusion of Maya (माया का भ्रम)',
-        content: `Kabir warns us about the illusions that keep us away from spiritual truth.
-
-        "माया मरी न मन मरा, मर मर गए शरीर।
-        आशा तृष्णा न मरी, कह गए दास कबीर॥"
-
-        Neither Maya (illusion) died nor the mind died, only the body perished. Hope and desire never died, says Kabir. This teaches us that spiritual death of desires is more important than physical death.`,
-        excerpt: 'Learn about the spiritual concept of Maya and how to overcome the illusions that bind us.',
-        author: 'Sant Kabir Das',
-        published_at: '2024-09-27T10:00:00Z',
-        category: 'Spirituality',
-        tags: ['maya', 'illusion', 'mind', 'desires', 'spiritual-death'],
-        featured_image: '/images/maya.jpg',
-        slug: 'illusion-of-maya',
-        created_at: '2024-09-27T10:00:00Z',
-        updated_at: '2024-09-27T10:00:00Z'
-      }
-    ];
-
-    const paginatedTeachings = mockTeachings.slice(offset, offset + limit);
-    return {
-      teachings: paginatedTeachings,
-      total: mockTeachings.length
-    };
+      return {
+        teachings: transformedTeachings,
+        total: countResult.length
+      };
+    } catch (error) {
+      console.error('Error fetching teachings:', error);
+      return { teachings: [], total: 0 };
+    }
   }
 
   async getTeachingBySlug(slug: string): Promise<Teaching | null> {
-    const { teachings } = await this.getTeachings(100); // Get all for searching
-    return teachings.find(t => t.slug === slug) || null;
+    try {
+      const db = getDatabase(this.env);
+
+      const results = await db
+        .select()
+        .from(teachings)
+        .where(and(
+          eq(teachings.slug, slug),
+          eq(teachings.published, true),
+          isNull(teachings.deletedAt)
+        ))
+        .limit(1);
+
+      if (results.length === 0) {
+        return null;
+      }
+
+      const t = results[0];
+      return {
+        id: t.id,
+        title: t.title,
+        content: t.content,
+        excerpt: t.excerpt,
+        author: t.author,
+        published_at: t.publishedAt || t.createdAt || '',
+        category: t.category,
+        tags: t.tags ? t.tags.split(',').map(tag => tag.trim()) : [],
+        featured_image: t.coverImage || undefined,
+        slug: t.slug,
+        created_at: t.createdAt || '',
+        updated_at: t.updatedAt || ''
+      };
+    } catch (error) {
+      console.error('Error fetching teaching by slug:', error);
+      return null;
+    }
   }
 
   // Events CRUD operations
   async getEvents(limit = 10, offset = 0, upcoming = false): Promise<{ events: Event[]; total: number }> {
-    const mockEvents: Event[] = [
-      {
-        id: '1',
-        title: 'Daily Satsang - Morning Meditation (प्रातःकालीन सत्संग)',
-        description: 'Join us for daily morning meditation and spiritual discourse based on Sant Kabir\'s teachings. Experience the peace of collective prayer and meditation in the early hours when the mind is most receptive to divine grace.',
-        location: 'Community Hall, Kabir Ashram',
-        event_date: '2024-10-01T06:00:00Z',
-        event_type: 'meditation',
-        is_featured: true,
-        registration_required: false,
-        max_attendees: 100,
-        current_attendees: 45,
-        created_at: '2024-09-29T10:00:00Z',
-        updated_at: '2024-09-29T10:00:00Z'
-      },
-      {
-        id: '2',
-        title: 'Kabir Jayanti Celebration (कबीर जयंती महोत्सव)',
-        description: 'Annual celebration of Sant Kabir\'s birth anniversary with special programs including bhajan sessions, community feast, and spiritual discourses. Join the entire community in honoring the great saint\'s teachings.',
-        location: 'Main Temple Complex',
-        event_date: '2024-10-15T09:00:00Z',
-        event_type: 'festival',
-        is_featured: true,
-        registration_required: true,
-        max_attendees: 500,
-        current_attendees: 234,
-        created_at: '2024-09-29T10:00:00Z',
-        updated_at: '2024-09-29T10:00:00Z'
-      },
-      {
-        id: '3',
-        title: 'Weekly Bhajan Session (साप्ताहिक भजन संध्या)',
-        description: 'Community singing of devotional songs and Kabir\'s dohas with musical accompaniment. Experience the joy of collective devotion through music and singing.',
-        location: 'Music Hall',
-        event_date: '2024-10-05T18:00:00Z',
-        event_type: 'music',
-        is_featured: false,
-        registration_required: false,
-        max_attendees: 75,
-        current_attendees: 32,
-        created_at: '2024-09-29T10:00:00Z',
-        updated_at: '2024-09-29T10:00:00Z'
-      },
-      {
-        id: '4',
-        title: 'Spiritual Discourse on Divine Names (हरि नाम चर्चा)',
-        description: 'Deep discussion on the power of divine names and the practice of remembering God through various spiritual names. Learn the significance of different forms of divine remembrance.',
-        location: 'Study Hall',
-        event_date: '2024-10-12T19:00:00Z',
-        event_type: 'discourse',
-        is_featured: false,
-        registration_required: true,
-        max_attendees: 50,
-        current_attendees: 28,
-        created_at: '2024-09-29T10:00:00Z',
-        updated_at: '2024-09-29T10:00:00Z'
+    try {
+      const db = getDatabase(this.env);
+
+      // Build where conditions
+      const conditions = [
+        eq(events.published, true),
+        isNull(events.deletedAt)
+      ];
+
+      // If upcoming filter is enabled, only show future events
+      if (upcoming) {
+        const today = new Date().toISOString().split('T')[0];
+        conditions.push(gte(events.startDate, today));
       }
-    ];
 
-    let filteredEvents = mockEvents;
-    if (upcoming) {
-      const now = new Date().toISOString();
-      filteredEvents = mockEvents.filter(event => event.event_date > now);
+      // Query published events that are not soft-deleted
+      const results = await db
+        .select()
+        .from(events)
+        .where(and(...conditions))
+        .orderBy(desc(events.startDate))
+        .limit(limit)
+        .offset(offset);
+
+      // Get total count
+      const countResult = await db
+        .select()
+        .from(events)
+        .where(and(...conditions));
+
+      // Transform database results to Event interface
+      const transformedEvents: Event[] = results.map(e => ({
+        id: e.id,
+        title: e.title,
+        description: e.description,
+        location: e.location || '',
+        event_date: e.startDate,
+        event_type: e.type,
+        is_featured: e.featured || false,
+        registration_required: e.registrationRequired || false,
+        max_attendees: e.maxAttendees || undefined,
+        current_attendees: e.currentAttendees || 0,
+        created_at: e.createdAt || '',
+        updated_at: e.updatedAt || ''
+      }));
+
+      return {
+        events: transformedEvents,
+        total: countResult.length
+      };
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      return { events: [], total: 0 };
     }
-
-    const paginatedEvents = filteredEvents.slice(offset, offset + limit);
-    return {
-      events: paginatedEvents,
-      total: filteredEvents.length
-    };
   }
 
   // Search functionality
@@ -269,52 +271,92 @@ export class DatabaseService {
 
   // Newsletter CRUD operations
   async getNewsletterSubscribers(limit = 100, offset = 0): Promise<{ subscribers: NewsletterSubscriber[]; total: number }> {
-    // Mock data - in production, query from newsletter_subscribers table
-    const mockSubscribers: NewsletterSubscriber[] = [
-      {
-        id: '1',
-        email: 'devotee1@example.com',
-        name: 'Ram Krishna',
-        subscribedAt: '2024-01-15T10:30:00Z',
-        isActive: true,
-        preferences: { teachings: true, events: true, meditation: false }
-      },
-      {
-        id: '2',
-        email: 'seeker2@example.com',
-        name: 'Maya Devi',
-        subscribedAt: '2024-02-01T14:20:00Z',
-        isActive: true,
-        preferences: { teachings: true, events: false, meditation: true }
-      },
-      {
-        id: '3',
-        email: 'spiritual.path@example.com',
-        name: 'Hari Om',
-        subscribedAt: '2024-03-12T08:45:00Z',
-        isActive: true,
-        preferences: { teachings: true, events: true, meditation: true }
-      }
-    ];
+    try {
+      const db = getDatabase(this.env);
 
-    const paginatedSubscribers = mockSubscribers.slice(offset, offset + limit);
-    return {
-      subscribers: paginatedSubscribers,
-      total: mockSubscribers.length
-    };
+      // Query active newsletter subscribers
+      const results = await db
+        .select()
+        .from(newsletters)
+        .where(eq(newsletters.status, 'active'))
+        .orderBy(desc(newsletters.subscribedAt))
+        .limit(limit)
+        .offset(offset);
+
+      // Get total count
+      const countResult = await db
+        .select()
+        .from(newsletters)
+        .where(eq(newsletters.status, 'active'));
+
+      // Transform database results to NewsletterSubscriber interface
+      const transformedSubscribers: NewsletterSubscriber[] = results.map(n => {
+        // Parse interests from comma-separated string to preferences object
+        const interests = n.interests ? n.interests.split(',') : [];
+        return {
+          id: n.id,
+          email: n.email,
+          name: n.name || undefined,
+          subscribedAt: n.subscribedAt || '',
+          isActive: n.status === 'active',
+          preferences: {
+            teachings: interests.includes('teachings'),
+            events: interests.includes('events'),
+            meditation: interests.includes('meditation')
+          }
+        };
+      });
+
+      return {
+        subscribers: transformedSubscribers,
+        total: countResult.length
+      };
+    } catch (error) {
+      console.error('Error fetching newsletter subscribers:', error);
+      return { subscribers: [], total: 0 };
+    }
   }
 
   async addNewsletterSubscriber(email: string, name?: string, preferences?: any): Promise<NewsletterSubscriber> {
-    // Mock implementation - in production, INSERT into newsletter_subscribers
-    const newSubscriber: NewsletterSubscriber = {
-      id: Date.now().toString(),
-      email,
-      name,
-      subscribedAt: new Date().toISOString(),
-      isActive: true,
-      preferences: preferences || { teachings: true, events: true, meditation: true }
-    };
-    return newSubscriber;
+    try {
+      const db = getDatabase(this.env);
+      const { createId } = await import('@paralleldrive/cuid2');
+      const crypto = await import('crypto');
+
+      // Convert preferences to interests string
+      const interests: string[] = [];
+      if (preferences?.teachings) interests.push('teachings');
+      if (preferences?.events) interests.push('events');
+      if (preferences?.meditation) interests.push('meditation');
+
+      const newSubscriber = {
+        id: createId(),
+        email,
+        name: name || null,
+        language: 'en',
+        status: 'active',
+        source: 'website',
+        interests: interests.join(',') || null,
+        verified: false,
+        verificationToken: createId(),
+        unsubscribeToken: crypto.randomBytes(32).toString('hex'),
+        subscribedAt: new Date().toISOString()
+      };
+
+      await db.insert(newsletters).values(newSubscriber);
+
+      return {
+        id: newSubscriber.id,
+        email: newSubscriber.email,
+        name: newSubscriber.name || undefined,
+        subscribedAt: newSubscriber.subscribedAt,
+        isActive: true,
+        preferences: preferences || { teachings: true, events: true, meditation: true }
+      };
+    } catch (error) {
+      console.error('Error adding newsletter subscriber:', error);
+      throw error;
+    }
   }
 
   async getNewsletterCampaigns(limit = 50, offset = 0): Promise<{ campaigns: NewsletterCampaign[]; total: number }> {

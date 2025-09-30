@@ -11,9 +11,13 @@ const categories = [
   { id: 'meditation', name: 'Meditation', count: 2 }
 ]
 
-export function BlogFilters() {
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [searchTerm, setSearchTerm] = useState('')
+interface BlogFiltersProps {
+  selectedCategory: string
+  searchQuery: string
+  onFiltersChange: (filters: { category?: string, search?: string }) => void
+}
+
+export function BlogFilters({ selectedCategory, searchQuery, onFiltersChange }: BlogFiltersProps) {
   const [sortBy, setSortBy] = useState('newest')
 
   return (
@@ -29,8 +33,8 @@ export function BlogFilters() {
           <input
             type="text"
             placeholder="Search teachings..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchQuery}
+            onChange={(e) => onFiltersChange({ search: e.target.value })}
             className="block w-full pl-10 pr-3 py-3 border border-cream-300 rounded-md leading-5 bg-cream-100 text-dark-900 placeholder-dark-500 focus:outline-none focus:ring-2 focus:ring-dark-500 focus:border-transparent"
           />
         </div>
@@ -41,7 +45,7 @@ export function BlogFilters() {
         {categories.map((category) => (
           <button
             key={category.id}
-            onClick={() => setSelectedCategory(category.id)}
+            onClick={() => onFiltersChange({ category: category.id })}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
               selectedCategory === category.id
                 ? 'bg-dark-900 text-cream-50'

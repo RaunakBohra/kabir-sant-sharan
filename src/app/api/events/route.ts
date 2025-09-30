@@ -34,19 +34,43 @@ export async function POST(request: NextRequest) {
     const body = await request.json() as any;
 
     // Validate required fields
-    const { title, description, location, event_date, event_type } = body;
-    if (!title || !description || !location || !event_date || !event_type) {
+    const { title, description, type, startDate, startTime } = body;
+    if (!title || !description || !type || !startDate || !startTime) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields: title, description, type, startDate, startTime' },
         { status: 400 }
       );
     }
 
+    // Transform form data to database format
+    const eventDate = new Date(`${startDate}T${startTime}`).toISOString();
+
     // In production, this would save to D1 database
     const newEvent = {
       id: Date.now().toString(),
-      ...body,
-      current_attendees: 0,
+      title: body.title,
+      description: body.description,
+      location: body.location || '',
+      virtual_link: body.virtualLink || null,
+      event_date: eventDate,
+      start_date: startDate,
+      end_date: body.endDate,
+      start_time: startTime,
+      end_time: body.endTime,
+      timezone: body.timezone || 'Asia/Kathmandu',
+      event_type: type,
+      category: body.category,
+      tags: Array.isArray(body.tags) ? body.tags : [],
+      organizer: body.organizer || 'Kabir Sant Sharan',
+      language: body.language || 'en',
+      max_attendees: body.maxAttendees || null,
+      current_attendees: body.currentAttendees || 0,
+      registration_required: body.registrationRequired || false,
+      registration_deadline: body.registrationDeadline || null,
+      is_featured: body.featured || false,
+      is_published: body.published || false,
+      cover_image: body.coverImage || null,
+      slug: body.slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -59,7 +83,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating event:', error);
     return NextResponse.json(
-      { error: 'Failed to create event' },
+      { error: 'Failed to create event', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

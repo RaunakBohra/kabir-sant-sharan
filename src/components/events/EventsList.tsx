@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { EventRegistrationModal } from './EventRegistrationModal'
 
 interface Event {
   id: string
@@ -86,6 +88,8 @@ export function EventsList({ filters }: EventsListProps) {
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [isRegistrationModalOpen, setIsRegistrationModalOpen] = useState(false)
 
   useEffect(() => {
     async function fetchEvents() {
@@ -116,6 +120,21 @@ export function EventsList({ filters }: EventsListProps) {
 
     fetchEvents()
   }, [filters])
+
+  const handleRegisterClick = (event: Event) => {
+    setSelectedEvent(event)
+    setIsRegistrationModalOpen(true)
+  }
+
+  const handleRegistrationSuccess = () => {
+    // Refresh events to get updated attendee count
+    window.location.reload()
+  }
+
+  const handleCloseModal = () => {
+    setIsRegistrationModalOpen(false)
+    setSelectedEvent(null)
+  }
 
   if (loading) {
     return (
@@ -278,9 +297,17 @@ export function EventsList({ filters }: EventsListProps) {
                 {/* Action Buttons */}
                 <div className="flex flex-col space-y-3 md:min-w-[200px]">
                   {event.registrationRequired ? (
-                    <button className="bg-dark-900 text-cream-50 px-6 py-3 rounded-md hover:bg-dark-800 transition-colors duration-200 font-medium">
+                    <button
+                      onClick={() => handleRegisterClick(event)}
+                      disabled={event.maxAttendees && event.currentAttendees >= event.maxAttendees}
+                      className={`px-6 py-3 rounded-md transition-colors duration-200 font-medium ${
+                        event.maxAttendees && event.currentAttendees >= event.maxAttendees
+                          ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                          : 'bg-dark-900 text-cream-50 hover:bg-dark-800'
+                      }`}
+                    >
                       {event.maxAttendees && event.currentAttendees >= event.maxAttendees ?
-                        'Event Full' : 'Register Now'}
+                        'Join Waitlist' : 'Register Now'}
                     </button>
                   ) : (
                     <div className="text-center py-2 text-dark-600 text-sm font-medium">
@@ -288,9 +315,12 @@ export function EventsList({ filters }: EventsListProps) {
                     </div>
                   )}
 
-                  <button className="border border-dark-300 text-dark-800 px-6 py-3 rounded-md hover:bg-cream-200 transition-colors duration-200 font-medium">
+                  <Link
+                    href={`/events/${event.slug}`}
+                    className="border border-dark-300 text-dark-800 px-6 py-3 rounded-md hover:bg-cream-200 transition-colors duration-200 font-medium text-center inline-block"
+                  >
                     View Details
-                  </button>
+                  </Link>
 
                   <button className="text-dark-600 hover:text-dark-800 px-6 py-2 transition-colors duration-200 text-sm flex items-center justify-center">
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,6 +342,16 @@ export function EventsList({ filters }: EventsListProps) {
             Load More Events
           </button>
         </div>
+      )}
+
+      {/* Registration Modal */}
+      {selectedEvent && (
+        <EventRegistrationModal
+          event={selectedEvent}
+          isOpen={isRegistrationModalOpen}
+          onClose={handleCloseModal}
+          onSuccess={handleRegistrationSuccess}
+        />
       )}
     </div>
   )

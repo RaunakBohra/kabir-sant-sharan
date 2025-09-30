@@ -2,14 +2,6 @@
 
 import { useState, useEffect } from 'react'
 
-  const eventTypes = [
-    { id: 'all', name: 'All Events', count: eventCounts.all },
-    { id: 'satsang', name: 'Satsang', count: eventCounts.satsang },
-    { id: 'festival', name: 'Festivals', count: eventCounts.festival },
-    { id: 'workshop', name: 'Workshops', count: eventCounts.workshop },
-    { id: 'meditation', name: 'Meditation', count: eventCounts.meditation }
-  ]
-
 const timeFilters = [
   { id: 'upcoming', name: 'Upcoming' },
   { id: 'this-week', name: 'This Week' },
@@ -58,13 +50,21 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
     fetchEventCounts()
   }, [])
 
+  const eventTypes = [
+    { id: 'all', name: 'All Events', count: eventCounts.all },
+    { id: 'satsang', name: 'Satsang', count: eventCounts.satsang },
+    { id: 'festival', name: 'Festivals', count: eventCounts.festival },
+    { id: 'workshop', name: 'Workshops', count: eventCounts.workshop },
+    { id: 'meditation', name: 'Meditation', count: eventCounts.meditation }
+  ]
+
   return (
     <div className="mb-12">
       {/* View Toggle */}
       <div className="flex justify-center mb-8">
         <div className="bg-cream-200 rounded-lg p-1 flex">
           <button
-            onClick={() => setViewMode('calendar')}
+            onClick={() => onFiltersChange({ viewMode: 'calendar' })}
             className={`px-6 py-2 rounded-md transition-colors duration-200 ${
               viewMode === 'calendar'
                 ? 'bg-dark-900 text-cream-50'
@@ -79,7 +79,7 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
             </div>
           </button>
           <button
-            onClick={() => setViewMode('list')}
+            onClick={() => onFiltersChange({ viewMode: 'list' })}
             className={`px-6 py-2 rounded-md transition-colors duration-200 ${
               viewMode === 'list'
                 ? 'bg-dark-900 text-cream-50'
@@ -101,7 +101,7 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
         {eventTypes.map((type) => (
           <button
             key={type.id}
-            onClick={() => setSelectedType(type.id)}
+            onClick={() => onFiltersChange({ type: type.id })}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
               selectedType === type.id
                 ? 'bg-dark-900 text-cream-50'
@@ -121,7 +121,7 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
             {timeFilters.map((filter) => (
               <button
                 key={filter.id}
-                onClick={() => setSelectedTime(filter.id)}
+                onClick={() => onFiltersChange({ timeRange: filter.id })}
                 className={`px-3 py-1 rounded-md text-sm transition-colors duration-200 ${
                   selectedTime === filter.id
                     ? 'bg-cream-200 text-dark-900 font-medium'
