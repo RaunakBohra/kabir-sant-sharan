@@ -13,11 +13,12 @@ export default function AdminEventsPage() {
 
   return (
     <ProtectedRoute requireAdmin={true}>
-      <div className="flex">
-        <SectionErrorBoundary>
-          <AdminSidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-        </SectionErrorBoundary>
-        <div className="flex-1 p-4 sm:p-6 lg:p-8">
+      <div className="min-h-screen bg-cream-100">
+        <div className="flex">
+          <SectionErrorBoundary>
+            <AdminSidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+          </SectionErrorBoundary>
+          <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
           <SectionErrorBoundary>
             <Suspense fallback={
               <div className="flex items-center justify-center p-8">
@@ -28,6 +29,7 @@ export default function AdminEventsPage() {
               <EventsManager />
             </Suspense>
           </SectionErrorBoundary>
+        </div>
         </div>
       </div>
     </ProtectedRoute>

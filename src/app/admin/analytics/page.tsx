@@ -18,7 +18,7 @@ export default function AdminAnalyticsPage() {
           <SectionErrorBoundary>
             <AdminSidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
           </SectionErrorBoundary>
-          <div className="flex-1 p-4 sm:p-6 lg:p-8">
+          <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
             <SectionErrorBoundary>
               <Suspense fallback={
                 <div className="flex items-center justify-center p-8">
