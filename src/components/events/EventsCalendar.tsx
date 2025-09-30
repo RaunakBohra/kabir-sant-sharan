@@ -10,6 +10,9 @@ interface CalendarEvent {
   type: string
   slug: string
   featured: boolean
+  maxAttendees?: number
+  currentAttendees: number
+  registrationRequired: boolean
 }
 
 function getTypeColor(type: string) {
