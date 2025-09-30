@@ -152,7 +152,7 @@ async function loginHandler(request: NextRequest): Promise<NextResponse> {
       role: 'admin'
     };
 
-    // Create response with tokens
+    // Create response with tokens (localStorage only, no cookies)
     const response = NextResponse.json({
       accessToken: sessionResult.tokens.accessToken,
       refreshToken: sessionResult.tokens.refreshToken,
@@ -160,33 +160,13 @@ async function loginHandler(request: NextRequest): Promise<NextResponse> {
       refreshExpiresAt: sessionResult.tokens.refreshExpiresAt,
       user,
       message: 'Login successful'
+    }, {
+      headers: {
+        'X-Trace-ID': traceId,
+        'Cache-Control': 'no-store',
+        'Pragma': 'no-cache'
+      }
     });
-
-    // Set cookies for session management
-    const isProduction = process.env.NODE_ENV === 'production';
-    const cookieOptions = {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: 'lax' as const,
-      path: '/'
-    };
-
-    // Set access token cookie
-    response.cookies.set('accessToken', sessionResult.tokens.accessToken, {
-      ...cookieOptions,
-      maxAge: 15 * 60 // 15 minutes
-    });
-
-    // Set refresh token cookie
-    response.cookies.set('refreshToken', sessionResult.tokens.refreshToken, {
-      ...cookieOptions,
-      maxAge: 7 * 24 * 60 * 60 // 7 days
-    });
-
-    // Add security headers
-    response.headers.set('X-Trace-ID', traceId);
-    response.headers.set('Cache-Control', 'no-store');
-    response.headers.set('Pragma', 'no-cache');
 
     return response;
 

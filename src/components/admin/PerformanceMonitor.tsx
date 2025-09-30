@@ -120,16 +120,25 @@ export default function PerformanceMonitor() {
     setError(null);
 
     try {
+      // Get token from localStorage
+      const accessToken = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+
+      if (!accessToken) {
+        setError('Authentication required. Please log in again.');
+        setLoading(false);
+        return;
+      }
+
       const [performanceResponse, liveResponse] = await Promise.all([
         fetch(`/api/v1/performance?timeWindow=${timeWindow}`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           }
         }),
         fetch('/api/v1/performance/live', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
           }
         })

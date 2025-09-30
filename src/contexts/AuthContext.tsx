@@ -30,10 +30,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuthStatus = async () => {
     try {
+      // Check if we're in browser context
+      if (typeof window === 'undefined') {
+        setIsLoading(false);
+        return;
+      }
+
       let accessToken = localStorage.getItem('accessToken');
       const refreshToken = localStorage.getItem('refreshToken');
       const expiresAt = localStorage.getItem('expiresAt');
 
+      // If no tokens exist, user is not logged in (this is normal for public pages)
       if (!accessToken || !refreshToken) {
         setIsLoading(false);
         return;
@@ -62,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.setItem('expiresAt', refreshData.expiresAt.toString());
             accessToken = refreshData.accessToken;
           } else {
-            // Refresh failed, clear tokens
+            // Refresh failed, clear tokens silently
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('expiresAt');
@@ -70,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return;
           }
         } catch (refreshError) {
-          console.error('Token refresh failed:', refreshError);
+          // Silently handle refresh errors (common on public pages with expired tokens)
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('expiresAt');
@@ -93,15 +100,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           isAuthenticated: true
         });
       } else {
+        // Token invalid, clear tokens silently
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('expiresAt');
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('expiresAt');
+      // Silently handle auth errors (common on public pages)
+      // Only clear tokens, don't log errors to console on public pages
+      if (localStorage.getItem('accessToken')) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('expiresAt');
+      }
     } finally {
       setIsLoading(false);
     }

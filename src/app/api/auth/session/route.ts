@@ -3,7 +3,14 @@ import { verifyAccessToken } from '@/lib/jwt-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const accessToken = request.cookies.get('accessToken')?.value;
+    // Try Bearer token first (primary method for localStorage-based auth)
+    const authHeader = request.headers.get('Authorization');
+    let accessToken = authHeader?.replace('Bearer ', '');
+
+    // Fallback to cookie if no Bearer token (backward compatibility)
+    if (!accessToken) {
+      accessToken = request.cookies.get('accessToken')?.value;
+    }
 
     if (!accessToken) {
       return NextResponse.json(

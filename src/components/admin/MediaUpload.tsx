@@ -34,7 +34,7 @@ export function MediaUpload({ onUploadSuccess, onUploadStart, onUploadEnd }: Med
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
   ];
 
-  const maxFileSize = 50 * 1024 * 1024; // 50MB
+  const maxFileSize = 200 * 1024 * 1024; // 200MB
 
   const validateFile = (file: File) => {
     if (!allowedTypes.includes(file.type)) {
@@ -71,6 +71,12 @@ export function MediaUpload({ onUploadSuccess, onUploadStart, onUploadEnd }: Med
       img.src = URL.createObjectURL(file);
     }
 
+    // Get auth token from localStorage
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      throw new Error('Authentication required. Please log in again.');
+    }
+
     const xhr = new XMLHttpRequest();
 
     return new Promise<void>((resolve, reject) => {
@@ -85,7 +91,7 @@ export function MediaUpload({ onUploadSuccess, onUploadStart, onUploadEnd }: Med
       });
 
       xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
+        if (xhr.status === 200 || xhr.status === 201) {
           setUploadProgress(prev => {
             const newProgress = { ...prev };
             delete newProgress[file.name];
@@ -93,7 +99,8 @@ export function MediaUpload({ onUploadSuccess, onUploadStart, onUploadEnd }: Med
           });
           resolve();
         } else {
-          reject(new Error(`Upload failed with status ${xhr.status}`));
+          const errorText = xhr.responseText ? JSON.parse(xhr.responseText).error : 'Upload failed';
+          reject(new Error(`Upload failed: ${errorText}`));
         }
       });
 
@@ -102,6 +109,7 @@ export function MediaUpload({ onUploadSuccess, onUploadStart, onUploadEnd }: Med
       });
 
       xhr.open('POST', '/api/media/upload');
+      xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
       xhr.send(formData);
     });
   };

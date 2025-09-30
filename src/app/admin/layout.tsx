@@ -1,7 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 
 export default function AdminLayout({
@@ -9,29 +8,7 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch('/api/auth/session/');
-        if (!response.ok) {
-          router.push('/login');
-          return;
-        }
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        router.push('/login');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [router]);
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -44,10 +21,7 @@ export default function AdminLayout({
     );
   }
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
+  // ProtectedRoute in each page handles auth redirect
   return (
     <div className="min-h-screen bg-gray-50">
       <AdminHeader />
