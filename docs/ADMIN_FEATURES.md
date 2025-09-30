@@ -223,8 +223,8 @@ The admin header includes:
 
 **Running Tests**:
 ```bash
-chmod +x e2e-admin-test.sh
-./e2e-admin-test.sh
+chmod +x scripts/testing/e2e-admin-test.sh
+./scripts/testing/e2e-admin-test.sh
 ```
 
 **Test Results**: 9/9 passing (100%)

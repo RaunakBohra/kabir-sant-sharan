@@ -44,7 +44,7 @@
       "Bash(npm run test:run:*)",
       "Bash(echo \"$2b$12$NNnKjCgp2n1L2eYtLARZoOHYIrDfqMYyBgJFCFnTU6.zAlZsAGglO\")",
       "Bash(chmod:*)",
-      "Bash(./e2e-test.sh:*)",
+      "Bash(./scripts/testing/e2e-test.sh:*)",
       "Bash(cat:*)",
       "Bash(npx shadcn@latest add:*)",
       "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZG1pbi1ZV1J0YVc1QSIsInNlc3Npb25JZCI6Im53OXJhODk0cTZ3a2tlMnVvdzh2ZjFueiIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NTkxNzMyMTUsImV4cCI6MTc1OTE3NDExNSwiaXNzIjoia2FiaXJzYW50c2hhcmFuLmNvbSJ9.7KZahwgLYhEmsAXIUqUQzh2qSGowUjSxByJSsPiI_WE\")",
@@ -52,7 +52,11 @@
       "Bash(npx tsc:*)",
       "Bash(git log:*)",
       "Bash(npx tsx:*)",
-      "Bash(sqlite3:*)"
+      "Bash(sqlite3:*)",
+      "Bash(./scripts/testing/e2e-admin-test.sh:*)",
+      "Bash(python3:*)",
+      "Bash(mv:*)",
+      "Bash(tree:*)"
     ],
     "deny": [],
     "ask": []

@@ -110,7 +110,7 @@ npm run dev
 
 8. (Optional) Initialize database with spiritual content:
 ```bash
-wrangler d1 execute kabir-sant-sharan --file=./database-setup.sql
+wrangler d1 execute kabir-sant-sharan --file=./scripts/database/database-setup.sql
 ```
 
 ## 🚀 Development Commands

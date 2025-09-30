@@ -41,7 +41,7 @@ export async function POST(
 
     // Check if event exists
     const eventsResult = await databaseService.getEvents();
-    const event = eventsResult.events.find((e: any) => e.id === params.id);
+    const event = eventsResult.events.find((e) => e.id === params.id);
 
     if (!event) {
       return NextResponse.json(
@@ -51,7 +51,7 @@ export async function POST(
     }
 
     // Check if event is published and registration is required
-    if (!event.published || !event.registrationRequired) {
+    if (!event.published || !event.registration_required) {
       return NextResponse.json(
         { error: 'Registration not available for this event' },
         { status: 400 }
@@ -59,8 +59,8 @@ export async function POST(
     }
 
     // Check registration deadline
-    if (event.registrationDeadline) {
-      const deadline = new Date(event.registrationDeadline);
+    if (event.registration_deadline) {
+      const deadline = new Date(event.registration_deadline);
       const now = new Date();
       if (now > deadline) {
         return NextResponse.json(
@@ -71,7 +71,7 @@ export async function POST(
     }
 
     // Check if event has already passed
-    const eventDate = new Date(event.startDate);
+    const eventDate = new Date(event.start_date);
     const now = new Date();
     if (eventDate < now) {
       return NextResponse.json(
@@ -94,7 +94,7 @@ export async function POST(
     }
 
     // Check capacity
-    const isWaitlist = event.maxAttendees && existingRegistrations.length >= event.maxAttendees;
+    const isWaitlist = event.max_attendees && existingRegistrations.length >= event.max_attendees;
 
     // Create registration
     const registration = {
@@ -130,8 +130,8 @@ export async function POST(
         confirmationCode: registration.confirmationCode,
         status: registration.status,
         eventTitle: event.title,
-        eventDate: event.startDate,
-        eventTime: event.startTime
+        eventDate: event.start_date,
+        eventTime: event.start_time
       },
       isWaitlist
     };

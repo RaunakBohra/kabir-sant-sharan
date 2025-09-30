@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { CreateEventDialog } from './ContentManager/CreateEventDialog';
 import { DeleteConfirmDialog } from './ContentManager/DeleteConfirmDialog';
@@ -42,11 +42,7 @@ export function ContentManager() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{ id: string; title: string; type: 'teaching' | 'event' } | null>(null);
 
-  useEffect(() => {
-    loadContent();
-  }, [activeContentType]);
-
-  const loadContent = async () => {
+  const loadContent = useCallback(async () => {
     setIsLoading(true);
     try {
       if (activeContentType === 'teachings') {
@@ -64,7 +60,11 @@ export function ContentManager() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [activeContentType]);
+
+  useEffect(() => {
+    loadContent();
+  }, [loadContent]);
 
   const handleAddContent = () => {
     if (activeContentType === 'teachings') {

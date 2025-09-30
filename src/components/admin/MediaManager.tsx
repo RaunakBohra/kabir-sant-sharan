@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MediaUpload } from './MediaUpload';
 import { MediaPreviewDialog } from './MediaManager/MediaPreviewDialog';
 import { EditMediaDialog } from './MediaManager/EditMediaDialog';
@@ -36,11 +36,7 @@ export function MediaManager() {
   const [previewMedia, setPreviewMedia] = useState<MediaFile | null>(null);
   const [editMedia, setEditMedia] = useState<MediaFile | null>(null);
 
-  useEffect(() => {
-    loadMediaFiles();
-  }, [selectedType]);
-
-  const loadMediaFiles = async () => {
+  const loadMediaFiles = useCallback(async () => {
     setIsLoading(true);
     try {
       const typeParam = selectedType !== 'all' ? `?type=${selectedType}` : '';
@@ -52,7 +48,11 @@ export function MediaManager() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedType]);
+
+  useEffect(() => {
+    loadMediaFiles();
+  }, [loadMediaFiles]);
 
 
   const formatFileSize = (bytes: number) => {

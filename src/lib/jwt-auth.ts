@@ -348,3 +348,6 @@ export const authErrors = {
     detail: 'You do not have sufficient permissions to access this resource'
   }
 } as const;
+
+// Export alias for backward compatibility
+export const verifyAccessToken = validateAccessToken;

@@ -38,24 +38,35 @@ export async function PUT(
     const body = await request.json();
     const db = getDatabase();
 
-    const updatedEvent = {
-      ...body,
-      id: params.id,
-      updatedAt: new Date()
-    };
+    // Only update provided fields
+    const updateData: any = {};
+
+    // Filter out undefined values and convert dates to ISO strings
+    Object.keys(body).forEach(key => {
+      if (body[key] !== undefined && key !== 'id') {
+        updateData[key] = body[key];
+      }
+    });
+
+    // Add updated timestamp
+    updateData.updatedAt = new Date().toISOString();
 
     await db.update(events)
-      .set(updatedEvent)
+      .set(updateData)
       .where(eq(events.id, params.id));
 
+    // Fetch updated event
+    const updatedEvent = await db.select().from(events).where(eq(events.id, params.id)).limit(1);
+
     return NextResponse.json({
+      success: true,
       message: 'Event updated successfully',
-      event: updatedEvent
+      event: updatedEvent[0]
     });
   } catch (error) {
     console.error('Error updating event:', error);
     return NextResponse.json(
-      { error: 'Failed to update event' },
+      { success: false, error: 'Failed to update event' },
       { status: 500 }
     );
   }

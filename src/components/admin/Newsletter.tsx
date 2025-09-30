@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface NewsletterSubscriber {
   id: string;
@@ -37,11 +37,7 @@ export function Newsletter() {
   const [emailContent, setEmailContent] = useState('');
   const [selectedSegment, setSelectedSegment] = useState<'all' | 'teachings' | 'events' | 'meditation'>('all');
 
-  useEffect(() => {
-    loadNewsletterData();
-  }, []);
-
-  const loadNewsletterData = async () => {
+  const loadNewsletterData = useCallback(async () => {
     setIsLoading(true);
     try {
       const [subscribersRes, campaignsRes] = await Promise.all([
@@ -59,7 +55,11 @@ export function Newsletter() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadNewsletterData();
+  }, [loadNewsletterData]);
 
   const handleSendNewsletter = async () => {
     if (!emailSubject.trim() || !emailContent.trim()) {

@@ -60,3 +60,16 @@ temp/
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+local.db
+
+# Test artifacts
+cookies.txt
+test-results/
+
+# Wrangler
+.wrangler/

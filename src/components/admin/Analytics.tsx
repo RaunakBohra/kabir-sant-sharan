@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface AnalyticsData {
   totalVisitors: number;
@@ -28,11 +28,7 @@ export function Analytics() {
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadAnalyticsData();
-  }, []);
-
-  const loadAnalyticsData = async () => {
+  const loadAnalyticsData = useCallback(async () => {
     setIsLoading(true);
     try {
       const [overviewRes, topPagesRes, activityRes] = await Promise.all([
@@ -53,7 +49,11 @@ export function Analytics() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadAnalyticsData();
+  }, [loadAnalyticsData]);
 
   if (isLoading || !analyticsData) {
     return (

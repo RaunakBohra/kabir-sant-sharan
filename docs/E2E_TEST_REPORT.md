@@ -462,7 +462,7 @@ All metrics well within acceptable ranges for production deployment.
 ## Test Execution Log
 
 ```bash
-$ ./e2e-test.sh
+$ ./scripts/testing/e2e-test.sh
 
 ================================================
   Kabir Sant Sharan - E2E Testing Suite

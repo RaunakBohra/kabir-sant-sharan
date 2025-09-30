@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -96,36 +96,44 @@ export function CreateEventDialog({ open, onOpenChange, onSuccess }: CreateEvent
     }
   });
 
+  // Create a stable auto-save function
+  const autoSave = useCallback(() => {
+    const values = form.getValues();
+    if (values.title || values.description) {
+      localStorage.setItem(autoSaveKey, JSON.stringify(values));
+      console.log('Auto-saved draft');
+    }
+  }, [form, autoSaveKey]);
+
   // Auto-save to localStorage every 30 seconds
   useEffect(() => {
     if (!open) return;
 
-    const interval = setInterval(() => {
-      const values = form.getValues();
-      if (values.title || values.description) {
-        localStorage.setItem(autoSaveKey, JSON.stringify(values));
-        console.log('Auto-saved draft');
-      }
-    }, 30000);
+    const interval = setInterval(autoSave, 30000);
 
     return () => clearInterval(interval);
-  }, [open, form, autoSaveKey]);
+  }, [open, autoSave]);
+
+  // Create a stable load draft function
+  const loadDraft = useCallback(() => {
+    const saved = localStorage.getItem(autoSaveKey);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        form.reset(parsed);
+        toast.info('Loaded saved draft');
+      } catch (error) {
+        console.error('Failed to load draft:', error);
+      }
+    }
+  }, [form, autoSaveKey]);
 
   // Load draft on mount
   useEffect(() => {
     if (open) {
-      const saved = localStorage.getItem(autoSaveKey);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          form.reset(parsed);
-          toast.info('Loaded saved draft');
-        } catch (error) {
-          console.error('Failed to load draft:', error);
-        }
-      }
+      loadDraft();
     }
-  }, [open, form, autoSaveKey]);
+  }, [open, loadDraft]);
 
   const onSubmit = async (data: EventFormData, saveAsDraft = false) => {
     setIsSubmitting(true);

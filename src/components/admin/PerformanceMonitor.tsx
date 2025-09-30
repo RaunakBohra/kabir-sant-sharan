@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -115,7 +115,7 @@ export default function PerformanceMonitor() {
     { value: '86400000', label: '24 hours' }
   ];
 
-  const fetchPerformanceData = async () => {
+  const fetchPerformanceData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -151,11 +151,11 @@ export default function PerformanceMonitor() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeWindow]);
 
   useEffect(() => {
     fetchPerformanceData();
-  }, [timeWindow]);
+  }, [fetchPerformanceData]);
 
   useEffect(() => {
     if (autoRefresh) {
@@ -165,7 +165,7 @@ export default function PerformanceMonitor() {
 
       return () => clearInterval(interval);
     }
-  }, [autoRefresh, timeWindow]);
+  }, [autoRefresh, fetchPerformanceData]);
 
   const formatBytes = (bytes: number): string => {
     const units = ['B', 'KB', 'MB', 'GB'];
