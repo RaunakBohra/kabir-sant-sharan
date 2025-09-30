@@ -19,18 +19,16 @@ test.describe('Media Streaming Tests', () => {
     // Wait for media to load
     await page.waitForSelector('[data-testid="media-grid"]');
 
-    // Look for the "Sati Pathan Din 4" file specifically
-    const satiPathanCard = page.locator('[data-testid="media-card"]').filter({
+    // Look for the "Sati Pathan Din 4" file specifically in the table
+    const satiPathanRow = page.locator('[data-testid="media-card"]').filter({
       hasText: 'Sati Pathan Din 4'
     });
 
-    await expect(satiPathanCard).toBeVisible();
-    console.log('Found Sati Pathan Din 4 media card');
+    await expect(satiPathanRow).toBeVisible();
+    console.log('Found Sati Pathan Din 4 media row');
 
-    // Click the preview button for this specific file
-    const previewButton = satiPathanCard.locator('button').filter({
-      hasText: 'Preview'
-    });
+    // Click the preview button (eye icon) for this specific file
+    const previewButton = satiPathanRow.locator('button[title="Preview"]');
 
     await expect(previewButton).toBeVisible();
     await previewButton.click();

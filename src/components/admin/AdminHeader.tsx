@@ -93,7 +93,7 @@ export function AdminHeader({ onMenuToggle }: AdminHeaderProps) {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200 touch-manipulation min-h-[44px]"
+                    className="block w-full text-left px-4 py-2 text-sm text-dark-700 hover:bg-cream-200 transition-colors duration-200 touch-manipulation min-h-[44px]"
                   >
                     Sign Out
                   </button>
