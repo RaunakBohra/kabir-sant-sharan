@@ -41,8 +41,8 @@ export function Newsletter() {
     setIsLoading(true);
     try {
       const [subscribersRes, campaignsRes] = await Promise.all([
-        fetch('/api/newsletter/subscribers?limit=100'),
-        fetch('/api/newsletter/campaigns?limit=50')
+        fetch('/api/newsletter/subscribers/?limit=100'),
+        fetch('/api/newsletter/campaigns/?limit=50')
       ]);
 
       const subscribersData = await subscribersRes.json() as { subscribers: NewsletterSubscriber[] };

@@ -16,7 +16,7 @@ export function DailyQuote() {
   useEffect(() => {
     const loadDailyQuote = async () => {
       try {
-        const response = await fetch('/api/quotes/daily')
+        const response = await fetch('/api/quotes/daily/')
         const data = await response.json() as { quote: Quote }
         setCurrentQuote(data.quote)
       } catch (error) {

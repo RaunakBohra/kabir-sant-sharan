@@ -102,7 +102,7 @@ export default function NewTeachingPage() {
     return () => window.removeEventListener('beforeunload', handler);
   }, [hasUnsavedChanges]);
 
-  const handleChange = (field: keyof TeachingFormData, value: any) => {
+  const handleChange = (field: keyof TeachingFormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setHasUnsavedChanges(true);
   };
@@ -143,7 +143,7 @@ export default function NewTeachingPage() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json() as { error?: string };
         throw new Error(error.error || 'Failed to create teaching');
       }
 

@@ -48,7 +48,7 @@ export default function EventDetailPage({ params }: EventDetailPageProps) {
       try {
         setLoading(true)
         // First get all events and find the one with matching slug
-        const response = await fetch('/api/events')
+        const response = await fetch('/api/events/')
         if (!response.ok) {
           throw new Error('Failed to fetch events')
         }

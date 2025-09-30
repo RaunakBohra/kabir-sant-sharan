@@ -18,7 +18,7 @@ export function UpcomingEvents() {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const response = await fetch('/api/events?limit=3')
+        const response = await fetch('/api/events/?limit=3')
         const data = await response.json() as { events: Event[] }
         setEvents(data.events || [])
       } catch (error) {

@@ -1,19 +1,35 @@
 'use client';
 
+import { Suspense, lazy } from 'react';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
-import { Newsletter } from '@/components/admin/Newsletter';
+import { SectionErrorBoundary } from '@/components/ui/error-boundary';
+
+const Newsletter = lazy(() => import('@/components/admin/Newsletter').then(mod => ({ default: mod.Newsletter })));
 
 export default function AdminNewsletterPage() {
   return (
     <ProtectedRoute requireAdmin={true}>
       <div className="min-h-screen bg-cream-100">
-        <AdminHeader />
+        <SectionErrorBoundary>
+          <AdminHeader />
+        </SectionErrorBoundary>
         <div className="flex">
-          <AdminSidebar />
+          <SectionErrorBoundary>
+            <AdminSidebar />
+          </SectionErrorBoundary>
           <div className="flex-1 p-8">
-            <Newsletter />
+            <SectionErrorBoundary>
+              <Suspense fallback={
+                <div className="flex items-center justify-center p-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+                  <span className="ml-3 text-dark-600">Loading newsletter...</span>
+                </div>
+              }>
+                <Newsletter />
+              </Suspense>
+            </SectionErrorBoundary>
           </div>
         </div>
       </div>

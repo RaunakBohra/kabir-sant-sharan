@@ -46,11 +46,11 @@ export function ContentManager() {
     setIsLoading(true);
     try {
       if (activeContentType === 'teachings') {
-        const response = await fetch('/api/teachings?limit=50');
+        const response = await fetch('/api/teachings/?limit=50');
         const data = await response.json() as { teachings: Teaching[] };
         setTeachings(data.teachings || []);
       } else {
-        const response = await fetch('/api/events?limit=50');
+        const response = await fetch('/api/events/?limit=50');
         const data = await response.json() as { events: Event[] };
         setEvents(data.events || []);
       }

@@ -102,7 +102,7 @@ export function EventsList({ filters }: EventsListProps) {
           params.append('type', filters.type)
         }
 
-        const url = `/api/events${params.toString() ? `?${params.toString()}` : ''}`
+        const url = `/api/events/${params.toString() ? `?${params.toString()}` : ''}`
         const response = await fetch(url)
 
         if (!response.ok) {
@@ -110,7 +110,35 @@ export function EventsList({ filters }: EventsListProps) {
         }
 
         const data = await response.json()
-        setEvents(data.events || [])
+        // Transform API response to match component interface
+        const transformedEvents = (data.events || []).map((event: any) => ({
+          id: event.id,
+          title: event.title,
+          description: event.description,
+          slug: event.slug || event.id,
+          type: event.event_type || 'general',
+          location: event.location,
+          virtualLink: event.virtual_link,
+          startDate: event.event_date || '',
+          endDate: event.end_date || event.event_date || '',
+          startTime: event.event_time || '00:00',
+          endTime: event.end_time || '23:59',
+          timezone: event.timezone || 'UTC',
+          maxAttendees: event.max_attendees,
+          currentAttendees: event.current_attendees || 0,
+          registrationRequired: event.registration_required || false,
+          registrationDeadline: event.registration_deadline,
+          category: event.category || 'general',
+          tags: event.tags,
+          coverImage: event.cover_image,
+          organizer: event.organizer || 'Kabir Sant Sharan',
+          language: event.language || 'en',
+          featured: event.is_featured || false,
+          published: event.published !== false,
+          createdAt: event.created_at || '',
+          updatedAt: event.updated_at || ''
+        }))
+        setEvents(transformedEvents)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load events')
       } finally {

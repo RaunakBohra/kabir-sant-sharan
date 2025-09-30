@@ -29,7 +29,7 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
   useEffect(() => {
     async function fetchEventCounts() {
       try {
-        const response = await fetch('/api/events/counts')
+        const response = await fetch('/api/events/counts/')
         if (response.ok) {
           const counts = await response.json()
           setEventCounts(counts)
@@ -62,7 +62,7 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
     <div className="mb-12">
       {/* View Toggle */}
       <div className="flex justify-center mb-8">
-        <div className="bg-cream-200 rounded-lg p-1 flex">
+        <div className="bg-cream-200 rounded-lg p-1 flex" role="tablist" aria-label="View mode selection">
           <button
             onClick={() => onFiltersChange({ viewMode: 'calendar' })}
             className={`px-6 py-2 rounded-md transition-colors duration-200 ${
@@ -70,6 +70,10 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
                 ? 'bg-dark-900 text-cream-50'
                 : 'text-dark-700 hover:text-dark-900'
             }`}
+            role="tab"
+            aria-selected={viewMode === 'calendar'}
+            aria-controls="events-display"
+            id="calendar-view-tab"
           >
             <div className="flex items-center space-x-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -85,6 +89,10 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
                 ? 'bg-dark-900 text-cream-50'
                 : 'text-dark-700 hover:text-dark-900'
             }`}
+            role="tab"
+            aria-selected={viewMode === 'list'}
+            aria-controls="events-display"
+            id="list-view-tab"
           >
             <div className="flex items-center space-x-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +105,8 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
       </div>
 
       {/* Event Type Filters */}
-      <div className="flex flex-wrap justify-center gap-3 mb-6">
+      <fieldset className="flex flex-wrap justify-center gap-3 mb-6">
+        <legend className="sr-only">Filter events by type</legend>
         {eventTypes.map((type) => (
           <button
             key={type.id}
@@ -107,17 +116,19 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
                 ? 'bg-dark-900 text-cream-50'
                 : 'bg-cream-200 text-dark-700 hover:bg-cream-300 hover:text-dark-900'
             }`}
+            aria-pressed={selectedType === type.id}
+            aria-label={`Filter by ${type.name} events (${type.count} available)`}
           >
             {type.name} ({type.count})
           </button>
         ))}
-      </div>
+      </fieldset>
 
       {/* Time Filters */}
       <div className="flex justify-center">
-        <div className="flex items-center space-x-4">
-          <span className="text-dark-700 font-medium">Show:</span>
-          <div className="flex space-x-2">
+        <fieldset className="flex items-center space-x-4">
+          <legend className="text-dark-700 font-medium">Show:</legend>
+          <div className="flex space-x-2" role="radiogroup" aria-labelledby="time-filter-legend">
             {timeFilters.map((filter) => (
               <button
                 key={filter.id}
@@ -127,12 +138,15 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
                     ? 'bg-cream-200 text-dark-900 font-medium'
                     : 'text-dark-600 hover:text-dark-800'
                 }`}
+                role="radio"
+                aria-checked={selectedTime === filter.id}
+                aria-label={`Show ${filter.name.toLowerCase()}`}
               >
                 {filter.name}
               </button>
             ))}
           </div>
-        </div>
+        </fieldset>
       </div>
     </div>
   )

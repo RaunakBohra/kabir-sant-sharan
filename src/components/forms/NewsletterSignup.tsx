@@ -123,14 +123,19 @@ export function NewsletterSignup({ onSubmit, variant = 'card', className = '' }:
       <div className={`${className}`}>
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1">
+            <label htmlFor="newsletter-email-minimal" className="sr-only">
+              Email address for newsletter subscription
+            </label>
             <input
               type="email"
+              id="newsletter-email-minimal"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-cream-300 rounded-lg bg-cream-100 text-dark-900 placeholder-dark-500 focus:outline-none focus:ring-2 focus:ring-dark-600 focus:border-transparent transition-colors duration-200"
               placeholder="Enter your email address"
               required
+              aria-describedby={submitStatus === 'error' ? 'newsletter-error-minimal' : submitStatus === 'success' ? 'newsletter-success-minimal' : undefined}
             />
           </div>
           <button
@@ -143,13 +148,13 @@ export function NewsletterSignup({ onSubmit, variant = 'card', className = '' }:
         </form>
 
         {submitStatus === 'success' && (
-          <div className="mt-3 text-green-700 text-sm font-medium">
+          <div id="newsletter-success-minimal" className="mt-3 text-green-700 text-sm font-medium" role="status" aria-live="polite">
             Thank you for subscribing! Please check your email to confirm.
           </div>
         )}
 
         {submitStatus === 'error' && (
-          <div className="mt-3 text-red-700 text-sm font-medium">
+          <div id="newsletter-error-minimal" className="mt-3 text-red-700 text-sm font-medium" role="alert" aria-live="assertive">
             {errorMessage}
           </div>
         )}
@@ -169,23 +174,36 @@ export function NewsletterSignup({ onSubmit, variant = 'card', className = '' }:
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              className="px-4 py-3 border border-dark-600 rounded-lg bg-dark-800 text-cream-50 placeholder-cream-300 focus:outline-none focus:ring-2 focus:ring-cream-400 focus:border-transparent transition-colors duration-200"
-              placeholder="Your name (optional)"
-            />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className="px-4 py-3 border border-dark-600 rounded-lg bg-dark-800 text-cream-50 placeholder-cream-300 focus:outline-none focus:ring-2 focus:ring-cream-400 focus:border-transparent transition-colors duration-200"
-              placeholder="Enter your email"
-              required
-            />
+            <div>
+              <label htmlFor="newsletter-name-inline" className="sr-only">
+                Name (optional)
+              </label>
+              <input
+                type="text"
+                id="newsletter-name-inline"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                className="px-4 py-3 border border-dark-600 rounded-lg bg-dark-800 text-cream-50 placeholder-cream-300 focus:outline-none focus:ring-2 focus:ring-cream-400 focus:border-transparent transition-colors duration-200"
+                placeholder="Your name (optional)"
+              />
+            </div>
+            <div>
+              <label htmlFor="newsletter-email-inline" className="sr-only">
+                Email address for newsletter subscription
+              </label>
+              <input
+                type="email"
+                id="newsletter-email-inline"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="px-4 py-3 border border-dark-600 rounded-lg bg-dark-800 text-cream-50 placeholder-cream-300 focus:outline-none focus:ring-2 focus:ring-cream-400 focus:border-transparent transition-colors duration-200"
+                placeholder="Enter your email"
+                required
+                aria-describedby={submitStatus === 'error' ? 'newsletter-error-inline' : submitStatus === 'success' ? 'newsletter-success-inline' : undefined}
+              />
+            </div>
           </div>
 
           <div className="flex justify-center">
@@ -199,13 +217,13 @@ export function NewsletterSignup({ onSubmit, variant = 'card', className = '' }:
           </div>
 
           {submitStatus === 'success' && (
-            <div className="text-green-400 text-sm font-medium text-center">
+            <div id="newsletter-success-inline" className="text-green-400 text-sm font-medium text-center" role="status" aria-live="polite">
               Welcome to our spiritual community! Please check your email to confirm your subscription.
             </div>
           )}
 
           {submitStatus === 'error' && (
-            <div className="text-red-400 text-sm font-medium text-center">
+            <div id="newsletter-error-inline" className="text-red-400 text-sm font-medium text-center" role="alert" aria-live="assertive">
               {errorMessage}
             </div>
           )}
@@ -314,11 +332,13 @@ export function NewsletterSignup({ onSubmit, variant = 'card', className = '' }:
                   <label key={option.value} className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
+                      id={`interest-${option.value}`}
                       checked={formData.interests.includes(option.value)}
                       onChange={() => handleInterestChange(option.value)}
                       className="w-4 h-4 text-dark-600 bg-cream-50 border-cream-400 rounded focus:ring-dark-500 focus:ring-2"
+                      aria-describedby={`interest-${option.value}-description`}
                     />
-                    <span className="ml-3 text-sm text-dark-800">{option.label}</span>
+                    <span id={`interest-${option.value}-description`} className="ml-3 text-sm text-dark-800">{option.label}</span>
                   </label>
                 ))}
               </div>

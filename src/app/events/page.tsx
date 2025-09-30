@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { EventsCalendar } from '@/components/events/EventsCalendar'
 import { EventsList } from '@/components/events/EventsList'
 import { EventsFilters } from '@/components/events/EventsFilters'
+import { SectionErrorBoundary } from '@/components/ui/error-boundary'
 
 interface EventFilters {
   type: string
@@ -36,21 +37,27 @@ export default function EventsPage() {
         </div>
 
         {/* Event Filters */}
-        <EventsFilters
-          selectedType={filters.type}
-          selectedTime={filters.timeRange}
-          viewMode={filters.viewMode}
-          onFiltersChange={handleFiltersChange}
-        />
+        <SectionErrorBoundary>
+          <EventsFilters
+            selectedType={filters.type}
+            selectedTime={filters.timeRange}
+            viewMode={filters.viewMode}
+            onFiltersChange={handleFiltersChange}
+          />
+        </SectionErrorBoundary>
 
         {/* Conditional View Based on Filter */}
-        {filters.viewMode === 'calendar' ? (
-          <div className="mb-12">
-            <EventsCalendar filters={{ type: filters.type, timeRange: filters.timeRange }} />
-          </div>
-        ) : (
-          <EventsList filters={{ type: filters.type, timeRange: filters.timeRange }} />
-        )}
+        <SectionErrorBoundary>
+          {filters.viewMode === 'calendar' ? (
+            <div className="mb-12" id="events-display">
+              <EventsCalendar filters={{ type: filters.type, timeRange: filters.timeRange }} />
+            </div>
+          ) : (
+            <div id="events-display">
+              <EventsList filters={{ type: filters.type, timeRange: filters.timeRange }} />
+            </div>
+          )}
+        </SectionErrorBoundary>
       </div>
     </div>
   )

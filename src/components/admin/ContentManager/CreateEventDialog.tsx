@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { FileUpload } from '@/components/ui/file-upload';
+import { ComponentErrorBoundary } from '@/components/ui/error-boundary';
 import { toast } from '@/components/ui/toast';
 
 const eventSchema = z.object({
@@ -243,25 +244,27 @@ export function CreateEventDialog({ open, onOpenChange, onSuccess }: CreateEvent
             />
 
             {/* Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <RichTextEditor
-                      content={field.value}
-                      onChange={field.onChange}
-                      placeholder="Describe the event, its purpose, and what attendees can expect..."
-                      minHeight={250}
-                      maxHeight={500}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <ComponentErrorBoundary isolate>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <RichTextEditor
+                        content={field.value}
+                        onChange={field.onChange}
+                        placeholder="Describe the event, its purpose, and what attendees can expect..."
+                        minHeight={250}
+                        maxHeight={500}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </ComponentErrorBoundary>
 
             {/* Event Type and Category */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

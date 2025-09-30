@@ -4,6 +4,7 @@ import { NavBar } from '@/components/navigation/NavBar'
 import { Footer } from '@/components/layout/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { Toaster } from '@/components/ui/toast'
+import { PageErrorBoundary } from '@/components/ui/error-boundary'
 import Script from 'next/script'
 
 export const metadata: Metadata = {
@@ -104,14 +105,16 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased bg-cream-500 text-dark-900 min-h-screen flex flex-col">
-        <AuthProvider>
-          <NavBar />
-          <main className="flex-1">
-            {children}
-          </main>
-          <Footer />
-          <Toaster />
-        </AuthProvider>
+        <PageErrorBoundary>
+          <AuthProvider>
+            <NavBar />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
+            <Toaster />
+          </AuthProvider>
+        </PageErrorBoundary>
 
         {/* Service Worker Registration */}
         <Script

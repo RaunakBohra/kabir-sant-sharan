@@ -32,9 +32,9 @@ export function Analytics() {
     setIsLoading(true);
     try {
       const [overviewRes, topPagesRes, activityRes] = await Promise.all([
-        fetch('/api/analytics/overview'),
-        fetch('/api/analytics/top-pages?limit=10'),
-        fetch('/api/analytics/recent-activity?limit=10')
+        fetch('/api/analytics/overview/'),
+        fetch('/api/analytics/top-pages/?limit=10'),
+        fetch('/api/analytics/recent-activity/?limit=10')
       ]);
 
       const overview = await overviewRes.json() as AnalyticsData;

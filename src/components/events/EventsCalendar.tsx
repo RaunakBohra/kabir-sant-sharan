@@ -57,11 +57,21 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
         if (filters?.type && filters.type !== 'all') {
           params.append('type', filters.type)
         }
-        const url = `/api/events${params.toString() ? `?${params.toString()}` : ''}`
+        const url = `/api/events/${params.toString() ? `?${params.toString()}` : ''}`
         const response = await fetch(url)
         if (response.ok) {
           const data = await response.json()
-          setEvents(data.events || [])
+          // Transform API response to match component interface
+          const transformedEvents = (data.events || []).map((event: any) => ({
+            id: event.id,
+            title: event.title,
+            startDate: event.event_date || '',
+            startTime: event.event_time || '00:00',
+            type: event.event_type || 'general',
+            slug: event.slug || event.id,
+            featured: event.is_featured || false
+          }))
+          setEvents(transformedEvents)
         }
       } catch (error) {
         console.error('Failed to fetch events:', error)
@@ -86,7 +96,7 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
   // Get events for a specific date
   const getEventsForDate = (day: number): CalendarEvent[] => {
     const dateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    return events.filter(event => event.startDate.startsWith(dateString))
+    return events.filter(event => event.startDate && event.startDate.startsWith(dateString))
   }
 
   const monthNames = [

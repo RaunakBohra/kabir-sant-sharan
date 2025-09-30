@@ -16,7 +16,7 @@ export default function AdminLayout({
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth/session');
+        const response = await fetch('/api/auth/session/');
         if (!response.ok) {
           router.push('/login');
           return;

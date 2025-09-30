@@ -11,7 +11,7 @@ interface Teaching {
   excerpt: string
   slug: string
   category: string
-  tags: string | null
+  tags: string[] | string | null
   author: string
   published: boolean
   featured: boolean
@@ -43,14 +43,14 @@ export default function TeachingDetailPage({ params }: { params: { id: string } 
     async function fetchTeaching() {
       try {
         setLoading(true)
-        const response = await fetch(`/api/teachings/${params.id}`)
+        const response = await fetch(`/api/teachings/${params.id}/`)
 
         if (!response.ok) {
           throw new Error('Teaching not found')
         }
 
         const data = await response.json()
-        setTeaching(data.teaching)
+        setTeaching(data)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load teaching')
       } finally {
@@ -118,9 +118,9 @@ export default function TeachingDetailPage({ params }: { params: { id: string } 
 
             {teaching.tags && (
               <div className="flex flex-wrap gap-2 mb-8">
-                {teaching.tags.split(',').map((tag, index) => (
+                {(Array.isArray(teaching.tags) ? teaching.tags : teaching.tags.split(',')).map((tag, index) => (
                   <span key={index} className="bg-cream-200 text-dark-700 px-3 py-1 rounded text-sm">
-                    #{tag.trim()}
+                    #{typeof tag === 'string' ? tag.trim() : tag}
                   </span>
                 ))}
               </div>

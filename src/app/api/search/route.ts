@@ -39,8 +39,8 @@ export async function GET(request: NextRequest) {
         content: event.description,
         type: 'event' as const,
         url: '/events',
-        eventType: event.event_type,
-        date: event.event_date,
+        eventType: event.type,
+        date: event.startDate,
         location: event.location
       }))
     ];

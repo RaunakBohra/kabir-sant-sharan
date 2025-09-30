@@ -202,17 +202,25 @@ export function AdvancedSearch() {
             <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
+            <label htmlFor="advanced-search-input" className="sr-only">
+              Search teachings, events, and media
+            </label>
             <input
+              id="advanced-search-input"
               type="text"
               placeholder="Search teachings, events, media..."
               value={filters.query}
               onChange={(e) => updateFilter('query', e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              aria-describedby="search-results-status"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
+            aria-expanded={showFilters}
+            aria-controls="search-filters"
+            aria-label={showFilters ? "Hide search filters" : "Show search filters"}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
@@ -223,11 +231,13 @@ export function AdvancedSearch() {
 
         {/* Advanced Filters */}
         {showFilters && (
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div id="search-filters" className="mt-6 pt-6 border-t border-gray-200" role="group" aria-labelledby="filters-heading">
+            <h3 id="filters-heading" className="sr-only">Search Filters</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
+                <label htmlFor="content-type-filter" className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
                 <select
+                  id="content-type-filter"
                   value={filters.type}
                   onChange={(e) => updateFilter('type', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -240,8 +250,9 @@ export function AdvancedSearch() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                <label htmlFor="language-filter" className="block text-sm font-medium text-gray-700 mb-2">Language</label>
                 <select
+                  id="language-filter"
                   value={filters.language}
                   onChange={(e) => updateFilter('language', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -254,8 +265,9 @@ export function AdvancedSearch() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+                <label htmlFor="date-range-filter" className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
                 <select
+                  id="date-range-filter"
                   value={filters.dateRange}
                   onChange={(e) => updateFilter('dateRange', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -268,8 +280,9 @@ export function AdvancedSearch() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                <label htmlFor="sort-by-filter" className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
                 <select
+                  id="sort-by-filter"
                   value={filters.sortBy}
                   onChange={(e) => updateFilter('sortBy', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -308,16 +321,19 @@ export function AdvancedSearch() {
                     </span>
                   )}
                 </h3>
+                <div id="search-results-status" className="sr-only" aria-live="polite">
+                  {isLoading ? 'Searching...' : totalResults > 0 ? `Found ${totalResults} results` : filters.query.trim() ? 'No results found' : ''}
+                </div>
               </div>
               {isLoading && (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600" aria-label="Loading search results"></div>
               )}
             </div>
           </div>
         )}
 
         {/* Results List */}
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-gray-200" role="main" aria-label="Search results">
           {results.length > 0 ? (
             results.map((result) => (
               <div key={result.id} data-testid="search-result" className="p-6 hover:bg-gray-50 transition-colors">

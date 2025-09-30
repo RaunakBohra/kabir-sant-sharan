@@ -23,14 +23,18 @@ export interface Event {
   title: string;
   description: string;
   location: string;
-  event_date: string;
-  event_type: string;
-  is_featured: boolean;
-  registration_required: boolean;
-  max_attendees?: number;
-  current_attendees: number;
-  created_at: string;
-  updated_at: string;
+  startDate: string;
+  type: string;
+  featured: boolean;
+  published: boolean;
+  registrationRequired: boolean;
+  registrationDeadline?: string;
+  maxAttendees?: number;
+  currentAttendees: number;
+  startTime: string;
+  endTime: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface NewsletterSubscriber {
@@ -221,14 +225,18 @@ export class DatabaseService {
         title: e.title,
         description: e.description,
         location: e.location || '',
-        event_date: e.startDate,
-        event_type: e.type,
-        is_featured: e.featured || false,
-        registration_required: e.registrationRequired || false,
-        max_attendees: e.maxAttendees || undefined,
-        current_attendees: e.currentAttendees || 0,
-        created_at: e.createdAt || '',
-        updated_at: e.updatedAt || ''
+        startDate: e.startDate,
+        type: e.type,
+        featured: e.featured || false,
+        published: e.published || false,
+        registrationRequired: e.registrationRequired || false,
+        registrationDeadline: e.registrationDeadline || undefined,
+        maxAttendees: e.maxAttendees || undefined,
+        currentAttendees: e.currentAttendees || 0,
+        startTime: e.startTime,
+        endTime: e.endTime,
+        createdAt: e.createdAt || '',
+        updatedAt: e.updatedAt || ''
       }));
 
       return {
@@ -260,7 +268,7 @@ export class DatabaseService {
     const filteredEvents = type === 'teaching' ? [] : events.filter(e =>
       e.title.toLowerCase().includes(lowerQuery) ||
       e.description.toLowerCase().includes(lowerQuery) ||
-      e.event_type.toLowerCase().includes(lowerQuery)
+      e.type.toLowerCase().includes(lowerQuery)
     );
 
     return {
@@ -472,8 +480,8 @@ export class DatabaseService {
           gte(analytics.timestamp, oneDayAgo)
         ));
 
-      const totalVisitors = visitorsResult[0]?.count || 0;
-      const pageViews = pageViewsResult[0]?.count || 0;
+      const totalVisitors = (visitorsResult[0] as any)?.count || 0;
+      const pageViews = (pageViewsResult[0] as any)?.count || 0;
 
       return {
         totalVisitors,

@@ -51,7 +51,7 @@ export async function POST(
     }
 
     // Check if event is published and registration is required
-    if (!event.published || !event.registration_required) {
+    if (!event.published || !event.registrationRequired) {
       return NextResponse.json(
         { error: 'Registration not available for this event' },
         { status: 400 }
@@ -59,8 +59,8 @@ export async function POST(
     }
 
     // Check registration deadline
-    if (event.registration_deadline) {
-      const deadline = new Date(event.registration_deadline);
+    if (event.registrationDeadline) {
+      const deadline = new Date(event.registrationDeadline);
       const now = new Date();
       if (now > deadline) {
         return NextResponse.json(
@@ -71,7 +71,7 @@ export async function POST(
     }
 
     // Check if event has already passed
-    const eventDate = new Date(event.start_date);
+    const eventDate = new Date(event.startDate);
     const now = new Date();
     if (eventDate < now) {
       return NextResponse.json(
@@ -130,8 +130,8 @@ export async function POST(
         confirmationCode: registration.confirmationCode,
         status: registration.status,
         eventTitle: event.title,
-        eventDate: event.start_date,
-        eventTime: event.start_time
+        eventDate: event.startDate,
+        eventTime: event.startTime
       },
       isWaitlist
     };

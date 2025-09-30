@@ -48,7 +48,7 @@ export function SearchBar({
       setIsLoading(true);
       try {
         // Use the actual search API
-        const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}&limit=10`);
+        const response = await fetch(`/api/search/?q=${encodeURIComponent(searchQuery)}&limit=10`);
 
         if (!response.ok) {
           throw new Error('Search request failed');
@@ -170,13 +170,22 @@ export function SearchBar({
             <div className="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl transform transition-all">
               {/* Search Input */}
               <div className="relative border-b border-gray-200">
+                <label htmlFor="search-input" className="sr-only">
+                  Search teachings, events, and media
+                </label>
                 <input
                   ref={inputRef}
+                  id="search-input"
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={placeholder}
                   className="w-full px-6 py-5 pl-14 pr-14 text-lg text-dark-900 bg-transparent focus:outline-none"
+                  aria-describedby="search-status"
+                  aria-expanded={isOpen}
+                  aria-autocomplete="list"
+                  role="combobox"
+                  aria-owns={isOpen ? "search-results" : undefined}
                 />
                 <div className="absolute inset-y-0 left-0 flex items-center pl-5">
                   {isLoading ? (
@@ -193,8 +202,9 @@ export function SearchBar({
                 <button
                   onClick={closeModal}
                   className="absolute inset-y-0 right-0 flex items-center pr-5 text-gray-400 hover:text-dark-900"
+                  aria-label="Close search"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -202,13 +212,18 @@ export function SearchBar({
 
               {/* Search Results */}
               <div className="max-h-[60vh] overflow-y-auto">
+                <div id="search-status" className="sr-only" aria-live="polite">
+                  {isLoading ? 'Searching...' : isOpen && results.length > 0 ? `${results.length} results found` : isOpen && query && results.length === 0 ? 'No results found' : ''}
+                </div>
                 {isOpen && results.length > 0 && (
-                  <div className="py-2">
+                  <div className="py-2" id="search-results" role="listbox" aria-label="Search results">
                     {results.map((result) => (
                       <button
                         key={result.id}
                         onClick={() => handleResultClick(result)}
                         className="w-full px-6 py-4 text-left hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors"
+                        role="option"
+                        aria-label={`${result.title} - ${result.type}`}
                       >
                         <div className="flex items-start space-x-3">
                           <div className="flex-shrink-0 mt-1">

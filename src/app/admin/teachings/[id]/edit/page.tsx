@@ -57,7 +57,7 @@ export default function EditTeachingPage() {
         const response = await fetch(`/api/teachings/${teachingId}`);
         if (!response.ok) throw new Error('Failed to load teaching');
 
-        const data = await response.json();
+        const data = await response.json() as { teaching: any };
         const teaching = data.teaching;
 
         setFormData({
@@ -97,7 +97,7 @@ export default function EditTeachingPage() {
     return () => window.removeEventListener('beforeunload', handler);
   }, [hasUnsavedChanges]);
 
-  const handleChange = (field: keyof TeachingFormData, value: any) => {
+  const handleChange = (field: keyof TeachingFormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setHasUnsavedChanges(true);
   };
@@ -137,7 +137,7 @@ export default function EditTeachingPage() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json() as { error?: string };
         throw new Error(error.error || 'Failed to update teaching');
       }
 

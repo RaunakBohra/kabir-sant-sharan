@@ -10,7 +10,7 @@ interface BlogPost {
   excerpt: string
   slug: string
   category: string
-  tags: string | null
+  tags: string[] | string | null
   coverImage: string | null
   author: string
   published: boolean
@@ -63,8 +63,9 @@ function calculateReadTime(content: string): string {
 }
 
 // Helper function to parse tags
-function parseTags(tags: string | null): string[] {
+function parseTags(tags: string[] | string | null): string[] {
   if (!tags) return []
+  if (Array.isArray(tags)) return tags
   return tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
 }
 
@@ -187,7 +188,7 @@ export function BlogList({ filters }: BlogListProps) {
         }
         params.append('limit', '50') // Get more posts for pagination
 
-        const url = `/api/teachings${params.toString() ? `?${params.toString()}` : ''}`
+        const url = `/api/teachings/${params.toString() ? `?${params.toString()}` : ''}`
         const response = await fetch(url)
 
         if (!response.ok) {
