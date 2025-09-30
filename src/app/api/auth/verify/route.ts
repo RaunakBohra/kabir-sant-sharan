@@ -4,7 +4,7 @@ import { createErrorResponse, getInstancePath, logError } from '@/lib/error-hand
 import { sessionManager } from '@/lib/session-manager';
 import { createId } from '@paralleldrive/cuid2';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
   const traceId = createId();

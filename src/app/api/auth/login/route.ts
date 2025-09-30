@@ -9,7 +9,7 @@ import { validateRequest, LoginSchema } from '@/lib/validation-schemas';
 import { withPerformanceTracking } from '@/lib/middleware/performance-middleware';
 import { createId } from '@paralleldrive/cuid2';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 /**
  * Extract client IP from request headers

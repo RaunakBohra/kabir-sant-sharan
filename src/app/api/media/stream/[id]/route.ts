@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateSignedStreamingUrl, getObjectMetadata } from '@/lib/r2-streaming';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 export async function GET(
   request: NextRequest,

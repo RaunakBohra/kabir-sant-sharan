@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { validateAccessToken } from '@/lib/jwt-auth';
 import { databaseService } from '@/lib/database-service';
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
   try {
