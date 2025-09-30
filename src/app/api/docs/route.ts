@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import swaggerSpec from '@/lib/openapi-spec';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 /**
  * @swagger
