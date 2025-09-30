@@ -12,19 +12,23 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const payload = verifyAccessToken(accessToken);
+    const result = verifyAccessToken(accessToken);
 
-    if (!payload) {
+    if (!result || !result.payload) {
       return NextResponse.json(
         { error: 'Invalid session' },
         { status: 401 }
       );
     }
 
+    const payload = result.payload;
+
     return NextResponse.json({
+      userId: payload.userId,
       user: {
         id: payload.userId,
-        sessionId: payload.sessionId
+        email: payload.email,
+        role: payload.role
       }
     });
   } catch (error) {

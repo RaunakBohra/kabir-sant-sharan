@@ -152,22 +152,43 @@ async function loginHandler(request: NextRequest): Promise<NextResponse> {
       role: 'admin'
     };
 
-    // Add security headers
-    const headers = {
-      'Content-Type': 'application/json',
-      'X-Trace-ID': traceId,
-      'Cache-Control': 'no-store',
-      'Pragma': 'no-cache'
-    };
-
-    return NextResponse.json({
+    // Create response with tokens
+    const response = NextResponse.json({
       accessToken: sessionResult.tokens.accessToken,
       refreshToken: sessionResult.tokens.refreshToken,
       expiresAt: sessionResult.tokens.accessExpiresAt,
       refreshExpiresAt: sessionResult.tokens.refreshExpiresAt,
       user,
       message: 'Login successful'
-    }, { headers });
+    });
+
+    // Set cookies for session management
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieOptions = {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'lax' as const,
+      path: '/'
+    };
+
+    // Set access token cookie
+    response.cookies.set('accessToken', sessionResult.tokens.accessToken, {
+      ...cookieOptions,
+      maxAge: 15 * 60 // 15 minutes
+    });
+
+    // Set refresh token cookie
+    response.cookies.set('refreshToken', sessionResult.tokens.refreshToken, {
+      ...cookieOptions,
+      maxAge: 7 * 24 * 60 * 60 // 7 days
+    });
+
+    // Add security headers
+    response.headers.set('X-Trace-ID', traceId);
+    response.headers.set('Cache-Control', 'no-store');
+    response.headers.set('Pragma', 'no-cache');
+
+    return response;
 
   } catch (error) {
     logError(error as Error, {

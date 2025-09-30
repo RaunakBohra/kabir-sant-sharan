@@ -44,36 +44,42 @@ export async function POST(request: NextRequest) {
 
     // Transform form data to database format
     const eventDate = new Date(`${startDate}T${startTime}`).toISOString();
+    const eventId = Date.now().toString();
 
-    // In production, this would save to D1 database
     const newEvent = {
-      id: Date.now().toString(),
+      id: eventId,
       title: body.title,
       description: body.description,
-      location: body.location || '',
-      virtual_link: body.virtualLink || null,
-      event_date: eventDate,
-      start_date: startDate,
-      end_date: body.endDate,
-      start_time: startTime,
-      end_time: body.endTime,
+      location: body.location || 'Virtual',
+      virtualLink: body.virtualLink || null,
+      startDate: startDate,
+      endDate: body.endDate || startDate,
+      startTime: startTime,
+      endTime: body.endTime || startTime,
       timezone: body.timezone || 'Asia/Kathmandu',
-      event_type: type,
-      category: body.category,
-      tags: Array.isArray(body.tags) ? body.tags : [],
+      type: type,
+      category: body.category || 'meditation',
+      tags: JSON.stringify(Array.isArray(body.tags) ? body.tags : (body.tags ? [body.tags] : [])),
       organizer: body.organizer || 'Kabir Sant Sharan',
       language: body.language || 'en',
-      max_attendees: body.maxAttendees || null,
-      current_attendees: body.currentAttendees || 0,
-      registration_required: body.registrationRequired || false,
-      registration_deadline: body.registrationDeadline || null,
-      is_featured: body.featured || false,
-      is_published: body.published || false,
-      cover_image: body.coverImage || null,
+      maxAttendees: body.maxAttendees || null,
+      currentAttendees: body.currentAttendees || 0,
+      registrationRequired: body.registrationRequired || false,
+      registrationDeadline: body.registrationDeadline || null,
+      featured: body.featured || false,
+      published: body.published || false,
+      coverImage: body.coverImage || null,
       slug: body.slug || title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
+
+    // Save to database
+    const { getDatabase } = await import('@/lib/db');
+    const { events } = await import('@/../drizzle/schema');
+    const db = getDatabase();
+
+    await db.insert(events).values(newEvent);
 
     return NextResponse.json({
       message: 'Event created successfully',

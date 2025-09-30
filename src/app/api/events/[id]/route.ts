@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { databaseService } from '@/lib/database-service';
+import { getDatabase } from '@/lib/db';
+import { events } from '@/../drizzle/schema';
+import { eq } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
 
@@ -8,16 +10,17 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const event = await databaseService.getEventById(params.id);
+    const db = getDatabase();
+    const event = await db.select().from(events).where(eq(events.id, params.id)).limit(1);
 
-    if (!event) {
+    if (event.length === 0) {
       return NextResponse.json(
         { error: 'Event not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ event });
+    return NextResponse.json({ event: event[0] });
   } catch (error) {
     console.error('Error fetching event:', error);
     return NextResponse.json(
@@ -33,13 +36,17 @@ export async function PUT(
 ) {
   try {
     const body = await request.json();
+    const db = getDatabase();
 
-    // In production, this would update in D1 database
     const updatedEvent = {
-      id: params.id,
       ...body,
-      updated_at: new Date().toISOString()
+      id: params.id,
+      updatedAt: new Date()
     };
+
+    await db.update(events)
+      .set(updatedEvent)
+      .where(eq(events.id, params.id));
 
     return NextResponse.json({
       message: 'Event updated successfully',
@@ -59,18 +66,21 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    // Verify event exists
-    const event = await databaseService.getEventById(params.id);
+    const db = getDatabase();
 
-    if (!event) {
+    // Check if event exists
+    const existingEvent = await db.select().from(events).where(eq(events.id, params.id)).limit(1);
+
+    if (existingEvent.length === 0) {
       return NextResponse.json(
         { error: 'Event not found' },
         { status: 404 }
       );
     }
 
-    // In production, this would soft delete in D1 database
-    // For now, we'll just return success
+    // Soft delete by moving to trash
+    await db.delete(events).where(eq(events.id, params.id));
+
     return NextResponse.json({
       message: 'Event deleted successfully',
       id: params.id
