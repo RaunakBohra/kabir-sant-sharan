@@ -178,19 +178,16 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
           {media.type === 'image' && (
             <div className="space-y-2">
               <Label htmlFor="altText" className="text-dark-900 font-medium">
-                Alt Text (for accessibility)
+                Alt Text
               </Label>
               <input
                 id="altText"
                 type="text"
                 value={formData.altText}
                 onChange={(e) => handleChange('altText', e.target.value)}
-                placeholder="Describe the image for screen readers"
+                placeholder="Describe the image"
                 className="w-full px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
-              <p className="text-xs text-dark-500">
-                Helps visually impaired users understand the image content
-              </p>
             </div>
           )}
 
@@ -219,41 +216,16 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
               type="text"
               value={formData.tags}
               onChange={(e) => handleChange('tags', e.target.value)}
-              placeholder="meditation, spiritual, kabir, doha"
+              placeholder="meditation, spiritual, kabir"
               className="w-full px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
-            <p className="text-xs text-dark-500">
-              Separate tags with commas. Helps with organization and search.
-            </p>
           </div>
 
-          {/* Read-only metadata */}
-          <div className="bg-cream-50 rounded-lg p-4 space-y-2">
-            <h4 className="font-medium text-dark-900 text-sm mb-2">File Information</h4>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              {media.duration && (
-                <div>
-                  <span className="text-dark-600">Duration:</span>
-                  <span className="ml-2 text-dark-900">{media.duration}</span>
-                </div>
-              )}
-              {media.fileSize && (
-                <div>
-                  <span className="text-dark-600">File Size:</span>
-                  <span className="ml-2 text-dark-900">{(media.fileSize / 1024 / 1024).toFixed(2)} MB</span>
-                </div>
-              )}
-              <div>
-                <span className="text-dark-600">Category:</span>
-                <span className="ml-2 text-dark-900">{media.category}</span>
-              </div>
-              <div>
-                <span className="text-dark-600">Created:</span>
-                <span className="ml-2 text-dark-900">
-                  {new Date(media.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
+          {/* File Info - Compact */}
+          <div className="flex flex-wrap gap-3 text-xs text-dark-600 pt-2 border-t border-cream-200">
+            {media.duration && <span>Duration: <strong>{media.duration}</strong></span>}
+            {media.fileSize && <span>Size: <strong>{(media.fileSize / 1024 / 1024).toFixed(2)} MB</strong></span>}
+            <span>Type: <strong>{media.category}</strong></span>
           </div>
 
           <DialogFooter>
