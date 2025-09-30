@@ -5,20 +5,32 @@ import { toast } from '@/components/ui/toast';
 
 interface MediaFile {
   id: string;
-  fileName: string;
-  originalName: string;
-  url: string;
+  title: string;
+  description: string;
   type: 'audio' | 'video' | 'image' | 'document';
-  size: number;
-  mimeType: string;
-  uploadedAt: string;
-  metadata?: {
-    title?: string;
-    artist?: string;
-    duration?: string;
-    dimensions?: string;
-    resolution?: string;
-  };
+  category: string;
+  tags?: string;
+  author: string;
+  duration?: string;
+  fileSize?: number;
+  mimeType?: string;
+  r2Key: string;
+  r2Bucket: string;
+  thumbnailKey?: string;
+  streamingUrl?: string;
+  downloadUrl?: string;
+  transcription?: string;
+  featured: boolean;
+  published: boolean;
+  views: number;
+  downloads: number;
+  likes: number;
+  language: string;
+  uploadedBy: string;
+  publishedAt?: string;
+  deletedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface MediaPreviewDialogProps {
@@ -31,22 +43,27 @@ export function MediaPreviewDialog({ open, onOpenChange, media }: MediaPreviewDi
   if (!media) return null;
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(media.url);
+    const url = media.downloadUrl || media.streamingUrl || '';
+    navigator.clipboard.writeText(url);
     toast.success('URL copied to clipboard');
   };
 
   const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = media.url;
-    link.download = media.originalName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success('Download started');
+    if (media.downloadUrl) {
+      const link = document.createElement('a');
+      link.href = media.downloadUrl;
+      link.download = media.title;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Download started');
+    } else {
+      toast.error('Download not available for this file');
+    }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+  const formatFileSize = (bytes?: number) => {
+    if (!bytes || bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -59,8 +76,8 @@ export function MediaPreviewDialog({ open, onOpenChange, media }: MediaPreviewDi
         return (
           <div className="relative bg-dark-900 rounded-lg overflow-hidden">
             <img
-              src={media.url}
-              alt={media.metadata?.title || media.originalName}
+              src={media.streamingUrl || media.downloadUrl || ''}
+              alt={media.title}
               className="w-full h-auto max-h-[70vh] object-contain"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/placeholder-image.png';
@@ -72,28 +89,28 @@ export function MediaPreviewDialog({ open, onOpenChange, media }: MediaPreviewDi
       case 'audio':
         return (
           <div className="space-y-4">
-            <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-8 text-center">
-              <svg className="w-24 h-24 mx-auto text-white mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg p-6 text-center">
+              <svg className="w-16 h-16 mx-auto text-white mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
               </svg>
               <h3 className="text-white text-xl font-semibold mb-2">
-                {media.metadata?.title || media.originalName}
+                {media.title}
               </h3>
-              {media.metadata?.artist && (
-                <p className="text-purple-100 text-sm">by {media.metadata.artist}</p>
-              )}
-              {media.metadata?.duration && (
-                <p className="text-purple-200 text-sm mt-2">Duration: {media.metadata.duration}</p>
+              <p className="text-purple-100 text-sm">by {media.author}</p>
+              {media.duration && (
+                <p className="text-purple-200 text-sm mt-2">Duration: {media.duration}</p>
               )}
             </div>
-            <audio
-              controls
-              className="w-full"
-              preload="metadata"
-            >
-              <source src={media.url} type={media.mimeType} />
-              Your browser does not support the audio element.
-            </audio>
+            <div className="bg-dark-900 rounded-lg p-4">
+              <audio
+                controls
+                className="w-full"
+                preload="metadata"
+              >
+                <source src={`/api/media/stream/${media.id}`} type={media.mimeType || 'audio/mpeg'} />
+                Your browser does not support the audio element.
+              </audio>
+            </div>
           </div>
         );
 
@@ -102,17 +119,22 @@ export function MediaPreviewDialog({ open, onOpenChange, media }: MediaPreviewDi
           <div className="bg-dark-900 rounded-lg overflow-hidden">
             <video
               controls
-              className="w-full max-h-[70vh]"
+              className="w-full h-auto max-h-[60vh]"
               preload="metadata"
+              poster={media.thumbnailKey ? `/api/media/stream/${media.id}?thumbnail=true` : undefined}
             >
-              <source src={media.url} type={media.mimeType} />
+              <source src={`/api/media/stream/${media.id}`} type={media.mimeType || 'video/mp4'} />
               Your browser does not support the video element.
             </video>
-            {media.metadata?.resolution && (
-              <div className="p-2 bg-dark-800 text-white text-sm text-center">
-                Resolution: {media.metadata.resolution}
-              </div>
-            )}
+            <div className="p-4 text-center">
+              <h3 className="text-white text-lg font-semibold mb-1">
+                {media.title}
+              </h3>
+              <p className="text-gray-300 text-sm">by {media.author}</p>
+              {media.duration && (
+                <p className="text-gray-400 text-sm mt-1">Duration: {media.duration}</p>
+              )}
+            </div>
           </div>
         );
 
@@ -121,9 +143,9 @@ export function MediaPreviewDialog({ open, onOpenChange, media }: MediaPreviewDi
           return (
             <div className="bg-cream-50 rounded-lg overflow-hidden" style={{ height: '70vh' }}>
               <iframe
-                src={media.url}
+                src={media.streamingUrl || media.downloadUrl || ''}
                 className="w-full h-full border-0"
-                title={media.originalName}
+                title={media.title}
               />
             </div>
           );
@@ -153,7 +175,7 @@ export function MediaPreviewDialog({ open, onOpenChange, media }: MediaPreviewDi
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold text-dark-900">
-            {media.metadata?.title || media.originalName}
+            {media.title}
           </DialogTitle>
         </DialogHeader>
 
@@ -165,27 +187,29 @@ export function MediaPreviewDialog({ open, onOpenChange, media }: MediaPreviewDi
           <div className="bg-cream-50 rounded-lg p-4 space-y-2">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <span className="font-medium text-dark-700">File Name:</span>
-                <p className="text-dark-900">{media.originalName}</p>
+                <span className="font-medium text-dark-700">Title:</span>
+                <p className="text-dark-900">{media.title}</p>
               </div>
               <div>
                 <span className="font-medium text-dark-700">File Size:</span>
-                <p className="text-dark-900">{formatFileSize(media.size)}</p>
+                <p className="text-dark-900">{formatFileSize(media.fileSize)}</p>
               </div>
               <div>
                 <span className="font-medium text-dark-700">Type:</span>
                 <p className="text-dark-900">{media.type} ({media.mimeType})</p>
               </div>
               <div>
-                <span className="font-medium text-dark-700">Uploaded:</span>
-                <p className="text-dark-900">{new Date(media.uploadedAt).toLocaleString()}</p>
+                <span className="font-medium text-dark-700">Author:</span>
+                <p className="text-dark-900">{media.author}</p>
               </div>
-              {media.metadata?.dimensions && (
-                <div>
-                  <span className="font-medium text-dark-700">Dimensions:</span>
-                  <p className="text-dark-900">{media.metadata.dimensions}</p>
-                </div>
-              )}
+              <div>
+                <span className="font-medium text-dark-700">Status:</span>
+                <p className="text-dark-900">{media.published ? 'Published' : 'Draft'}{media.featured ? ' • Featured' : ''}</p>
+              </div>
+              <div>
+                <span className="font-medium text-dark-700">Created:</span>
+                <p className="text-dark-900">{new Date(media.createdAt).toLocaleString()}</p>
+              </div>
             </div>
           </div>
 

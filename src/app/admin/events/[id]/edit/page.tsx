@@ -47,7 +47,7 @@ export default function EditEventPage() {
           <div className="flex-1 p-4 sm:p-6 lg:p-8">
             <div className="max-w-4xl mx-auto">
               <div className="flex items-center justify-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dark-900"></div>
                 <span className="ml-3 text-dark-600">Loading event...</span>
               </div>
             </div>
@@ -96,7 +96,7 @@ export default function EditEventPage() {
               </div>
               <Suspense fallback={
                 <div className="flex items-center justify-center p-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dark-900"></div>
                   <span className="ml-3 text-dark-600">Loading event form...</span>
                 </div>
               }>

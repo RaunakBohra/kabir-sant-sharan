@@ -62,10 +62,10 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
     <div className="mb-12">
       {/* View Toggle */}
       <div className="flex justify-center mb-8">
-        <div className="bg-cream-200 rounded-lg p-1 flex" role="tablist" aria-label="View mode selection">
+        <div className="bg-cream-200 rounded-lg p-1 flex w-full max-w-md" role="tablist" aria-label="View mode selection">
           <button
             onClick={() => onFiltersChange({ viewMode: 'calendar' })}
-            className={`px-6 py-2 rounded-md transition-colors duration-200 ${
+            className={`flex-1 px-4 sm:px-6 py-2 rounded-md transition-colors duration-200 ${
               viewMode === 'calendar'
                 ? 'bg-dark-900 text-cream-50'
                 : 'text-dark-700 hover:text-dark-900'
@@ -75,16 +75,16 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
             aria-controls="events-display"
             id="calendar-view-tab"
           >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center space-x-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span>Calendar View</span>
+              <span className="hidden sm:inline">Calendar</span>
             </div>
           </button>
           <button
             onClick={() => onFiltersChange({ viewMode: 'list' })}
-            className={`px-6 py-2 rounded-md transition-colors duration-200 ${
+            className={`flex-1 px-4 sm:px-6 py-2 rounded-md transition-colors duration-200 ${
               viewMode === 'list'
                 ? 'bg-dark-900 text-cream-50'
                 : 'text-dark-700 hover:text-dark-900'
@@ -94,11 +94,11 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
             aria-controls="events-display"
             id="list-view-tab"
           >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center space-x-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
               </svg>
-              <span>List View</span>
+              <span className="hidden sm:inline">List</span>
             </div>
           </button>
         </div>
@@ -125,15 +125,15 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
       </fieldset>
 
       {/* Time Filters */}
-      <div className="flex justify-center">
-        <fieldset className="flex items-center space-x-4">
-          <legend className="text-dark-700 font-medium">Show:</legend>
-          <div className="flex space-x-2" role="radiogroup" aria-labelledby="time-filter-legend">
+      <div className="flex justify-center overflow-x-auto">
+        <fieldset className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto px-4 sm:px-0">
+          <legend className="text-dark-700 font-medium text-sm sm:text-base mb-2 sm:mb-0">Show:</legend>
+          <div className="flex flex-wrap justify-center gap-2" role="radiogroup" aria-labelledby="time-filter-legend">
             {timeFilters.map((filter) => (
               <button
                 key={filter.id}
                 onClick={() => onFiltersChange({ timeRange: filter.id })}
-                className={`px-3 py-1 rounded-md text-sm transition-colors duration-200 ${
+                className={`px-3 py-1 rounded-md text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap ${
                   selectedTime === filter.id
                     ? 'bg-cream-200 text-dark-900 font-medium'
                     : 'text-dark-600 hover:text-dark-800'

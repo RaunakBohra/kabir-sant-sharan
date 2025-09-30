@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { apiRequest } from '@/lib/api-client';
 
 interface User {
   id: string;
@@ -54,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (tokenExpiry - now <= fiveMinutes) {
         // Token is expired or near expiry, try to refresh
         try {
-          const refreshResponse = await fetch('/api/auth/refresh', {
+          const refreshResponse = await apiRequest('/api/auth/refresh', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -87,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Verify the access token
-      const response = await fetch('/api/auth/verify', {
+      const response = await apiRequest('/api/auth/verify', {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
@@ -120,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await apiRequest('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

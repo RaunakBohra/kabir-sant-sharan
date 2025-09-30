@@ -7,23 +7,32 @@ import { Label } from '@/components/ui/label';
 
 interface MediaFile {
   id: string;
-  fileName: string;
-  originalName: string;
-  url: string;
+  title: string;
+  description: string;
   type: 'audio' | 'video' | 'image' | 'document';
-  size: number;
-  mimeType: string;
-  uploadedAt: string;
-  metadata?: {
-    title?: string;
-    artist?: string;
-    duration?: string;
-    dimensions?: string;
-    resolution?: string;
-    altText?: string;
-    description?: string;
-    tags?: string[];
-  };
+  category: string;
+  tags?: string;
+  author: string;
+  duration?: string;
+  fileSize?: number;
+  mimeType?: string;
+  r2Key: string;
+  r2Bucket: string;
+  thumbnailKey?: string;
+  streamingUrl?: string;
+  downloadUrl?: string;
+  transcription?: string;
+  featured: boolean;
+  published: boolean;
+  views: number;
+  downloads: number;
+  likes: number;
+  language: string;
+  uploadedBy: string;
+  publishedAt?: string;
+  deletedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface EditMediaDialogProps {
@@ -46,11 +55,11 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
   useEffect(() => {
     if (media) {
       setFormData({
-        title: media.metadata?.title || media.originalName || '',
-        artist: media.metadata?.artist || '',
-        description: media.metadata?.description || '',
-        altText: media.metadata?.altText || '',
-        tags: media.metadata?.tags?.join(', ') || ''
+        title: media.title || '',
+        artist: media.author || '',
+        description: media.description || '',
+        altText: '',
+        tags: media.tags || ''
       });
     }
   }, [media]);
@@ -62,18 +71,23 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
     setIsLoading(true);
 
     try {
-      const response = await fetch(`/api/media/upload/${media.id}`, {
+      // Get access token from localStorage
+      const accessToken = localStorage.getItem('accessToken');
+
+      const response = await fetch(`/api/media/${media.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
         body: JSON.stringify({
-          metadata: {
-            ...media.metadata,
-            title: formData.title,
-            artist: formData.artist,
-            description: formData.description,
-            altText: formData.altText,
-            tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean)
-          }
+          title: formData.title,
+          description: formData.description,
+          author: formData.artist || 'Sant Kabir Das',
+          category: media.type,
+          tags: formData.tags,
+          featured: media.featured,
+          published: media.published
         })
       });
 
@@ -122,7 +136,7 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
                 </div>
               )}
               <div>
-                <p className="text-sm font-medium text-dark-900">{media.originalName}</p>
+                <p className="text-sm font-medium text-dark-900">{media.title}</p>
                 <p className="text-xs text-dark-500">{media.type.toUpperCase()} • {media.mimeType}</p>
               </div>
             </div>
@@ -217,28 +231,26 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
           <div className="bg-cream-50 rounded-lg p-4 space-y-2">
             <h4 className="font-medium text-dark-900 text-sm mb-2">File Information</h4>
             <div className="grid grid-cols-2 gap-3 text-sm">
-              {media.metadata?.duration && (
+              {media.duration && (
                 <div>
                   <span className="text-dark-600">Duration:</span>
-                  <span className="ml-2 text-dark-900">{media.metadata.duration}</span>
+                  <span className="ml-2 text-dark-900">{media.duration}</span>
                 </div>
               )}
-              {media.metadata?.dimensions && (
+              {media.fileSize && (
                 <div>
-                  <span className="text-dark-600">Dimensions:</span>
-                  <span className="ml-2 text-dark-900">{media.metadata.dimensions}</span>
-                </div>
-              )}
-              {media.metadata?.resolution && (
-                <div>
-                  <span className="text-dark-600">Resolution:</span>
-                  <span className="ml-2 text-dark-900">{media.metadata.resolution}</span>
+                  <span className="text-dark-600">File Size:</span>
+                  <span className="ml-2 text-dark-900">{(media.fileSize / 1024 / 1024).toFixed(2)} MB</span>
                 </div>
               )}
               <div>
-                <span className="text-dark-600">Uploaded:</span>
+                <span className="text-dark-600">Category:</span>
+                <span className="ml-2 text-dark-900">{media.category}</span>
+              </div>
+              <div>
+                <span className="text-dark-600">Created:</span>
                 <span className="ml-2 text-dark-900">
-                  {new Date(media.uploadedAt).toLocaleDateString()}
+                  {new Date(media.createdAt).toLocaleDateString()}
                 </span>
               </div>
             </div>

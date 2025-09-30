@@ -24,21 +24,21 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
   const [formData, setFormData] = useState({
     title: event?.title || '',
     description: event?.description || '',
-    type: event?.event_type || 'satsang',
+    type: event?.type || 'satsang',
     location: event?.location || '',
-    virtualLink: event?.virtual_link || '',
-    startDate: event?.event_date?.split('T')[0] || '',
-    startTime: event?.event_time || '',
-    endDate: event?.end_date?.split('T')[0] || event?.event_date?.split('T')[0] || '',
-    endTime: event?.end_time || '',
+    virtualLink: event?.virtualLink || '',
+    startDate: event?.startDate?.split('T')[0] || '',
+    startTime: event?.startTime || '',
+    endDate: event?.endDate?.split('T')[0] || event?.startDate?.split('T')[0] || '',
+    endTime: event?.endTime || '',
     timezone: event?.timezone || 'Asia/Kathmandu',
-    maxAttendees: event?.max_attendees || '',
-    registrationRequired: event?.registration_required ?? true,
-    registrationDeadline: event?.registration_deadline?.split('T')[0] || '',
+    maxAttendees: event?.maxAttendees || '',
+    registrationRequired: event?.registrationRequired ?? true,
+    registrationDeadline: event?.registrationDeadline?.split('T')[0] || '',
     organizer: event?.organizer || 'Kabir Sant Sharan',
     language: event?.language || 'en',
     published: event?.published ?? false,
-    featured: event?.is_featured ?? false,
+    featured: event?.featured ?? false,
     tags: event?.tags || ''
   });
 
@@ -61,24 +61,25 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
         body: JSON.stringify({
           title: formData.title,
           description: formData.description,
-          event_type: formData.type,
-          event_date: formData.startDate,
-          event_time: formData.startTime,
-          end_date: formData.endDate,
-          end_time: formData.endTime,
+          type: formData.type,
+          startDate: formData.startDate,
+          startTime: formData.startTime,
+          endDate: formData.endDate,
+          endTime: formData.endTime,
           location: formData.location,
-          virtual_link: formData.virtualLink,
+          virtualLink: formData.virtualLink,
           timezone: formData.timezone,
-          max_attendees: formData.maxAttendees ? parseInt(formData.maxAttendees.toString()) : null,
-          registration_required: formData.registrationRequired,
-          registration_deadline: formData.registrationDeadline,
+          maxAttendees: formData.maxAttendees ? parseInt(formData.maxAttendees.toString()) : null,
+          registrationRequired: formData.registrationRequired,
+          registrationDeadline: formData.registrationDeadline,
           organizer: formData.organizer,
           language: formData.language,
           published: saveAsDraft ? false : formData.published,
-          is_featured: formData.featured,
+          featured: formData.featured,
           tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean).join(','),
           slug: formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
-          current_attendees: event?.current_attendees || 0
+          currentAttendees: event?.currentAttendees || 0,
+          category: formData.type
         })
       });
 
@@ -112,7 +113,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
           onChange={handleChange}
           required
           placeholder="e.g., Daily Satsang - Morning Meditation"
-          className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
         />
       </div>
 
@@ -129,7 +130,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
           required
           rows={6}
           placeholder="Describe the event, its purpose, and what attendees can expect..."
-          className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
         />
       </div>
 
@@ -145,7 +146,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             value={formData.type}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           >
             {EVENT_TYPES.map(type => (
               <option key={type.value} value={type.value}>{type.label}</option>
@@ -163,7 +164,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             value={formData.language}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           >
             <option value="en">English</option>
             <option value="hi">Hindi</option>
@@ -185,7 +186,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             value={formData.startDate}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           />
         </div>
 
@@ -200,7 +201,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             value={formData.startTime}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           />
         </div>
 
@@ -215,7 +216,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             value={formData.endDate}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           />
         </div>
 
@@ -230,7 +231,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             value={formData.endTime}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           />
         </div>
       </div>
@@ -248,7 +249,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             value={formData.location}
             onChange={handleChange}
             placeholder="e.g., Kabir Sant Sharan, Kathmandu"
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           />
         </div>
 
@@ -263,7 +264,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             value={formData.virtualLink}
             onChange={handleChange}
             placeholder="https://zoom.us/j/..."
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           />
         </div>
       </div>
@@ -282,7 +283,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             onChange={handleChange}
             min="1"
             placeholder="Leave empty for unlimited"
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           />
         </div>
 
@@ -296,7 +297,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             name="registrationDeadline"
             value={formData.registrationDeadline}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+            className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
           />
         </div>
       </div>
@@ -313,7 +314,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
           value={formData.tags}
           onChange={handleChange}
           placeholder="meditation, kabir, satsang"
-          className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+          className="w-full px-4 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
         />
       </div>
 
@@ -326,7 +327,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             name="registrationRequired"
             checked={formData.registrationRequired}
             onChange={handleChange}
-            className="w-4 h-4 text-teal-600 border-cream-300 rounded focus:ring-teal-500"
+            className="w-4 h-4 text-dark-900 border-cream-300 rounded focus:ring-dark-900"
           />
           <label htmlFor="registrationRequired" className="ml-2 text-sm text-dark-700">
             Registration Required
@@ -340,7 +341,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             name="featured"
             checked={formData.featured}
             onChange={handleChange}
-            className="w-4 h-4 text-teal-600 border-cream-300 rounded focus:ring-teal-500"
+            className="w-4 h-4 text-dark-900 border-cream-300 rounded focus:ring-dark-900"
           />
           <label htmlFor="featured" className="ml-2 text-sm text-dark-700">
             Featured Event
@@ -354,7 +355,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
             name="published"
             checked={formData.published}
             onChange={handleChange}
-            className="w-4 h-4 text-teal-600 border-cream-300 rounded focus:ring-teal-500"
+            className="w-4 h-4 text-dark-900 border-cream-300 rounded focus:ring-dark-900"
           />
           <label htmlFor="published" className="ml-2 text-sm text-dark-700">
             Publish Event

@@ -242,20 +242,20 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                 {/* Event Details */}
                 <div className="space-y-2 text-sm text-dark-600">
                   <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg className="w-4 h-4 mr-2 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                     <span aria-label={`Event date: ${formatDate(event.startDate)}`}>{formatDate(event.startDate)}</span>
                   </div>
                   <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg className="w-4 h-4 mr-2 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span aria-label={`Event time: ${formatTime(event.startTime)} to ${formatTime(event.endTime)}`}>{formatTime(event.startTime)} - {formatTime(event.endTime)}</span>
                   </div>
                   {event.location && (
                     <div className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <svg className="w-4 h-4 mr-2 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
@@ -264,7 +264,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                   )}
                   {spotsRemaining !== null && (
                     <div className="flex items-center">
-                      <svg className="w-4 h-4 mr-2 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <svg className="w-4 h-4 mr-2 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
                       <span
@@ -330,7 +330,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                     required
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
                     aria-describedby={error ? 'error-message' : undefined}
                     aria-invalid={error ? 'true' : 'false'}
                     autoComplete="name"
@@ -348,7 +348,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                     required
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
                     aria-describedby={error ? 'error-message' : undefined}
                     aria-invalid={error ? 'true' : 'false'}
                     autoComplete="email"
@@ -367,7 +367,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                   required
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
                   aria-describedby={error ? 'error-message' : undefined}
                   aria-invalid={error ? 'true' : 'false'}
                   autoComplete="tel"
@@ -391,7 +391,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                     required
                     value={formData.emergencyContact}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
                     aria-describedby={error ? 'error-message' : undefined}
                     aria-invalid={error ? 'true' : 'false'}
                     autoComplete="name"
@@ -409,7 +409,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                     required
                     value={formData.emergencyPhone}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
                     aria-describedby={error ? 'error-message' : undefined}
                     aria-invalid={error ? 'true' : 'false'}
                     autoComplete="tel"
@@ -433,7 +433,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                   rows={3}
                   value={formData.dietaryRestrictions}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
                   placeholder="Please list any dietary restrictions, allergies, or special meal requirements..."
                   aria-describedby="dietary-help"
                 />
@@ -450,7 +450,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                   rows={3}
                   value={formData.specialRequests}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-cream-300 rounded-md focus:outline-none focus:ring-2 focus:ring-dark-900 focus:border-transparent"
                   placeholder="Any accessibility needs, special accommodations, or other requests..."
                   aria-describedby="requests-help"
                 />
@@ -466,7 +466,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                 required
                 checked={formData.agreeToTerms}
                 onChange={handleInputChange}
-                className="mt-1 h-4 w-4 text-teal-600 focus:ring-teal-500 border-cream-300 rounded"
+                className="mt-1 h-4 w-4 text-dark-900 focus:ring-dark-900 border-cream-300 rounded"
                 aria-describedby="terms-description"
                 aria-invalid={error ? 'true' : 'false'}
               />
@@ -495,7 +495,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
                   "px-6 py-2 text-white font-medium rounded-md transition-colors duration-200",
                   isSubmitting || !formData.agreeToTerms
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-teal-600 hover:bg-teal-700"
+                    : "bg-dark-900 hover:bg-dark-800"
                 )}
                 aria-label={isSubmitting ? 'Submitting registration' : (isFull ? 'Join waiting list for this event' : 'Submit registration for this event')}
                 aria-describedby={!formData.agreeToTerms ? 'terms-description' : undefined}

@@ -1,3 +1,6 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import { AudioPlayer } from './AudioPlayer'
 import { VideoPlayer } from './VideoPlayer'
 
@@ -5,99 +8,22 @@ interface MediaItem {
   id: string
   title: string
   description: string
-  type: 'audio' | 'video'
-  src: string
-  poster?: string
-  duration: string
+  type: string
   category: string
+  tags?: string
   author: string
-  uploadDate: string
+  duration?: string
+  streamingUrl?: string
+  downloadUrl?: string
+  featured: boolean
+  published: boolean
   views: number
-  featured?: boolean
+  downloads: number
+  likes: number
+  language: string
+  publishedAt?: string
+  createdAt: string
 }
-
-const sampleMediaItems: MediaItem[] = [
-  {
-    id: '1',
-    title: 'Sant Kabir\'s Teaching on Inner Truth',
-    description: 'A profound discourse on discovering the divine truth within oneself, exploring the path of self-realization through Kabir\'s timeless wisdom.',
-    type: 'audio',
-    src: '/audio/sample-teaching.mp3',
-    duration: '25:30',
-    category: 'Spiritual Teachings',
-    author: 'Sant Kabir Das',
-    uploadDate: '2024-09-25',
-    views: 1250,
-    featured: true
-  },
-  {
-    id: '2',
-    title: 'Weekly Satsang - Unity in Diversity',
-    description: 'Complete recording of our weekly satsang discussing Kabir\'s revolutionary teachings on the oneness of all religions and spiritual paths.',
-    type: 'video',
-    src: '/video/sample-satsang.mp4',
-    poster: '/images/satsang-poster.jpg',
-    duration: '45:15',
-    category: 'Satsang Recordings',
-    author: 'Community Leader',
-    uploadDate: '2024-09-28',
-    views: 890,
-    featured: true
-  },
-  {
-    id: '3',
-    title: 'Devotional Bhajan - Sab Dharti Kagad',
-    description: 'Beautiful rendition of Kabir\'s famous doha "Sab Dharti Kagad Karun" with traditional musical accompaniment and spiritual interpretation.',
-    type: 'audio',
-    src: '/audio/sample-bhajan.mp3',
-    duration: '8:45',
-    category: 'Devotional Music',
-    author: 'Spiritual Musicians',
-    uploadDate: '2024-09-26',
-    views: 650,
-    featured: false
-  },
-  {
-    id: '4',
-    title: 'Meditation Guide - Kabir\'s Simple Path',
-    description: 'Guided meditation session based on Sant Kabir\'s teachings on inner contemplation and connecting with the divine presence within.',
-    type: 'audio',
-    src: '/audio/sample-meditation.mp3',
-    duration: '15:20',
-    category: 'Meditation Guides',
-    author: 'Meditation Teacher',
-    uploadDate: '2024-09-24',
-    views: 1100,
-    featured: false
-  },
-  {
-    id: '5',
-    title: 'Festival Celebration - Kabir Jayanti 2024',
-    description: 'Complete video recording of our Kabir Jayanti celebration with spiritual discourses, kirtan, and community participation.',
-    type: 'video',
-    src: '/video/sample-festival.mp4',
-    poster: '/images/festival-poster.jpg',
-    duration: '1:20:30',
-    category: 'Festival Recordings',
-    author: 'Community',
-    uploadDate: '2024-09-20',
-    views: 2100,
-    featured: false
-  },
-  {
-    id: '6',
-    title: 'Daily Wisdom - Morning Reflection',
-    description: 'Short daily reflection on one of Kabir\'s dohas, providing spiritual insight for starting the day with divine consciousness.',
-    type: 'audio',
-    src: '/audio/sample-daily.mp3',
-    duration: '5:12',
-    category: 'Daily Wisdom',
-    author: 'Spiritual Guide',
-    uploadDate: '2024-09-29',
-    views: 420,
-    featured: false
-  }
-]
 
 function formatDate(dateString: string) {
   const date = new Date(dateString)
@@ -116,135 +42,252 @@ function formatViews(views: number) {
 }
 
 export function MediaGrid() {
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [offset, setOffset] = useState(0)
+  const limit = 12
+
+  useEffect(() => {
+    fetchMedia()
+  }, [])
+
+  const fetchMedia = async (loadMore = false) => {
+    try {
+      if (loadMore) {
+        setLoadingMore(true)
+      } else {
+        setLoading(true)
+      }
+
+      const currentOffset = loadMore ? offset : 0
+      const response = await fetch(`/api/media?limit=${limit}&offset=${currentOffset}&published=true`)
+      const data = await response.json()
+
+      if (data.items) {
+        if (loadMore) {
+          setMediaItems(prev => [...prev, ...data.items])
+        } else {
+          setMediaItems(data.items)
+        }
+        setHasMore(data.items.length === limit)
+        setOffset(currentOffset + data.items.length)
+      }
+    } catch (error) {
+      console.error('Error fetching media:', error)
+    } finally {
+      setLoading(false)
+      setLoadingMore(false)
+    }
+  }
+
+  const handleLoadMore = () => {
+    if (!loadingMore && hasMore) {
+      fetchMedia(true)
+    }
+  }
+
+  const incrementViewCount = async (mediaId: string) => {
+    try {
+      await fetch(`/api/media/${mediaId}/view`, { method: 'POST' })
+      // Update local state to reflect the incremented view count
+      setMediaItems(prev => prev.map(item =>
+        item.id === mediaId ? { ...item, views: item.views + 1 } : item
+      ))
+    } catch (error) {
+      console.error('Error incrementing view count:', error)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <h2 className="text-3xl font-bold text-dark-900 mb-8 text-center">Spiritual Media Library</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="bg-cream-100 rounded-lg shadow-lg overflow-hidden border border-cream-200 animate-pulse">
+              <div className="p-4 space-y-3">
+                <div className="h-4 bg-cream-200 rounded w-1/3"></div>
+                <div className="h-6 bg-cream-200 rounded w-3/4"></div>
+                <div className="h-12 bg-cream-200 rounded"></div>
+                <div className="h-16 bg-cream-200 rounded"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  const featuredItems = mediaItems.filter(item => item.featured)
+  const regularItems = mediaItems.filter(item => !item.featured)
+
   return (
     <div>
       <h2 className="text-3xl font-bold text-dark-900 mb-8 text-center">Spiritual Media Library</h2>
 
       {/* Featured Media Section */}
-      <div className="mb-12">
-        <h3 className="text-xl font-bold text-dark-900 mb-6">Featured Content</h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {sampleMediaItems.filter(item => item.featured).map((item) => (
-            <div key={item.id} className="bg-cream-100 rounded-lg shadow-lg overflow-hidden border border-cream-200">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-dark-600 bg-cream-200 px-3 py-1 rounded-full">
-                    {item.category}
-                  </span>
-                  <span className="text-sm text-dark-500">{item.duration}</span>
-                </div>
-
-                <h4 className="text-lg font-bold text-dark-900 mb-2">{item.title}</h4>
-                <p className="text-dark-700 text-sm mb-4 leading-relaxed">{item.description}</p>
-
-                {/* Media Player */}
-                <div className="mb-4">
-                  {item.type === 'audio' ? (
-                    <AudioPlayer
-                      title={item.title}
-                      artist={item.author}
-                      src={item.src}
-                      duration={item.duration}
-                    />
-                  ) : (
-                    <VideoPlayer
-                      title={item.title}
-                      src={item.src}
-                      poster={item.poster}
-                      duration={item.duration}
-                    />
-                  )}
-                </div>
-
-                {/* Media Info */}
-                <div className="flex items-center justify-between text-xs text-dark-600">
-                  <div className="flex items-center space-x-4">
-                    <span>By {item.author}</span>
-                    <span>{formatDate(item.uploadDate)}</span>
+      {featuredItems.length > 0 && (
+        <div className="mb-12">
+          <h3 className="text-xl font-bold text-dark-900 mb-6">Featured Content</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {featuredItems.map((item) => (
+              <div key={item.id} className="bg-cream-100 rounded-lg shadow-lg overflow-hidden border border-cream-200">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-dark-600 bg-cream-200 px-3 py-1 rounded-full">
+                      {item.category}
+                    </span>
+                    <span className="text-sm text-dark-500">{item.duration || 'Unknown'}</span>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    <span>{formatViews(item.views)}</span>
+
+                  <h4 className="text-lg font-bold text-dark-900 mb-2">{item.title}</h4>
+                  <p className="text-dark-700 text-sm mb-4 leading-relaxed">{item.description}</p>
+
+                  {/* Media Player */}
+                  <div className="mb-4">
+                    {item.type === 'audio' && item.streamingUrl ? (
+                      <AudioPlayer
+                        title={item.title}
+                        artist={item.author}
+                        src={item.streamingUrl}
+                        duration={item.duration}
+                        onPlayStateChange={(isPlaying) => {
+                          if (isPlaying) {
+                            incrementViewCount(item.id)
+                          }
+                        }}
+                      />
+                    ) : item.type === 'video' && item.streamingUrl ? (
+                      <VideoPlayer
+                        title={item.title}
+                        src={item.streamingUrl}
+                        duration={item.duration}
+                      />
+                    ) : (
+                      <div className="bg-cream-200 rounded-lg p-4 text-center text-dark-600">
+                        Media not available
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Media Info */}
+                  <div className="flex items-center justify-between text-xs text-dark-600">
+                    <div className="flex items-center space-x-4">
+                      <span>By {item.author}</span>
+                      <span>{formatDate(item.publishedAt || item.createdAt)}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      <span>{formatViews(item.views)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* All Media Grid */}
       <div>
-        <h3 className="text-xl font-bold text-dark-900 mb-6">All Media</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {sampleMediaItems.map((item) => (
-            <div key={item.id} className="bg-cream-100 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-cream-200">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium text-dark-600 bg-cream-200 px-2 py-1 rounded-full">
-                    {item.category}
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${
-                      item.type === 'audio' ? 'bg-blue-500' : 'bg-red-500'
-                    }`}></div>
-                    <span className="text-xs text-dark-500">{item.duration}</span>
-                  </div>
-                </div>
-
-                <h4 className="text-base font-bold text-dark-900 mb-2 line-clamp-2">{item.title}</h4>
-                <p className="text-dark-700 text-xs mb-3 leading-relaxed line-clamp-2">{item.description}</p>
-
-                {/* Compact Media Player */}
-                <div className="mb-3">
-                  {item.type === 'audio' ? (
-                    <AudioPlayer
-                      title={item.title}
-                      artist={item.author}
-                      src={item.src}
-                      duration={item.duration}
-                    />
-                  ) : (
-                    <div className="aspect-video bg-dark-100 rounded overflow-hidden">
-                      <VideoPlayer
-                        title={item.title}
-                        src={item.src}
-                        poster={item.poster}
-                        duration={item.duration}
-                      />
+        <h3 className="text-xl font-bold text-dark-900 mb-6">{featuredItems.length > 0 ? 'More Media' : 'All Media'}</h3>
+        {regularItems.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {regularItems.map((item) => (
+              <div key={item.id} className="bg-cream-100 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-cream-200">
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-dark-600 bg-cream-200 px-2 py-1 rounded-full">
+                      {item.category}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-2 h-2 rounded-full ${
+                        item.type === 'audio' ? 'bg-dark-600' : 'bg-dark-700'
+                      }`}></div>
+                      <span className="text-xs text-dark-500">{item.duration || 'Unknown'}</span>
                     </div>
-                  )}
-                </div>
-
-                {/* Media Footer */}
-                <div className="flex items-center justify-between text-xs text-dark-600">
-                  <div className="flex flex-col space-y-1">
-                    <span className="font-medium">{item.author}</span>
-                    <span>{formatDate(item.uploadDate)}</span>
                   </div>
-                  <div className="flex items-center space-x-1">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    <span>{formatViews(item.views)}</span>
+
+                  <h4 className="text-base font-bold text-dark-900 mb-2 line-clamp-2">{item.title}</h4>
+                  <p className="text-dark-700 text-xs mb-3 leading-relaxed line-clamp-2">{item.description}</p>
+
+                  {/* Compact Media Player */}
+                  <div className="mb-3">
+                    {item.type === 'audio' && item.streamingUrl ? (
+                      <AudioPlayer
+                        title={item.title}
+                        artist={item.author}
+                        src={item.streamingUrl}
+                        duration={item.duration}
+                        onPlayStateChange={(isPlaying) => {
+                          if (isPlaying) {
+                            incrementViewCount(item.id)
+                          }
+                        }}
+                      />
+                    ) : item.type === 'video' && item.streamingUrl ? (
+                      <div className="aspect-video bg-dark-100 rounded overflow-hidden">
+                        <VideoPlayer
+                          title={item.title}
+                          src={item.streamingUrl}
+                          duration={item.duration}
+                        />
+                      </div>
+                    ) : (
+                      <div className="bg-cream-200 rounded-lg p-2 text-center text-dark-600 text-xs">
+                        Media not available
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Media Footer */}
+                  <div className="flex items-center justify-between text-xs text-dark-600">
+                    <div className="flex flex-col space-y-1">
+                      <span className="font-medium">{item.author}</span>
+                      <span>{formatDate(item.publishedAt || item.createdAt)}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                      <span>{formatViews(item.views)}</span>
+                    </div>
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-dark-400 mb-4">
+              <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
             </div>
-          ))}
-        </div>
+            <h3 className="text-xl font-semibold text-dark-900 mb-2">No Media Found</h3>
+            <p className="text-dark-600">Check back later for spiritual teachings and content.</p>
+          </div>
+        )}
       </div>
 
       {/* Load More */}
-      <div className="text-center mt-8">
-        <button className="bg-cream-200 hover:bg-cream-300 text-dark-800 px-6 py-3 rounded-md transition-colors duration-200 font-medium">
-          Load More Spiritual Content
-        </button>
-      </div>
+      {hasMore && regularItems.length > 0 && (
+        <div className="text-center mt-8">
+          <button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            className="bg-cream-200 hover:bg-cream-300 disabled:opacity-50 text-dark-800 px-6 py-3 rounded-md transition-colors duration-200 font-medium"
+          >
+            {loadingMore ? 'Loading...' : 'Load More Spiritual Content'}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

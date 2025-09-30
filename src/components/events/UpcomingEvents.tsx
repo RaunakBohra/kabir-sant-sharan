@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react'
 interface Event {
   id: string
   title: string
-  event_date: string
+  startDate: string
   location: string
-  event_type: string
+  type: string
   description: string
 }
 
@@ -94,10 +94,10 @@ export function UpcomingEvents() {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-sm font-medium text-dark-600 bg-cream-200 px-3 py-1 rounded-full">
-                    {event.event_type}
+                    {event.type}
                   </span>
                   <span className="text-sm text-dark-500">
-                    {formatTime(event.event_date)}
+                    {formatTime(event.startDate)}
                   </span>
                 </div>
 
@@ -110,7 +110,7 @@ export function UpcomingEvents() {
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    {formatDate(event.event_date)}
+                    {formatDate(event.startDate)}
                   </div>
                   <div className="flex items-center text-dark-700 text-sm">
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

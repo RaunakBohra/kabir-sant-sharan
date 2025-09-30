@@ -41,12 +41,12 @@ export function BlogFilters({ selectedCategory, searchQuery, onFiltersChange }: 
       </div>
 
       {/* Category Filters */}
-      <div className="flex flex-wrap justify-center gap-3 mb-6">
+      <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-6 px-2">
         {categories.map((category) => (
           <button
             key={category.id}
             onClick={() => onFiltersChange({ category: category.id })}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+            className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-colors duration-200 whitespace-nowrap ${
               selectedCategory === category.id
                 ? 'bg-dark-900 text-cream-50'
                 : 'bg-cream-200 text-dark-700 hover:bg-cream-300 hover:text-dark-900'
@@ -58,13 +58,13 @@ export function BlogFilters({ selectedCategory, searchQuery, onFiltersChange }: 
       </div>
 
       {/* Sort Options */}
-      <div className="flex justify-center">
-        <div className="flex items-center space-x-4">
-          <span className="text-dark-700 font-medium">Sort by:</span>
+      <div className="flex justify-center px-4">
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
+          <span className="text-dark-700 font-medium text-sm sm:text-base">Sort by:</span>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-cream-100 border border-cream-300 text-dark-900 text-sm rounded-md focus:ring-dark-500 focus:border-dark-500 px-3 py-2"
+            className="w-full sm:w-auto bg-cream-100 border border-cream-300 text-dark-900 text-sm rounded-md focus:ring-dark-500 focus:border-dark-500 px-3 py-2"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>

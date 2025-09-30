@@ -56,7 +56,14 @@
       "Bash(./scripts/testing/e2e-admin-test.sh:*)",
       "Bash(python3:*)",
       "Bash(mv:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(tee:*)",
+      "Bash(echo:*)",
+      "Bash(npx drizzle-kit push:*)",
+      "Bash(npx drizzle-kit:*)",
+      "Bash(for color in teal amber purple blue green yellow red)",
+      "Bash(do echo -n \"$color: \")",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

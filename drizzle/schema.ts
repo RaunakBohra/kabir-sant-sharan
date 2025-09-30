@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { text, integer, sqliteTable, uniqueIndex } from 'drizzle-orm/sqlite-core'
+import { text, integer, sqliteTable, uniqueIndex, index } from 'drizzle-orm/sqlite-core'
 
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
@@ -118,8 +118,8 @@ export const media = sqliteTable('media', {
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
 }, (media) => ({
-  typeIdx: uniqueIndex('media_type_idx').on(media.type),
-  categoryIdx: uniqueIndex('media_category_idx').on(media.category),
+  typeIdx: index('media_type_idx').on(media.type),
+  categoryIdx: index('media_category_idx').on(media.category),
   r2KeyIdx: uniqueIndex('media_r2_key_idx').on(media.r2Key)
 }))
 

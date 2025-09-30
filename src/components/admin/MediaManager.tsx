@@ -5,26 +5,37 @@ import { MediaUpload } from './MediaUpload';
 import { MediaPreviewDialog } from './MediaManager/MediaPreviewDialog';
 import { EditMediaDialog } from './MediaManager/EditMediaDialog';
 import { toast } from '@/components/ui/toast';
+import { apiRequest } from '@/lib/api-client';
+import { extractProductNameFromR2Key, formatFileSize, formatDuration } from '@/lib/media-utils';
 
 interface MediaFile {
   id: string;
-  fileName: string;
-  originalName: string;
-  url: string;
-  type: 'audio' | 'video' | 'image' | 'document';
-  size: number;
-  mimeType: string;
-  uploadedAt: string;
-  metadata?: {
-    title?: string;
-    artist?: string;
-    duration?: string;
-    dimensions?: string;
-    resolution?: string;
-    altText?: string;
-    description?: string;
-    tags?: string[];
-  };
+  title: string;
+  description: string;
+  type: string;
+  category: string;
+  tags?: string;
+  author: string;
+  duration?: string;
+  fileSize?: number;
+  mimeType?: string;
+  r2Key: string;
+  r2Bucket: string;
+  thumbnailKey?: string;
+  streamingUrl?: string;
+  downloadUrl?: string;
+  transcription?: string;
+  featured: boolean;
+  published: boolean;
+  views: number;
+  downloads: number;
+  likes: number;
+  language: string;
+  uploadedBy: string;
+  publishedAt?: string;
+  deletedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export function MediaManager() {
@@ -39,12 +50,22 @@ export function MediaManager() {
   const loadMediaFiles = useCallback(async () => {
     setIsLoading(true);
     try {
-      const typeParam = selectedType !== 'all' ? `?type=${selectedType}` : '';
-      const response = await fetch(`/api/media/upload${typeParam}`);
-      const data = await response.json() as { files: MediaFile[] };
-      setMediaFiles(data.files || []);
+      const params = new URLSearchParams({
+        limit: '100',
+        offset: '0',
+        published: 'false' // Show all media for admin (both published and unpublished)
+      });
+
+      if (selectedType !== 'all') {
+        params.append('type', selectedType);
+      }
+
+      const response = await apiRequest(`/api/media?${params}`);
+      const data = await response.json();
+      setMediaFiles(data.media || []);
     } catch (error) {
       console.error('Failed to load media files:', error);
+      toast.error('Failed to load media files');
     } finally {
       setIsLoading(false);
     }
@@ -55,13 +76,6 @@ export function MediaManager() {
   }, [loadMediaFiles]);
 
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   const getFileTypeIcon = (type: string) => {
     switch (type) {
@@ -154,74 +168,128 @@ export function MediaManager() {
           </nav>
         </div>
 
-        {/* Media Grid */}
+        {/* Media Table */}
         <div className="p-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dark-900"></div>
             </div>
           ) : filteredFiles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredFiles.map((file) => (
-                <div key={file.id} className="bg-cream-100 rounded-lg p-4 hover:bg-cream-200 transition-colors">
-                  <div className="flex items-center justify-center mb-3">
-                    {getFileTypeIcon(file.type)}
-                  </div>
-                  <div className="text-center">
-                    <h3 className="font-medium text-dark-900 text-sm mb-1 truncate" title={file.originalName}>
-                      {file.metadata?.title || file.originalName}
-                    </h3>
-                    {file.metadata?.artist && (
-                      <p className="text-xs text-dark-500 mb-1">by {file.metadata.artist}</p>
-                    )}
-                    {file.metadata?.duration && (
-                      <p className="text-xs text-dark-500 mb-1">{file.metadata.duration}</p>
-                    )}
-                    <p className="text-xs text-dark-500">{formatFileSize(file.size)}</p>
-                    <p className="text-xs text-dark-400 mt-1">
-                      {new Date(file.uploadedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center space-x-2 mt-3">
-                    <button
-                      onClick={() => setPreviewMedia(file)}
-                      className="p-1 text-dark-400 hover:text-blue-600 transition-colors"
-                      title="Preview"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => setEditMedia(file)}
-                      className="p-1 text-dark-400 hover:text-amber-600 transition-colors"
-                      title="Edit"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => {
-                        const link = document.createElement('a');
-                        link.href = file.url;
-                        link.download = file.originalName;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        toast.success('Download started');
-                      }}
-                      className="p-1 text-dark-400 hover:text-green-600 transition-colors"
-                      title="Download"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
+            <div className="overflow-x-auto" data-testid="media-grid">
+              <table className="w-full border-collapse border border-cream-200 rounded-lg">
+                <thead>
+                  <tr className="bg-cream-100">
+                    <th className="border border-cream-200 px-4 py-3 text-left text-dark-900 font-medium">Type</th>
+                    <th className="border border-cream-200 px-4 py-3 text-left text-dark-900 font-medium">Title</th>
+                    <th className="border border-cream-200 px-4 py-3 text-left text-dark-900 font-medium">Product Name</th>
+                    <th className="border border-cream-200 px-4 py-3 text-left text-dark-900 font-medium">Author</th>
+                    <th className="border border-cream-200 px-4 py-3 text-left text-dark-900 font-medium">Duration</th>
+                    <th className="border border-cream-200 px-4 py-3 text-left text-dark-900 font-medium">Size</th>
+                    <th className="border border-cream-200 px-4 py-3 text-left text-dark-900 font-medium">Status</th>
+                    <th className="border border-cream-200 px-4 py-3 text-left text-dark-900 font-medium">Created</th>
+                    <th className="border border-cream-200 px-4 py-3 text-left text-dark-900 font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredFiles.map((file) => (
+                    <tr key={file.id} className="hover:bg-cream-50 transition-colors" data-testid="media-card">
+                      <td className="border border-cream-200 px-4 py-3">
+                        <div className="flex items-center justify-center w-8">
+                          {getFileTypeIcon(file.type)}
+                        </div>
+                      </td>
+                      <td className="border border-cream-200 px-4 py-3">
+                        <div className="font-medium text-dark-900 text-sm" title={file.title}>
+                          {file.title}
+                        </div>
+                      </td>
+                      <td className="border border-cream-200 px-4 py-3">
+                        <div className="text-sm text-dark-700">
+                          {extractProductNameFromR2Key(file.r2Key)}
+                        </div>
+                      </td>
+                      <td className="border border-cream-200 px-4 py-3">
+                        <div className="text-sm text-dark-600">
+                          {file.author}
+                        </div>
+                      </td>
+                      <td className="border border-cream-200 px-4 py-3">
+                        <div className="text-sm text-dark-600">
+                          {file.duration ? formatDuration(file.duration) : '-'}
+                        </div>
+                      </td>
+                      <td className="border border-cream-200 px-4 py-3">
+                        <div className="text-sm text-dark-600">
+                          {formatFileSize(file.fileSize)}
+                        </div>
+                      </td>
+                      <td className="border border-cream-200 px-4 py-3">
+                        <div className="flex items-center space-x-2">
+                          <span className={`inline-block w-2 h-2 rounded-full ${
+                            file.published ? 'bg-green-500' : 'bg-yellow-500'
+                          }`} title={file.published ? 'Published' : 'Draft'}></span>
+                          <span className="text-xs text-dark-600">
+                            {file.published ? 'Published' : 'Draft'}
+                          </span>
+                          {file.featured && (
+                            <span className="text-xs text-yellow-600" title="Featured">⭐</span>
+                          )}
+                        </div>
+                        <div className="text-xs text-dark-400 mt-1">
+                          {file.views} views • {file.likes} likes
+                        </div>
+                      </td>
+                      <td className="border border-cream-200 px-4 py-3">
+                        <div className="text-sm text-dark-600">
+                          {new Date(file.createdAt).toLocaleDateString()}
+                        </div>
+                      </td>
+                      <td className="border border-cream-200 px-4 py-3">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => setPreviewMedia(file)}
+                            className="p-1 text-dark-400 hover:text-blue-600 transition-colors"
+                            title="Preview"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => setEditMedia(file)}
+                            className="p-1 text-dark-400 hover:text-amber-600 transition-colors"
+                            title="Edit"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                          </button>
+                          {file.downloadUrl && (
+                            <button
+                              onClick={() => {
+                                const link = document.createElement('a');
+                                link.href = file.downloadUrl!;
+                                link.download = extractProductNameFromR2Key(file.r2Key);
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                toast.success('Download started');
+                              }}
+                              className="p-1 text-dark-400 hover:text-green-600 transition-colors"
+                              title="Download"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
             <div className="text-center py-12">

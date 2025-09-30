@@ -1,13 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createR2Storage, CloudflareEnv } from '@/lib/r2-storage';
+import { createR2UploadService } from '@/lib/r2-upload';
+import { databaseService } from '@/lib/database-service';
+import { validateAccessToken } from '@/lib/jwt-auth';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
+    // Validate authentication
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { error: 'Missing or invalid authorization header' },
+        { status: 401 }
+      );
+    }
+
+    const token = authHeader.substring(7);
+    const { valid, payload } = validateAccessToken(token);
+
+    if (!valid || !payload) {
+      return NextResponse.json(
+        { error: 'Invalid or expired token' },
+        { status: 401 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const type = formData.get('type') as 'audio' | 'video' | 'image' | 'document';
+    const metadataStr = formData.get('metadata') as string | null;
 
     if (!file) {
       return NextResponse.json(
@@ -23,36 +45,91 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (10MB limit for demo)
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    // Validate file size (200MB limit to match client-side)
+    const maxSize = 200 * 1024 * 1024; // 200MB
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'File too large. Maximum size is 10MB' },
+        { error: 'File too large. Maximum size is 200MB' },
         { status: 400 }
       );
     }
 
-    // In production, this would use actual R2 storage
-    // For now, return a mock response
-    const mockStorageResponse = {
-      success: true,
-      url: `/api/media/file/${Date.now()}-${file.name}`,
-      fileId: Date.now().toString(),
-      fileName: file.name,
+    // Parse metadata if provided
+    let metadata: Record<string, string> = {};
+    if (metadataStr) {
+      try {
+        metadata = JSON.parse(metadataStr);
+      } catch (e) {
+        console.warn('Failed to parse metadata:', e);
+      }
+    }
+
+    // Initialize R2 upload service
+    const r2Service = createR2UploadService();
+
+    // Generate unique key for the file
+    const r2Key = r2Service.generateKey(file.name, type);
+
+    // Convert file to buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload to R2
+    const uploadResult = await r2Service.uploadFile(
+      buffer,
+      r2Key,
+      file.type,
+      metadata
+    );
+
+    if (!uploadResult.success) {
+      return NextResponse.json(
+        { error: uploadResult.error || 'Upload failed' },
+        { status: 500 }
+      );
+    }
+
+    // Save to database
+    const mediaItem = await databaseService.createMedia({
+      title: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
+      description: metadata.description || '',
+      type: type,
+      category: metadata.category || 'uncategorized',
+      tags: metadata.tags || '',
+      author: metadata.author || 'Admin',
+      duration: metadata.duration || null,
       fileSize: file.size,
       mimeType: file.type,
-      uploadedAt: new Date().toISOString()
-    };
+      r2Key: r2Key,
+      r2Bucket: process.env.R2_BUCKET_NAME || 'kabir-media',
+      thumbnailKey: null,
+      streamingUrl: uploadResult.url!,
+      downloadUrl: uploadResult.url!,
+      transcription: null,
+      featured: false,
+      published: false, // Default to unpublished, admin can publish later
+      language: 'en',
+      uploadedBy: payload.userId,
+    });
 
     return NextResponse.json({
       message: 'File uploaded successfully',
-      data: mockStorageResponse
+      data: {
+        id: mediaItem.id,
+        url: uploadResult.url,
+        key: r2Key,
+        fileName: file.name,
+        fileSize: file.size,
+        mimeType: file.type,
+        type: type,
+        uploadedAt: mediaItem.createdAt
+      }
     });
 
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: error instanceof Error ? error.message : 'Failed to upload file' },
       { status: 500 }
     );
   }
@@ -69,12 +146,20 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const limit = parseInt(searchParams.get('limit') || '20');
     const offset = parseInt(searchParams.get('offset') || '0');
+    const published = searchParams.get('published');
 
     // Build where conditions
     const conditions = [
-      eq(media.published, true),
       isNull(media.deletedAt)
     ];
+
+    // Only filter by published status if specifically requested
+    if (published === 'true') {
+      conditions.push(eq(media.published, true));
+    } else if (published === 'false') {
+      conditions.push(eq(media.published, false));
+    }
+    // If published is null/undefined, show all (for admin)
 
     if (type) {
       conditions.push(eq(media.type, type));

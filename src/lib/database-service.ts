@@ -1,7 +1,7 @@
 // Database service for connecting to D1 and managing data
 import { getDatabase } from './db';
 import { eq, desc, gte, isNull, and, sql as drizzleSql } from 'drizzle-orm';
-import { teachings, events, newsletters, newsletterCampaigns, analytics } from '@/drizzle/schema';
+import { teachings, events, newsletters, newsletterCampaigns, analytics, media } from '@/drizzle/schema';
 
 export interface Teaching {
   id: string;
@@ -83,6 +83,36 @@ export interface RecentActivity {
   page?: string;
   query?: string;
   time: string;
+}
+
+export interface Media {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  category: string;
+  tags?: string;
+  author: string;
+  duration?: string;
+  fileSize?: number;
+  mimeType?: string;
+  r2Key: string;
+  r2Bucket: string;
+  thumbnailKey?: string;
+  streamingUrl?: string;
+  downloadUrl?: string;
+  transcription?: string;
+  featured: boolean;
+  published: boolean;
+  views: number;
+  downloads: number;
+  likes: number;
+  language: string;
+  uploadedBy: string;
+  publishedAt?: string;
+  deletedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export class DatabaseService {
@@ -584,6 +614,204 @@ export class DatabaseService {
     } catch (error) {
       console.error('Error tracking page view:', error);
     }
+  }
+
+  // Media CRUD operations
+  async getMedia(options: {
+    limit?: number;
+    offset?: number;
+    category?: string;
+    type?: string;
+    published?: boolean;
+  } = {}): Promise<{ media: Media[]; total: number }> {
+    try {
+      const db = getDatabase(this.env);
+      const { limit = 50, offset = 0, category = 'all', type = 'all', published = true } = options;
+
+      // Build query conditions
+      const conditions = [];
+      if (published !== undefined) {
+        conditions.push(eq(media.published, published));
+      }
+      if (category !== 'all') {
+        conditions.push(eq(media.category, category));
+      }
+      if (type !== 'all') {
+        conditions.push(eq(media.type, type));
+      }
+      conditions.push(isNull(media.deletedAt));
+
+      const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+      const [mediaData, countResult] = await Promise.all([
+        db
+          .select()
+          .from(media)
+          .where(whereClause)
+          .orderBy(desc(media.createdAt))
+          .limit(limit)
+          .offset(offset),
+        db
+          .select({ count: drizzleSql<number>`count(*)` })
+          .from(media)
+          .where(whereClause)
+      ]);
+
+      const total = (countResult[0] as any)?.count || 0;
+
+      return {
+        media: mediaData.map(this.transformMediaFromDB),
+        total
+      };
+    } catch (error) {
+      console.error('Error fetching media:', error);
+      return { media: [], total: 0 };
+    }
+  }
+
+  async getMediaById(id: string): Promise<Media | null> {
+    try {
+      const db = getDatabase(this.env);
+      const result = await db
+        .select()
+        .from(media)
+        .where(and(eq(media.id, id), isNull(media.deletedAt)))
+        .limit(1);
+
+      return result.length > 0 ? this.transformMediaFromDB(result[0]) : null;
+    } catch (error) {
+      console.error('Error fetching media by ID:', error);
+      return null;
+    }
+  }
+
+  async createMedia(mediaData: Partial<Media>): Promise<Media> {
+    const db = getDatabase(this.env);
+    const { createId } = await import('@paralleldrive/cuid2');
+
+    const now = new Date().toISOString();
+    const newMedia = {
+      id: createId(),
+      title: mediaData.title || '',
+      description: mediaData.description || '',
+      type: mediaData.type || 'audio',
+      category: mediaData.category || 'uncategorized',
+      tags: mediaData.tags || '',
+      author: mediaData.author || 'Unknown',
+      duration: mediaData.duration || null,
+      fileSize: mediaData.fileSize || null,
+      mimeType: mediaData.mimeType || null,
+      r2Key: mediaData.r2Key || '',
+      r2Bucket: mediaData.r2Bucket || 'kabir-media',
+      thumbnailKey: mediaData.thumbnailKey || null,
+      streamingUrl: mediaData.streamingUrl || null,
+      downloadUrl: mediaData.downloadUrl || null,
+      transcription: mediaData.transcription || null,
+      featured: mediaData.featured || false,
+      published: mediaData.published || false,
+      views: 0,
+      downloads: 0,
+      likes: 0,
+      language: mediaData.language || 'en',
+      uploadedBy: mediaData.uploadedBy || 'admin',
+      publishedAt: mediaData.published ? now : null,
+      deletedAt: null,
+      createdAt: now,
+      updatedAt: now
+    };
+
+    await db.insert(media).values(newMedia);
+    return this.transformMediaFromDB(newMedia);
+  }
+
+  async updateMedia(id: string, mediaData: Partial<Media>): Promise<Media | null> {
+    try {
+      const db = getDatabase(this.env);
+      const now = new Date().toISOString();
+
+      const updateData = {
+        ...mediaData,
+        updatedAt: now
+      };
+
+      if (mediaData.published && !mediaData.publishedAt) {
+        updateData.publishedAt = now;
+      }
+
+      await db
+        .update(media)
+        .set(updateData)
+        .where(and(eq(media.id, id), isNull(media.deletedAt)));
+
+      return this.getMediaById(id);
+    } catch (error) {
+      console.error('Error updating media:', error);
+      return null;
+    }
+  }
+
+  async deleteMedia(id: string): Promise<boolean> {
+    try {
+      const db = getDatabase(this.env);
+      const now = new Date().toISOString();
+
+      await db
+        .update(media)
+        .set({ deletedAt: now, updatedAt: now })
+        .where(eq(media.id, id));
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting media:', error);
+      return false;
+    }
+  }
+
+  async incrementMediaViews(id: string): Promise<void> {
+    try {
+      const db = getDatabase(this.env);
+      await db
+        .update(media)
+        .set({
+          views: drizzleSql`${media.views} + 1`,
+          updatedAt: new Date().toISOString()
+        })
+        .where(eq(media.id, id));
+    } catch (error) {
+      console.error('Error incrementing media views:', error);
+    }
+  }
+
+  private transformMediaFromDB(dbMedia: any): Media {
+    return {
+      id: dbMedia.id,
+      title: dbMedia.title,
+      description: dbMedia.description,
+      type: dbMedia.type,
+      category: dbMedia.category,
+      tags: dbMedia.tags,
+      author: dbMedia.author,
+      duration: dbMedia.duration,
+      fileSize: dbMedia.file_size || dbMedia.fileSize,
+      mimeType: dbMedia.mime_type || dbMedia.mimeType,
+      r2Key: dbMedia.r2_key || dbMedia.r2Key,
+      r2Bucket: dbMedia.r2_bucket || dbMedia.r2Bucket,
+      thumbnailKey: dbMedia.thumbnail_key || dbMedia.thumbnailKey,
+      streamingUrl: dbMedia.streaming_url || dbMedia.streamingUrl,
+      downloadUrl: dbMedia.download_url || dbMedia.downloadUrl,
+      transcription: dbMedia.transcription,
+      featured: !!dbMedia.featured,
+      published: !!dbMedia.published,
+      views: dbMedia.views || 0,
+      downloads: dbMedia.downloads || 0,
+      likes: dbMedia.likes || 0,
+      language: dbMedia.language,
+      uploadedBy: dbMedia.uploaded_by || dbMedia.uploadedBy,
+      publishedAt: dbMedia.published_at || dbMedia.publishedAt,
+      deletedAt: dbMedia.deleted_at || dbMedia.deletedAt,
+      createdAt: dbMedia.created_at || dbMedia.createdAt,
+      updatedAt: dbMedia.updated_at || dbMedia.updatedAt
+    };
   }
 }
 

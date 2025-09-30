@@ -171,12 +171,12 @@ export default function EditTeachingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream-50 py-8">
-      <div className="max-w-5xl mx-auto px-4">
+    <div className="min-h-screen bg-cream-50 py-4 sm:py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-dark-900">Edit Teaching</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-dark-900">Edit Teaching</h1>
             <p className="text-sm text-dark-500 mt-1">
               {hasUnsavedChanges && 'Unsaved changes'}
             </p>
@@ -184,14 +184,14 @@ export default function EditTeachingPage() {
           <div className="flex items-center space-x-3">
             <button
               onClick={handleCancel}
-              className="px-4 py-2 text-dark-700 bg-white border border-cream-300 rounded-lg hover:bg-cream-50 transition-colors"
+              className="flex-1 sm:flex-none px-4 py-2 text-dark-700 bg-white border border-cream-300 rounded-lg hover:bg-cream-50 transition-colors touch-manipulation min-h-[44px]"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               disabled={isSaving}
-              className="px-6 py-2 text-white bg-dark-900 rounded-lg hover:bg-dark-800 transition-colors disabled:opacity-50"
+              className="flex-1 sm:flex-none px-6 py-2 text-white bg-dark-900 rounded-lg hover:bg-dark-800 transition-colors disabled:opacity-50 touch-manipulation min-h-[44px]"
             >
               {isSaving ? 'Saving...' : 'Save Changes'}
             </button>
@@ -199,7 +199,7 @@ export default function EditTeachingPage() {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-lg shadow-lg border border-cream-200 p-8 space-y-6">
+        <div className="bg-white rounded-lg shadow-lg border border-cream-200 p-4 sm:p-6 lg:p-8 space-y-6">
           {/* Title */}
           <div>
             <label className="block text-sm font-medium text-dark-900 mb-2">

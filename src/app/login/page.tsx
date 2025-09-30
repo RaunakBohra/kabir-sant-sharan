@@ -120,8 +120,8 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center">
-            <div className="bg-amber-50 border border-amber-200 rounded-md p-3 text-sm">
-              <p className="text-amber-800">
+            <div className="bg-cream-100 border border-cream-300 rounded-md p-3 text-sm">
+              <p className="text-dark-800">
                 <strong>Demo Credentials:</strong><br />
                 Email: admin@kabirsantsharan.com<br />
                 Password: admin123

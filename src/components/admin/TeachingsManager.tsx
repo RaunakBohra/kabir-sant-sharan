@@ -81,7 +81,7 @@ export function TeachingsManager() {
         </div>
         <button
           onClick={handleAddTeaching}
-          className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors duration-200 flex items-center space-x-2"
+          className="bg-dark-900 text-white px-4 py-2 rounded-lg hover:bg-dark-800 transition-colors duration-200 flex items-center space-x-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -94,8 +94,8 @@ export function TeachingsManager() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 bg-cream-200 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
               </svg>
             </div>
@@ -108,8 +108,8 @@ export function TeachingsManager() {
 
         <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 bg-cream-200 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
             </div>
@@ -140,7 +140,7 @@ export function TeachingsManager() {
         <div className="p-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dark-900"></div>
             </div>
           ) : (
             <div className="space-y-4">
@@ -161,7 +161,7 @@ export function TeachingsManager() {
                     <div className="flex items-center space-x-2 ml-4">
                       <button
                         onClick={() => handleEditTeaching(teaching.id)}
-                        className="p-2 text-dark-400 hover:text-teal-600 transition-colors"
+                        className="p-2 text-dark-400 hover:text-dark-900 transition-colors"
                         title="Edit teaching"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -170,7 +170,7 @@ export function TeachingsManager() {
                       </button>
                       <button
                         onClick={() => handleDeleteClick(teaching.id, teaching.title)}
-                        className="p-2 text-red-400 hover:text-red-600 transition-colors"
+                        className="p-2 text-dark-400 hover:text-dark-700 transition-colors"
                         title="Delete teaching"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

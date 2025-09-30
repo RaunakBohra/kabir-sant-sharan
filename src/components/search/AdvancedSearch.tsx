@@ -157,7 +157,7 @@ export function AdvancedSearch() {
     let highlightedText = text;
     highlights.forEach(highlight => {
       const regex = new RegExp(`(${highlight})`, 'gi');
-      highlightedText = highlightedText.replace(regex, '<mark class="bg-yellow-200">$1</mark>');
+      highlightedText = highlightedText.replace(regex, '<mark class="bg-cream-300 font-medium">$1</mark>');
     });
     return highlightedText;
   };
@@ -166,19 +166,19 @@ export function AdvancedSearch() {
     switch (type) {
       case 'teaching':
         return (
-          <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-dark-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C20.168 18.477 18.582 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
         );
       case 'event':
         return (
-          <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-dark-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
         );
       case 'media':
         return (
-          <svg className="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-dark-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15" />
           </svg>
         );
@@ -191,15 +191,15 @@ export function AdvancedSearch() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Search Header */}
       <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Search Spiritual Content</h1>
-        <p className="text-gray-600">Discover teachings, events, and media from Sant Kabir's wisdom</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-dark-900 mb-2">Search Spiritual Content</h1>
+        <p className="text-sm sm:text-base text-dark-600">Discover teachings, events, and media from Sant Kabir's wisdom</p>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex space-x-4">
+      <div className="bg-cream-50 rounded-lg shadow-sm border border-cream-300 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
-            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <label htmlFor="advanced-search-input" className="sr-only">
@@ -211,36 +211,36 @@ export function AdvancedSearch() {
               placeholder="Search teachings, events, media..."
               value={filters.query}
               onChange={(e) => updateFilter('query', e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-cream-300 rounded-lg focus:ring-2 focus:ring-dark-900 focus:border-dark-900"
               aria-describedby="search-results-status"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
+            className="px-4 sm:px-6 py-2.5 sm:py-3 bg-cream-200 text-dark-700 rounded-lg hover:bg-cream-300 flex items-center justify-center space-x-2 min-h-[44px] touch-manipulation"
             aria-expanded={showFilters}
             aria-controls="search-filters"
             aria-label={showFilters ? "Hide search filters" : "Show search filters"}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4" />
             </svg>
-            <span>Filters</span>
+            <span className="text-sm sm:text-base">Filters</span>
           </button>
         </div>
 
         {/* Advanced Filters */}
         {showFilters && (
-          <div id="search-filters" className="mt-6 pt-6 border-t border-gray-200" role="group" aria-labelledby="filters-heading">
+          <div id="search-filters" className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-cream-300" role="group" aria-labelledby="filters-heading">
             <h3 id="filters-heading" className="sr-only">Search Filters</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div>
-                <label htmlFor="content-type-filter" className="block text-sm font-medium text-gray-700 mb-2">Content Type</label>
+                <label htmlFor="content-type-filter" className="block text-xs sm:text-sm font-medium text-dark-700 mb-2">Content Type</label>
                 <select
                   id="content-type-filter"
                   value={filters.type}
                   onChange={(e) => updateFilter('type', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-cream-300 rounded-md focus:ring-dark-900 focus:border-dark-900"
                 >
                   <option value="all">All Types</option>
                   <option value="teachings">Teachings</option>
@@ -250,12 +250,12 @@ export function AdvancedSearch() {
               </div>
 
               <div>
-                <label htmlFor="language-filter" className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                <label htmlFor="language-filter" className="block text-xs sm:text-sm font-medium text-dark-700 mb-2">Language</label>
                 <select
                   id="language-filter"
                   value={filters.language}
                   onChange={(e) => updateFilter('language', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-cream-300 rounded-md focus:ring-dark-900 focus:border-dark-900"
                 >
                   <option value="all">All Languages</option>
                   <option value="en">English</option>
@@ -265,12 +265,12 @@ export function AdvancedSearch() {
               </div>
 
               <div>
-                <label htmlFor="date-range-filter" className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+                <label htmlFor="date-range-filter" className="block text-xs sm:text-sm font-medium text-dark-700 mb-2">Date Range</label>
                 <select
                   id="date-range-filter"
                   value={filters.dateRange}
                   onChange={(e) => updateFilter('dateRange', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-cream-300 rounded-md focus:ring-dark-900 focus:border-dark-900"
                 >
                   <option value="all">All Time</option>
                   <option value="week">This Week</option>
@@ -280,12 +280,12 @@ export function AdvancedSearch() {
               </div>
 
               <div>
-                <label htmlFor="sort-by-filter" className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                <label htmlFor="sort-by-filter" className="block text-xs sm:text-sm font-medium text-dark-700 mb-2">Sort By</label>
                 <select
                   id="sort-by-filter"
                   value={filters.sortBy}
                   onChange={(e) => updateFilter('sortBy', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-cream-300 rounded-md focus:ring-dark-900 focus:border-dark-900"
                 >
                   <option value="relevance">Relevance</option>
                   <option value="date">Date</option>
@@ -297,7 +297,7 @@ export function AdvancedSearch() {
             <div className="mt-4 flex justify-end">
               <button
                 onClick={clearFilters}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-xs sm:text-sm text-dark-600 hover:text-dark-800"
               >
                 Clear Filters
               </button>
@@ -307,16 +307,16 @@ export function AdvancedSearch() {
       </div>
 
       {/* Search Results */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-cream-50 rounded-lg shadow-sm border border-cream-300">
         {/* Results Header */}
         {(filters.query.trim() || results.length > 0) && (
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-cream-300">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-lg font-medium text-gray-900">
+                <h3 className="text-base sm:text-lg font-medium text-dark-900">
                   Search Results
                   {totalResults > 0 && (
-                    <span className="text-sm text-gray-500 ml-2">
+                    <span className="text-xs sm:text-sm text-dark-500 ml-2">
                       ({totalResults} result{totalResults !== 1 ? 's' : ''})
                     </span>
                   )}
@@ -326,42 +326,42 @@ export function AdvancedSearch() {
                 </div>
               </div>
               {isLoading && (
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary-600" aria-label="Loading search results"></div>
+                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-dark-900" aria-label="Loading search results"></div>
               )}
             </div>
           </div>
         )}
 
         {/* Results List */}
-        <div className="divide-y divide-gray-200" role="main" aria-label="Search results">
+        <div className="divide-y divide-cream-300" role="main" aria-label="Search results">
           {results.length > 0 ? (
             results.map((result) => (
-              <div key={result.id} data-testid="search-result" className="p-6 hover:bg-gray-50 transition-colors">
-                <div className="flex items-start space-x-4">
+              <div key={result.id} data-testid="search-result" className="p-4 sm:p-6 hover:bg-cream-100 transition-colors">
+                <div className="flex items-start space-x-3 sm:space-x-4">
                   <div className="flex-shrink-0 mt-1">
                     {getTypeIcon(result.type)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h4 className="text-lg font-medium text-gray-900 hover:text-primary-600">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <h4 className="text-base sm:text-lg font-medium text-dark-900 hover:text-dark-700">
                         <a href={result.url}>{result.title}</a>
                       </h4>
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                      <span className="text-xs bg-cream-200 text-dark-600 px-2 py-1 rounded-full">
                         {result.type}
                       </span>
                       {result.language !== 'en' && (
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">
+                        <span className="text-xs bg-cream-200 text-dark-600 px-2 py-1 rounded-full">
                           {result.language}
                         </span>
                       )}
                     </div>
                     <p
-                      className="text-gray-600 text-sm mb-2 line-clamp-2"
+                      className="text-dark-600 text-xs sm:text-sm mb-2 line-clamp-2"
                       dangerouslySetInnerHTML={{
                         __html: highlightText(result.excerpt, result.highlights)
                       }}
                     />
-                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                    <div className="flex items-center space-x-3 sm:space-x-4 text-xs text-dark-500">
                       <span>{new Date(result.date).toLocaleDateString()}</span>
                       <span className="capitalize">{result.category}</span>
                     </div>
@@ -370,20 +370,20 @@ export function AdvancedSearch() {
               </div>
             ))
           ) : filters.query.trim() && !isLoading ? (
-            <div className="p-12 text-center">
-              <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-8 sm:p-12 text-center">
+              <svg className="w-10 h-10 sm:w-12 sm:h-12 text-dark-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No results found</h3>
-              <p className="text-gray-600">Try adjusting your search terms or filters</p>
+              <h3 className="text-base sm:text-lg font-medium text-dark-900 mb-2">No results found</h3>
+              <p className="text-sm sm:text-base text-dark-600">Try adjusting your search terms or filters</p>
             </div>
           ) : !filters.query.trim() ? (
-            <div className="p-12 text-center">
-              <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-8 sm:p-12 text-center">
+              <svg className="w-10 h-10 sm:w-12 sm:h-12 text-dark-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Start your spiritual search</h3>
-              <p className="text-gray-600">Enter a search term to explore teachings, events, and media</p>
+              <h3 className="text-base sm:text-lg font-medium text-dark-900 mb-2">Start your spiritual search</h3>
+              <p className="text-sm sm:text-base text-dark-600">Enter a search term to explore teachings, events, and media</p>
             </div>
           ) : null}
         </div>

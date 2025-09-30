@@ -108,14 +108,14 @@ export function ContentManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-dark-900">Content Management</h1>
-          <p className="text-dark-600 mt-1">Manage teachings, events, and spiritual content</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-dark-900">Content Management</h1>
+          <p className="text-sm sm:text-base text-dark-600 mt-1">Manage teachings, events, and spiritual content</p>
         </div>
         <button
           onClick={handleAddContent}
-          className="bg-dark-900 text-white px-4 py-2 rounded-lg hover:bg-dark-800 transition-colors duration-200 flex items-center space-x-2"
+          className="bg-dark-900 text-white px-4 py-3 rounded-lg hover:bg-dark-800 transition-colors duration-200 flex items-center justify-center space-x-2 touch-manipulation sm:w-auto w-full"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -125,7 +125,7 @@ export function ContentManager() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
           <div className="flex items-center">
             <div className="w-12 h-12 bg-dark-100 rounded-lg flex items-center justify-center">
@@ -221,11 +221,11 @@ export function ContentManager() {
               {activeContentType === 'teachings' ? (
                 teachings.length > 0 ? (
                   teachings.map((teaching) => (
-                    <div key={teaching.id} className="flex items-center justify-between p-4 border border-cream-200 rounded-lg hover:bg-cream-100 transition-colors duration-200">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-dark-900">{teaching.title}</h3>
-                        <p className="text-sm text-dark-600 mt-1">{teaching.excerpt}</p>
-                        <div className="flex items-center space-x-4 mt-2 text-xs text-dark-500">
+                    <div key={teaching.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-cream-200 rounded-lg hover:bg-cream-100 transition-colors duration-200 gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-dark-900 truncate">{teaching.title}</h3>
+                        <p className="text-sm text-dark-600 mt-1 line-clamp-2">{teaching.excerpt}</p>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-dark-500">
                           <span>By {teaching.author}</span>
                           <span>•</span>
                           <span>{teaching.category}</span>
@@ -233,22 +233,24 @@ export function ContentManager() {
                           <span>{new Date(teaching.published_at).toLocaleDateString()}</span>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2 ml-4">
+                      <div className="flex items-center space-x-2 sm:ml-4 flex-shrink-0 justify-end sm:justify-start">
                         <button
                           onClick={() => handleEditTeaching(teaching.id)}
-                          className="p-2 text-dark-400 hover:text-dark-600 transition-colors"
+                          className="p-2 sm:p-2 text-dark-400 hover:text-dark-600 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                           title="Edit teaching"
+                          aria-label="Edit teaching"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                           </svg>
                         </button>
                         <button
                           onClick={() => handleDeleteClick(teaching.id, teaching.title, 'teaching')}
-                          className="p-2 text-red-400 hover:text-red-600 transition-colors"
+                          className="p-2 sm:p-2 text-red-400 hover:text-red-600 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                           title="Delete teaching"
+                          aria-label="Delete teaching"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                           </svg>
                         </button>
@@ -267,11 +269,11 @@ export function ContentManager() {
               ) : (
                 events.length > 0 ? (
                   events.map((event) => (
-                    <div key={event.id} className="flex items-center justify-between p-4 border border-cream-200 rounded-lg hover:bg-cream-100 transition-colors duration-200">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-dark-900">{event.title}</h3>
-                        <p className="text-sm text-dark-600 mt-1">{event.description}</p>
-                        <div className="flex items-center space-x-4 mt-2 text-xs text-dark-500">
+                    <div key={event.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-cream-200 rounded-lg hover:bg-cream-100 transition-colors duration-200 gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-dark-900 truncate">{event.title}</h3>
+                        <p className="text-sm text-dark-600 mt-1 line-clamp-2">{event.description}</p>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-dark-500">
                           <span>{event.location}</span>
                           <span>•</span>
                           <span>{event.event_type}</span>
@@ -281,21 +283,23 @@ export function ContentManager() {
                           <span>{event.current_attendees} attending</span>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2 ml-4">
+                      <div className="flex items-center space-x-2 sm:ml-4 flex-shrink-0 justify-end sm:justify-start">
                         <button
-                          className="p-2 text-dark-400 hover:text-dark-600 transition-colors"
+                          className="p-2 sm:p-2 text-dark-400 hover:text-dark-600 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                           title="Edit event"
+                          aria-label="Edit event"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                           </svg>
                         </button>
                         <button
                           onClick={() => handleDeleteClick(event.id, event.title, 'event')}
-                          className="p-2 text-red-400 hover:text-red-600 transition-colors"
+                          className="p-2 sm:p-2 text-red-400 hover:text-red-600 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                           title="Delete event"
+                          aria-label="Delete event"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                           </svg>
                         </button>
