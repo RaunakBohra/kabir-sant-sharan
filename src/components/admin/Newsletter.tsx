@@ -149,19 +149,19 @@ export function Newsletter() {
               {/* Subscribers Tab */}
               {activeTab === 'subscribers' && (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h3 className="text-lg font-medium text-gray-900">Email Subscribers</h3>
-                    <div className="flex space-x-2">
-                      <button className="bg-dark-900 text-white px-4 py-2 rounded-lg hover:bg-dark-800 text-sm transition-colors duration-200">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <button className="bg-dark-900 text-white px-4 py-3 rounded-lg hover:bg-dark-800 text-sm transition-colors duration-200 touch-manipulation">
                         Export List
                       </button>
-                      <button className="bg-dark-900 text-white px-4 py-2 rounded-lg hover:bg-dark-800 text-sm transition-colors duration-200">
+                      <button className="bg-dark-900 text-white px-4 py-3 rounded-lg hover:bg-dark-800 text-sm transition-colors duration-200 touch-manipulation">
                         Add Subscriber
                       </button>
                     </div>
                   </div>
 
-                  <div className="bg-cream-100 rounded-lg overflow-hidden">
+                  <div className="bg-cream-100 rounded-lg overflow-x-auto">
                     <table className="min-w-full divide-y divide-cream-200">
                       <thead className="bg-cream-100">
                         <tr>
@@ -232,11 +232,11 @@ export function Newsletter() {
               {/* Campaigns Tab */}
               {activeTab === 'campaigns' && (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <h3 className="text-lg font-medium text-gray-900">Email Campaigns</h3>
                     <button
                       onClick={() => setActiveTab('compose')}
-                      className="bg-dark-900 text-white px-4 py-2 rounded-lg hover:bg-dark-800 text-sm transition-colors duration-200"
+                      className="bg-dark-900 text-white px-4 py-3 rounded-lg hover:bg-dark-800 text-sm transition-colors duration-200 touch-manipulation sm:w-auto w-full"
                     >
                       Create Campaign
                     </button>

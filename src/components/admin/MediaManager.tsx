@@ -113,22 +113,20 @@ export function MediaManager() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-dark-900">Media Manager</h1>
-          <p className="text-dark-600 mt-1">Upload and manage spiritual content media files</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-dark-900">Media Manager</h1>
+          <p className="text-sm sm:text-base text-dark-600 mt-1">Upload and manage spiritual content media files</p>
         </div>
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setShowUpload(!showUpload)}
-            className="bg-dark-900 text-white px-4 py-2 rounded-lg hover:bg-dark-800 transition-colors duration-200 flex items-center space-x-2"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-            </svg>
-            <span>{showUpload ? 'Hide Upload' : 'Upload Media'}</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setShowUpload(!showUpload)}
+          className="bg-dark-900 text-white px-4 py-3 rounded-lg hover:bg-dark-800 transition-colors duration-200 flex items-center justify-center space-x-2 touch-manipulation sm:w-auto w-full"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+          </svg>
+          <span>{showUpload ? 'Hide Upload' : 'Upload Media'}</span>
+        </button>
       </div>
 
       {/* Upload Interface */}
@@ -144,8 +142,8 @@ export function MediaManager() {
 
       {/* Filter Tabs */}
       <div className="bg-cream-50 rounded-lg shadow-lg border border-cream-200">
-        <div className="border-b border-cream-200">
-          <nav className="flex space-x-8 px-6">
+        <div className="border-b border-cream-200 overflow-x-auto">
+          <nav className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max sm:min-w-0">
             {[
               { id: 'all', label: 'All Files', count: mediaFiles.length },
               { id: 'audio', label: 'Audio', count: mediaFiles.filter(f => f.type === 'audio').length },
@@ -156,7 +154,7 @@ export function MediaManager() {
               <button
                 key={tab.id}
                 onClick={() => setSelectedType(tab.id as any)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 ${
+                className={`py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 whitespace-nowrap ${
                   selectedType === tab.id
                     ? 'border-dark-900 text-dark-900'
                     : 'border-transparent text-dark-500 hover:text-dark-700 hover:border-cream-300'

@@ -77,20 +77,20 @@ export function Settings() {
       <div className="flex justify-end">
         <button
           onClick={saveSettings}
-          className="bg-dark-900 text-white px-4 py-2 rounded-md hover:bg-dark-800 transition-colors duration-200"
+          className="bg-dark-900 text-white px-4 py-3 rounded-md hover:bg-dark-800 transition-colors duration-200 touch-manipulation sm:w-auto w-full"
         >
           Save Changes
         </button>
       </div>
 
       <div className="bg-cream-50 rounded-lg shadow-lg border border-cream-200">
-        <div className="border-b border-cream-200">
-          <nav className="flex space-x-8 px-6">
+        <div className="border-b border-cream-200 overflow-x-auto">
+          <nav className="flex space-x-4 sm:space-x-8 px-4 sm:px-6 min-w-max sm:min-w-0">
             {sections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id as any)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors duration-200 ${
+                className={`py-4 px-1 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-2 transition-colors duration-200 whitespace-nowrap ${
                   activeSection === section.id
                     ? 'border-dark-900 text-dark-900'
                     : 'border-transparent text-dark-500 hover:text-dark-700 hover:border-cream-300'
