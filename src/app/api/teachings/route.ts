@@ -56,6 +56,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const { getDatabase } = await import('@/lib/db');
+    const { teachings } = await import('@/drizzle/schema');
+    const { createId } = await import('@paralleldrive/cuid2');
+
     const body = await request.json() as any;
 
     // Validate required fields
@@ -66,6 +70,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const db = getDatabase();
 
     // Generate slug from title
     const baseSlug = title
@@ -80,7 +86,7 @@ export async function POST(request: NextRequest) {
     const readingTime = Math.ceil(wordCount / 200);
 
     const newTeaching = {
-      id: Date.now().toString(),
+      id: createId(),
       title,
       content,
       excerpt,
@@ -97,8 +103,12 @@ export async function POST(request: NextRequest) {
       views: 0,
       likes: 0,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      translationOf: null,
+      deletedAt: null
     };
+
+    await db.insert(teachings).values(newTeaching);
 
     return NextResponse.json({
       message: 'Teaching created successfully',

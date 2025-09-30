@@ -39,9 +39,7 @@ export const teachings = sqliteTable('teachings', {
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
 }, (teachings) => ({
-  slugIdx: uniqueIndex('slug_idx').on(teachings.slug),
-  categoryIdx: uniqueIndex('category_idx').on(teachings.category),
-  publishedIdx: uniqueIndex('published_idx').on(teachings.published)
+  slugIdx: uniqueIndex('slug_idx').on(teachings.slug)
 }))
 
 export const events = sqliteTable('events', {
@@ -72,9 +70,7 @@ export const events = sqliteTable('events', {
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
 }, (events) => ({
-  slugIdx: uniqueIndex('events_slug_idx').on(events.slug),
-  dateIdx: uniqueIndex('events_date_idx').on(events.startDate),
-  categoryIdx: uniqueIndex('events_category_idx').on(events.category)
+  slugIdx: uniqueIndex('events_slug_idx').on(events.slug)
 }))
 
 export const eventRegistrations = sqliteTable('event_registrations', {
@@ -143,11 +139,7 @@ export const quotes = sqliteTable('quotes', {
   likes: integer('likes').default(0),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
-}, (quotes) => ({
-  categoryIdx: uniqueIndex('quotes_category_idx').on(quotes.category),
-  dateIdx: uniqueIndex('quotes_date_idx').on(quotes.displayDate),
-  languageIdx: uniqueIndex('quotes_language_idx').on(quotes.language)
-}))
+})
 
 export const newsletters = sqliteTable('newsletters', {
   id: text('id').primaryKey(),
@@ -167,6 +159,27 @@ export const newsletters = sqliteTable('newsletters', {
 }, (newsletters) => ({
   emailIdx: uniqueIndex('newsletter_email_idx').on(newsletters.email),
   tokenIdx: uniqueIndex('newsletter_token_idx').on(newsletters.unsubscribeToken)
+}))
+
+export const newsletterCampaigns = sqliteTable('newsletter_campaigns', {
+  id: text('id').primaryKey(),
+  subject: text('subject').notNull(),
+  content: text('content').notNull(),
+  status: text('status').notNull().default('draft'), // draft, scheduled, sent, failed
+  segment: text('segment').notNull().default('all'), // all, teachings, events, meditation
+  scheduledFor: text('scheduled_for'),
+  sentAt: text('sent_at'),
+  recipients: integer('recipients').default(0),
+  opens: integer('opens').default(0),
+  clicks: integer('clicks').default(0),
+  bounces: integer('bounces').default(0),
+  unsubscribes: integer('unsubscribes').default(0),
+  createdBy: text('created_by').notNull().references(() => users.id),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
+}, (campaigns) => ({
+  statusIdx: uniqueIndex('campaign_status_idx').on(campaigns.status),
+  sentAtIdx: uniqueIndex('campaign_sent_at_idx').on(campaigns.sentAt)
 }))
 
 export const comments: any = sqliteTable('comments', {

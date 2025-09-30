@@ -60,69 +60,62 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const { getDatabase } = await import('@/lib/db');
+    const { media } = await import('@/drizzle/schema');
+    const { eq, isNull, and, desc } = await import('drizzle-orm');
+
+    const db = getDatabase();
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
     const limit = parseInt(searchParams.get('limit') || '20');
+    const offset = parseInt(searchParams.get('offset') || '0');
 
-    // Mock media files list
-    const mockMediaFiles = [
-      {
-        id: '1',
-        fileName: 'kabir-bhajan-1.mp3',
-        originalName: 'Kabir Bhajan - Suno Bhai Sadho.mp3',
-        url: '/api/media/file/kabir-bhajan-1.mp3',
-        type: 'audio',
-        size: 5242880, // 5MB
-        mimeType: 'audio/mpeg',
-        uploadedAt: '2024-09-29T10:00:00Z',
-        metadata: {
-          title: 'Suno Bhai Sadho',
-          artist: 'Traditional',
-          duration: '4:32'
-        }
-      },
-      {
-        id: '2',
-        fileName: 'meditation-video-1.mp4',
-        originalName: 'Morning Meditation Guide.mp4',
-        url: '/api/media/file/meditation-video-1.mp4',
-        type: 'video',
-        size: 25165824, // 24MB
-        mimeType: 'video/mp4',
-        uploadedAt: '2024-09-29T09:00:00Z',
-        metadata: {
-          title: 'Morning Meditation Guide',
-          duration: '15:30',
-          resolution: '1920x1080'
-        }
-      },
-      {
-        id: '3',
-        fileName: 'kabir-portrait.jpg',
-        originalName: 'Sant Kabir Portrait.jpg',
-        url: '/api/media/file/kabir-portrait.jpg',
-        type: 'image',
-        size: 1048576, // 1MB
-        mimeType: 'image/jpeg',
-        uploadedAt: '2024-09-29T08:00:00Z',
-        metadata: {
-          title: 'Sant Kabir Portrait',
-          dimensions: '800x600',
-          artist: 'Traditional Art'
-        }
-      }
+    // Build where conditions
+    const conditions = [
+      eq(media.published, true),
+      isNull(media.deletedAt)
     ];
 
-    let filteredFiles = mockMediaFiles;
     if (type) {
-      filteredFiles = mockMediaFiles.filter(file => file.type === type);
+      conditions.push(eq(media.type, type));
     }
 
-    const limitedFiles = filteredFiles.slice(0, limit);
+    // Query media from database
+    const results = await db
+      .select()
+      .from(media)
+      .where(and(...conditions))
+      .orderBy(desc(media.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    // Get total count
+    const countResult = await db
+      .select()
+      .from(media)
+      .where(and(...conditions));
+
+    // Transform to expected format
+    const files = results.map(m => ({
+      id: m.id,
+      fileName: m.r2Key.split('/').pop() || m.r2Key,
+      originalName: m.title,
+      url: m.streamingUrl || m.downloadUrl || '',
+      type: m.type,
+      size: m.fileSize || 0,
+      mimeType: m.mimeType || '',
+      uploadedAt: m.createdAt || '',
+      metadata: {
+        title: m.title,
+        artist: m.author,
+        duration: m.duration || undefined,
+        description: m.description
+      }
+    }));
 
     return NextResponse.json({
-      files: limitedFiles,
-      total: filteredFiles.length,
+      files,
+      total: countResult.length,
       limit
     });
 

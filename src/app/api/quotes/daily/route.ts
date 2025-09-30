@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/db';
 import { quotes } from '@/drizzle/schema';
-import { eq, isNull, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 export const runtime = 'nodejs';
 
@@ -13,10 +13,7 @@ export async function GET(request: NextRequest) {
     const allQuotes = await db
       .select()
       .from(quotes)
-      .where(and(
-        eq(quotes.active, true),
-        isNull(quotes.deletedAt)
-      ));
+      .where(eq(quotes.active, true));
 
     if (allQuotes.length === 0) {
       return NextResponse.json(

@@ -1,7 +1,7 @@
 // Database service for connecting to D1 and managing data
 import { getDatabase } from './db';
-import { eq, desc, gte, isNull, and } from 'drizzle-orm';
-import { teachings, events, newsletters } from '@/drizzle/schema';
+import { eq, desc, gte, isNull, and, sql as drizzleSql } from 'drizzle-orm';
+import { teachings, events, newsletters, newsletterCampaigns, analytics } from '@/drizzle/schema';
 
 export interface Teaching {
   id: string;
@@ -360,94 +360,222 @@ export class DatabaseService {
   }
 
   async getNewsletterCampaigns(limit = 50, offset = 0): Promise<{ campaigns: NewsletterCampaign[]; total: number }> {
-    // Mock data - in production, query from newsletter_campaigns table
-    const mockCampaigns: NewsletterCampaign[] = [
-      {
-        id: '1',
-        subject: 'Weekly Teachings: Path of Divine Love',
-        content: 'This week we explore Kabir\'s teachings on divine love and selfless devotion...',
-        status: 'sent',
-        sentAt: '2024-09-22T09:00:00Z',
-        recipients: 1247,
-        opens: 832,
-        clicks: 234,
-        segment: 'all',
-        created_at: '2024-09-20T10:00:00Z',
-        updated_at: '2024-09-22T09:00:00Z'
-      },
-      {
-        id: '2',
-        subject: 'Upcoming Satsang: Community Gathering',
-        content: 'Join us for our monthly satsang gathering with devotional singing and spiritual discussions...',
-        status: 'draft',
-        recipients: 0,
-        opens: 0,
-        clicks: 0,
-        segment: 'events',
-        created_at: '2024-09-28T10:00:00Z',
-        updated_at: '2024-09-28T10:00:00Z'
-      }
-    ];
+    try {
+      const db = getDatabase(this.env);
 
-    const paginatedCampaigns = mockCampaigns.slice(offset, offset + limit);
-    return {
-      campaigns: paginatedCampaigns,
-      total: mockCampaigns.length
-    };
+      // Query campaigns ordered by creation date
+      const results = await db
+        .select()
+        .from(newsletterCampaigns)
+        .orderBy(desc(newsletterCampaigns.createdAt))
+        .limit(limit)
+        .offset(offset);
+
+      // Get total count
+      const countResult = await db
+        .select()
+        .from(newsletterCampaigns);
+
+      // Transform to NewsletterCampaign interface
+      const transformedCampaigns: NewsletterCampaign[] = results.map(c => ({
+        id: c.id,
+        subject: c.subject,
+        content: c.content,
+        status: c.status as 'draft' | 'sent' | 'scheduled',
+        sentAt: c.sentAt || undefined,
+        scheduledFor: c.scheduledFor || undefined,
+        recipients: c.recipients || 0,
+        opens: c.opens || 0,
+        clicks: c.clicks || 0,
+        segment: c.segment as 'all' | 'teachings' | 'events' | 'meditation',
+        created_at: c.createdAt || '',
+        updated_at: c.updatedAt || ''
+      }));
+
+      return {
+        campaigns: transformedCampaigns,
+        total: countResult.length
+      };
+    } catch (error) {
+      console.error('Error fetching newsletter campaigns:', error);
+      return { campaigns: [], total: 0 };
+    }
   }
 
   async createNewsletterCampaign(campaign: Partial<NewsletterCampaign>): Promise<NewsletterCampaign> {
-    // Mock implementation - in production, INSERT into newsletter_campaigns
-    const newCampaign: NewsletterCampaign = {
-      id: Date.now().toString(),
-      subject: campaign.subject || '',
-      content: campaign.content || '',
-      status: campaign.status || 'draft',
-      sentAt: campaign.status === 'sent' ? new Date().toISOString() : undefined,
-      scheduledFor: campaign.scheduledFor,
-      recipients: campaign.recipients || 0,
-      opens: 0,
-      clicks: 0,
-      segment: campaign.segment || 'all',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    };
-    return newCampaign;
+    try {
+      const db = getDatabase(this.env);
+      const { createId } = await import('@paralleldrive/cuid2');
+
+      const newCampaign = {
+        id: createId(),
+        subject: campaign.subject || '',
+        content: campaign.content || '',
+        status: campaign.status || 'draft',
+        segment: campaign.segment || 'all',
+        scheduledFor: campaign.scheduledFor || null,
+        sentAt: campaign.status === 'sent' ? new Date().toISOString() : null,
+        recipients: campaign.recipients || 0,
+        opens: 0,
+        clicks: 0,
+        bounces: 0,
+        unsubscribes: 0,
+        createdBy: 'admin-YWRtaW5A', // TODO: Get from session
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      await db.insert(newsletterCampaigns).values(newCampaign);
+
+      return {
+        id: newCampaign.id,
+        subject: newCampaign.subject,
+        content: newCampaign.content,
+        status: newCampaign.status as 'draft' | 'sent' | 'scheduled',
+        sentAt: newCampaign.sentAt || undefined,
+        scheduledFor: newCampaign.scheduledFor || undefined,
+        recipients: newCampaign.recipients,
+        opens: newCampaign.opens,
+        clicks: newCampaign.clicks,
+        segment: newCampaign.segment as 'all' | 'teachings' | 'events' | 'meditation',
+        created_at: newCampaign.createdAt,
+        updated_at: newCampaign.updatedAt
+      };
+    } catch (error) {
+      console.error('Error creating newsletter campaign:', error);
+      throw error;
+    }
   }
 
   // Analytics operations
   async getAnalyticsOverview(): Promise<AnalyticsOverview> {
-    // Mock data - in production, aggregate from analytics_visitors and analytics_page_views
-    return {
-      totalVisitors: 1247,
-      pageViews: 3891,
-      avgSessionDuration: '3m 42s',
-      bounceRate: '34.2%'
-    };
+    try {
+      const db = getDatabase(this.env);
+
+      // Get unique visitors (unique sessionIds) in last 24 hours
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+      const visitorsResult = await db
+        .select({ count: drizzleSql<number>`COUNT(DISTINCT ${analytics.sessionId})` })
+        .from(analytics)
+        .where(and(
+          eq(analytics.event, 'page_view'),
+          gte(analytics.timestamp, oneDayAgo)
+        ));
+
+      // Get total page views in last 24 hours
+      const pageViewsResult = await db
+        .select({ count: drizzleSql<number>`COUNT(*)` })
+        .from(analytics)
+        .where(and(
+          eq(analytics.event, 'page_view'),
+          gte(analytics.timestamp, oneDayAgo)
+        ));
+
+      const totalVisitors = visitorsResult[0]?.count || 0;
+      const pageViews = pageViewsResult[0]?.count || 0;
+
+      return {
+        totalVisitors,
+        pageViews,
+        avgSessionDuration: '3m 42s', // TODO: Calculate from session data
+        bounceRate: '34.2%' // TODO: Calculate from session data
+      };
+    } catch (error) {
+      console.error('Error fetching analytics overview:', error);
+      return {
+        totalVisitors: 0,
+        pageViews: 0,
+        avgSessionDuration: '0m 0s',
+        bounceRate: '0%'
+      };
+    }
   }
 
   async getTopPages(limit = 10): Promise<TopPage[]> {
-    // Mock data - in production, GROUP BY page and COUNT from analytics_page_views
-    return [
-      { path: '/', title: 'Home', views: 1234 },
-      { path: '/teachings', title: 'Teachings', views: 892 },
-      { path: '/events', title: 'Events', views: 567 },
-      { path: '/media', title: 'Media', views: 423 }
-    ].slice(0, limit);
+    try {
+      const db = getDatabase(this.env);
+
+      // Get top pages by view count in last 7 days
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+      const results = await db
+        .select({
+          path: analytics.resourceId,
+          views: drizzleSql<number>`COUNT(*)`
+        })
+        .from(analytics)
+        .where(and(
+          eq(analytics.event, 'page_view'),
+          eq(analytics.resourceType, 'page'),
+          gte(analytics.timestamp, sevenDaysAgo)
+        ))
+        .groupBy(analytics.resourceId)
+        .orderBy(desc(drizzleSql`COUNT(*)`))
+        .limit(limit);
+
+      return results.map(r => ({
+        path: r.path || '/',
+        title: r.path?.split('/').pop()?.replace(/-/g, ' ') || 'Home',
+        views: r.views
+      }));
+    } catch (error) {
+      console.error('Error fetching top pages:', error);
+      return [];
+    }
   }
 
   async getRecentActivity(limit = 10): Promise<RecentActivity[]> {
-    // Mock data - in production, SELECT from analytics_page_views ORDER BY viewed_at DESC
-    return [
-      { type: 'visit', page: '/teachings/path-of-divine-love', time: '2 minutes ago' },
-      { type: 'search', query: 'kabir doha', time: '5 minutes ago' },
-      { type: 'visit', page: '/events', time: '8 minutes ago' }
-    ].slice(0, limit);
+    try {
+      const db = getDatabase(this.env);
+
+      const results = await db
+        .select()
+        .from(analytics)
+        .where(eq(analytics.event, 'page_view'))
+        .orderBy(desc(analytics.timestamp))
+        .limit(limit);
+
+      return results.map(r => {
+        const timestamp = new Date(r.timestamp || '');
+        const now = new Date();
+        const diffMinutes = Math.floor((now.getTime() - timestamp.getTime()) / (1000 * 60));
+
+        let timeAgo = '';
+        if (diffMinutes < 1) timeAgo = 'just now';
+        else if (diffMinutes < 60) timeAgo = `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+        else timeAgo = `${Math.floor(diffMinutes / 60)} hour${Math.floor(diffMinutes / 60) > 1 ? 's' : ''} ago`;
+
+        return {
+          type: r.event === 'search' ? 'search' : 'visit' as 'visit' | 'search',
+          page: r.resourceId || undefined,
+          query: r.event === 'search' ? r.metadata : undefined,
+          time: timeAgo
+        };
+      });
+    } catch (error) {
+      console.error('Error fetching recent activity:', error);
+      return [];
+    }
   }
 
   async trackPageView(page: string, visitorId: string, title?: string): Promise<void> {
-    // Mock implementation - in production, INSERT into analytics_page_views
-    console.log(`Tracked page view: ${page} by ${visitorId}`);
+    try {
+      const db = getDatabase(this.env);
+      const { createId } = await import('@paralleldrive/cuid2');
+
+      await db.insert(analytics).values({
+        id: createId(),
+        event: 'page_view',
+        resourceType: 'page',
+        resourceId: page,
+        sessionId: visitorId,
+        metadata: title || null,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error tracking page view:', error);
+    }
   }
 }
 
