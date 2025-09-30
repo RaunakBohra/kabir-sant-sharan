@@ -12,6 +12,15 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Home', href: '/' },
+  {
+    label: 'About',
+    href: '/about',
+    children: [
+      { label: 'About Us', href: '/about' },
+      { label: 'About Ashram', href: '/about/ashram' },
+      { label: 'About Sant Kabir', href: '/about/sant-kabir' },
+    ]
+  },
   { label: 'Teachings', href: '/teachings' },
   { label: 'Events', href: '/events' },
   { label: 'Media', href: '/media' },

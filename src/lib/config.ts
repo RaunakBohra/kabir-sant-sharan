@@ -36,7 +36,7 @@ interface SecurityConfig {
 /**
  * Validates that all required environment variables are present
  */
-function validateEnvironment(): void {
+function validateEnvironment(envVars: Record<string, string | undefined>): void {
   const required = [
     'JWT_SECRET',
     'JWT_REFRESH_SECRET',
@@ -44,7 +44,7 @@ function validateEnvironment(): void {
     'ADMIN_PASSWORD_HASH'
   ];
 
-  const missing = required.filter(key => !process.env[key]);
+  const missing = required.filter(key => !envVars[key]);
 
   if (missing.length > 0) {
     throw new Error(
@@ -54,11 +54,11 @@ function validateEnvironment(): void {
   }
 
   // Validate JWT secret strength (minimum 32 characters)
-  if (process.env.JWT_SECRET!.length < 32) {
+  if (envVars.JWT_SECRET!.length < 32) {
     throw new Error('JWT_SECRET must be at least 32 characters long for security');
   }
 
-  if (process.env.JWT_REFRESH_SECRET!.length < 32) {
+  if (envVars.JWT_REFRESH_SECRET!.length < 32) {
     throw new Error('JWT_REFRESH_SECRET must be at least 32 characters long for security');
   }
 
@@ -70,7 +70,7 @@ function validateEnvironment(): void {
     'secret'
   ];
 
-  if (weakSecrets.includes(process.env.JWT_SECRET!)) {
+  if (weakSecrets.includes(envVars.JWT_SECRET!)) {
     console.warn('⚠️  WARNING: Using a weak JWT_SECRET. Please generate a strong random secret for production!');
   }
 }
@@ -78,66 +78,89 @@ function validateEnvironment(): void {
 /**
  * Creates and validates the security configuration
  */
-export function createSecurityConfig(): SecurityConfig {
+export function createSecurityConfig(envOverride?: Record<string, string | undefined>): SecurityConfig {
+  // Use either provided env vars or process.env
+  const envVars = envOverride || (typeof process !== 'undefined' ? process.env : {});
+
   // Only validate in server-side environments
   if (typeof window === 'undefined') {
-    validateEnvironment();
+    validateEnvironment(envVars);
   }
 
   return {
     jwt: {
-      secret: process.env.JWT_SECRET || '',
-      refreshSecret: process.env.JWT_REFRESH_SECRET || '',
-      accessExpiry: process.env.JWT_ACCESS_EXPIRY || '15m',
-      refreshExpiry: process.env.JWT_REFRESH_EXPIRY || '7d',
+      secret: envVars.JWT_SECRET || '',
+      refreshSecret: envVars.JWT_REFRESH_SECRET || '',
+      accessExpiry: envVars.JWT_ACCESS_EXPIRY || '15m',
+      refreshExpiry: envVars.JWT_REFRESH_EXPIRY || '7d',
       algorithm: 'HS256',
       issuer: 'kabirsantsharan.com'
     },
     auth: {
-      adminEmail: process.env.ADMIN_EMAIL || '',
-      adminPasswordHash: process.env.ADMIN_PASSWORD_HASH || '',
-      bcryptSaltRounds: parseInt(process.env.BCRYPT_SALT_ROUNDS || '12', 10)
+      adminEmail: envVars.ADMIN_EMAIL || '',
+      adminPasswordHash: envVars.ADMIN_PASSWORD_HASH || '',
+      bcryptSaltRounds: parseInt(envVars.BCRYPT_SALT_ROUNDS || '12', 10)
     },
     rateLimit: {
       auth: {
-        max: parseInt(process.env.RATE_LIMIT_AUTH_MAX || '5', 10),
-        window: parseInt(process.env.RATE_LIMIT_AUTH_WINDOW || '60000', 10)
+        max: parseInt(envVars.RATE_LIMIT_AUTH_MAX || '5', 10),
+        window: parseInt(envVars.RATE_LIMIT_AUTH_WINDOW || '60000', 10)
       },
       api: {
-        max: parseInt(process.env.RATE_LIMIT_API_MAX || '100', 10),
-        window: parseInt(process.env.RATE_LIMIT_API_WINDOW || '900000', 10)
+        max: parseInt(envVars.RATE_LIMIT_API_MAX || '100', 10),
+        window: parseInt(envVars.RATE_LIMIT_API_WINDOW || '900000', 10)
       },
       search: {
-        max: parseInt(process.env.RATE_LIMIT_SEARCH_MAX || '50', 10),
-        window: parseInt(process.env.RATE_LIMIT_SEARCH_WINDOW || '60000', 10)
+        max: parseInt(envVars.RATE_LIMIT_SEARCH_MAX || '50', 10),
+        window: parseInt(envVars.RATE_LIMIT_SEARCH_WINDOW || '60000', 10)
       }
     },
     cors: {
-      origins: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5002']
+      origins: envVars.CORS_ORIGIN?.split(',') || ['http://localhost:5002']
     },
     logging: {
-      level: (process.env.LOG_LEVEL as any) || 'info'
+      level: (envVars.LOG_LEVEL as any) || 'info'
     },
     monitoring: {
-      sentryDsn: process.env.SENTRY_DSN
+      sentryDsn: envVars.SENTRY_DSN
     }
   };
 }
 
 /**
- * Singleton configuration instance
+ * Singleton configuration instance - lazy loaded to avoid process.env issues in Workers
  */
-export const securityConfig = createSecurityConfig();
+let _securityConfig: SecurityConfig | null = null;
+
+export function getSecurityConfig(envOverride?: Record<string, string | undefined>): SecurityConfig {
+  if (!_securityConfig || envOverride) {
+    _securityConfig = createSecurityConfig(envOverride);
+  }
+  return _securityConfig;
+}
+
+// For backward compatibility
+export const securityConfig = new Proxy({} as SecurityConfig, {
+  get(target, prop) {
+    return getSecurityConfig()[prop as keyof SecurityConfig];
+  }
+});
 
 /**
  * Helper function to check if we're in production
  */
-export const isProduction = process.env.NODE_ENV === 'production';
+export function isProduction(envVars?: Record<string, string | undefined>): boolean {
+  const env = envVars || (typeof process !== 'undefined' ? process.env : {});
+  return env.NODE_ENV === 'production';
+}
 
 /**
  * Helper function to check if we're in development
  */
-export const isDevelopment = process.env.NODE_ENV === 'development';
+export function isDevelopment(envVars?: Record<string, string | undefined>): boolean {
+  const env = envVars || (typeof process !== 'undefined' ? process.env : {});
+  return env.NODE_ENV === 'development';
+}
 
 /**
  * Generate a secure random string for secrets

@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configure for Cloudflare Pages with full-stack support
-  trailingSlash: true,
+  // Configure for Cloudflare Pages with Functions support
   experimental: {
     typedRoutes: true,
   },
@@ -9,27 +8,22 @@ const nextConfig = {
     unoptimized: true,
     domains: ['res.cloudinary.com', 'media.kabirsantsharan.com'],
   },
-  // Security headers for all environments
   async headers() {
     return [
       {
-        source: '/(.*)',
+        source: '/:path*',
         headers: [
           {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "img-src 'self' data: https: http:",
+              "frame-src 'self' https://www.google.com https://www.youtube.com",
+              "connect-src 'self' https://static.cloudflareinsights.com",
+            ].join('; '),
           },
         ],
       },

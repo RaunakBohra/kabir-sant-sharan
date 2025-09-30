@@ -4,12 +4,18 @@
  */
 
 function getApiBaseUrl(): string {
-  // In development, always use HTTP localhost:5002
+  // Check if we're in browser environment
+  if (typeof window !== 'undefined') {
+    // In browser, use current origin for relative API calls
+    return window.location.origin;
+  }
+
+  // In development server environment, use localhost:5002
   if (process.env.NODE_ENV === 'development') {
     return 'http://localhost:5002';
   }
 
-  // In production, use the configured app URL
+  // In production build, use the configured app URL
   return process.env.NEXT_PUBLIC_APP_URL || 'https://kabirsantsharan.com';
 }
 

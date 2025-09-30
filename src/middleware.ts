@@ -55,14 +55,15 @@ function addSecurityHeaders(response: NextResponse, request: NextRequest): NextR
   response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
 
   // HSTS only in production
-  if (isProduction) {
+  if (isProduction()) {
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   }
 
   // Content Security Policy
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Note: unsafe-* needed for Next.js dev
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://cdn.jsdelivr.net", // Note: unsafe-* needed for Next.js dev
+    "script-src-elem 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://cdn.jsdelivr.net",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' data: https:",
     "font-src 'self' https://fonts.gstatic.com",
@@ -84,7 +85,7 @@ function addSecurityHeaders(response: NextResponse, request: NextRequest): NextR
 
     if (origin && allowedOrigins.includes(origin)) {
       response.headers.set('Access-Control-Allow-Origin', origin);
-    } else if (isDevelopment) {
+    } else if (isDevelopment()) {
       response.headers.set('Access-Control-Allow-Origin', '*');
     }
 

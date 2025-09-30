@@ -68,7 +68,11 @@
       "Bash(awk:*)",
       "WebFetch(domain:orm.drizzle.team)",
       "Bash(npm view:*)",
-      "Bash(xargs -I {} sh -c 'echo \"\"\"\"=== {} ===\"\"\"\" && head -20 \"\"\"\"{}\"\"\"\"')"
+      "Bash(xargs -I {} sh -c 'echo \"\"\"\"=== {} ===\"\"\"\" && head -20 \"\"\"\"{}\"\"\"\"')",
+      "Bash(NODE_ENV=development npx tsx src/lib/db-seed.ts)",
+      "Bash(git restore:*)",
+      "Bash(KillShell da4735)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": [],
     "ask": []

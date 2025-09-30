@@ -70,7 +70,7 @@ class StructuredLogger {
    * Output log entry to appropriate destination
    */
   private output(entry: LogEntry): void {
-    if (isDevelopment) {
+    if (isDevelopment()) {
       // Pretty print for development
       const colorMap = {
         debug: '\x1b[36m', // cyan
@@ -96,7 +96,7 @@ class StructuredLogger {
     }
 
     // Send to external monitoring services in production
-    if (isProduction) {
+    if (isProduction()) {
       this.sendToMonitoring(entry);
     }
   }

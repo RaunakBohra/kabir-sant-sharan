@@ -1,7 +1,11 @@
 import { NextRequest } from 'next/server';
 import { drizzle } from 'drizzle-orm/d1';
 import { eq, and, lt, desc } from 'drizzle-orm';
-import { sessions, users, type Session, type NewSession } from '@/drizzle/schema';
+import { sessions, users } from '../../functions/src/drizzle/schema';
+
+// Define session types locally since they're not exported from functions schema
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
 import { generateTokenPair, validateAccessToken, validateRefreshToken, type TokenPair } from './jwt-auth';
 import { logger } from './logger';
 import { trackDatabaseOperation } from './middleware/performance-middleware';

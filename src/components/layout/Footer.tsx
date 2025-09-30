@@ -37,6 +37,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href={"/about"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                  About Us
+                </Link>
+              </li>
+              <li>
                 <Link href={"/teachings"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
                   Teachings
                 </Link>
@@ -51,37 +56,32 @@ export function Footer() {
                   Media
                 </Link>
               </li>
-              <li>
-                <Link href={"/search"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
-                  Search
-                </Link>
-              </li>
             </ul>
           </div>
 
-          {/* Contact & Connect */}
+          {/* Connect Section */}
           <div>
             <h3 className="font-semibold text-cream-100 mb-4">Connect</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="mailto:info@kabirsantsharan.org" className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                <Link href={"/about"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href={"/about/ashram"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                  Our Ashram
+                </Link>
+              </li>
+              <li>
+                <Link href={"/about/sant-kabir"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
+                  Sant Kabir Das
+                </Link>
+              </li>
+              <li>
+                <Link href={"/contact"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
                   Contact Us
-                </a>
-              </li>
-              <li>
-                <Link href={"/events"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
-                  Join Satsang
                 </Link>
-              </li>
-              <li>
-                <Link href={"/teachings"} className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
-                  Community Forum
-                </Link>
-              </li>
-              <li>
-                <a href="mailto:contact@kabirsantsharan.org" className="text-cream-200 hover:text-cream-100 transition-colors duration-200">
-                  Email Us
-                </a>
               </li>
             </ul>
           </div>

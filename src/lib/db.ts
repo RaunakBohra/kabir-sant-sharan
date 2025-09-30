@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/d1';
-import * as schema from '@/drizzle/schema';
+import * as schema from '../../functions/src/drizzle/schema';
 
 let localDb: any = null;
 

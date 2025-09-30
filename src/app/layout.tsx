@@ -133,7 +133,7 @@ export default function RootLayout({
         />
 
         {/* Cloudflare Web Analytics - Production Only */}
-        {process.env.NODE_ENV === 'production' && (
+        {process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' && (
           <Script
             defer
             src="https://static.cloudflareinsights.com/beacon.min.js"

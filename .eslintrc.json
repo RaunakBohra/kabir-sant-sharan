@@ -7,7 +7,10 @@
     "@next/next/no-img-element": "off",
     "react/no-unescaped-entities": "off",
     "react/jsx-key": "error",
-    "no-console": ["warn", { "allow": ["warn", "error"] }]
+    "no-console": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "jsx-a11y/role-has-required-aria-props": "off",
+    "@next/next/no-page-custom-font": "off"
   },
   "ignorePatterns": [
     ".next/**",

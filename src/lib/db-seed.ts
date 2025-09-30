@@ -8,7 +8,7 @@ import { getDatabase } from './db';
 import { securityConfig, hashPassword } from './config';
 import { createId } from '@paralleldrive/cuid2';
 import { eq, sql } from 'drizzle-orm';
-import { users, teachings, events, media } from '@/drizzle/schema';
+import { users, teachings, events, media } from '../../functions/src/drizzle/schema';
 
 interface SeedResult {
   success: boolean;
@@ -25,7 +25,7 @@ export async function seedAdminUser(env?: any): Promise<SeedResult> {
       throw new Error('Database not available. Make sure D1 binding is configured.');
     }
 
-    const db = getDatabase(env);
+    const db = await getDatabase(env);
 
     // Check if admin user already exists
     const existingAdmin = await db
@@ -97,7 +97,7 @@ export async function getAdminUser(env?: any): Promise<{
       return null;
     }
 
-    const db = getDatabase(env);
+    const db = await getDatabase(env);
 
     const result = await (db as any).query(
       'SELECT id, email, name, password_hash, role FROM users WHERE email = ? AND role = ?',
@@ -125,7 +125,7 @@ export async function updateAdminPassword(newPassword: string, env?: any): Promi
       throw new Error('Database not available');
     }
 
-    const db = getDatabase(env);
+    const db = await getDatabase(env);
 
     // Hash the new password
     const hashedPassword = await hashPassword(newPassword);
@@ -163,7 +163,7 @@ export async function seedSampleContent(env?: any): Promise<SeedResult> {
       throw new Error('Database not available');
     }
 
-    const db = getDatabase(env);
+    const db = await getDatabase(env);
 
     // Check if sample content already exists
     const existingTeachings = await (db as any).query('SELECT COUNT(*) as count FROM teachings');
@@ -278,7 +278,7 @@ export async function validateDatabaseSchema(env?: any): Promise<boolean> {
       throw new Error('Database not available');
     }
 
-    const db = getDatabase(env);
+    const db = await getDatabase(env);
 
     // Check if required tables exist
     const tables = ['users', 'teachings', 'events', 'sessions'];
