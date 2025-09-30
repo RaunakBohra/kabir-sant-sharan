@@ -65,11 +65,14 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
           const transformedEvents = (data.events || []).map((event: any) => ({
             id: event.id,
             title: event.title,
-            startDate: event.event_date || '',
-            startTime: event.event_time || '00:00',
-            type: event.event_type || 'general',
+            startDate: event.startDate || '',
+            startTime: event.startTime || '00:00',
+            type: event.type || 'general',
             slug: event.slug || event.id,
-            featured: event.is_featured || false
+            featured: event.featured || false,
+            maxAttendees: event.maxAttendees,
+            currentAttendees: event.currentAttendees || 0,
+            registrationRequired: event.registrationRequired || false
           }))
           setEvents(transformedEvents)
         }

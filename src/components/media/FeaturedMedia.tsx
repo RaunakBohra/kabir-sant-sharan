@@ -40,9 +40,9 @@ export function FeaturedMedia() {
       const response = await fetch('/api/media?limit=4&offset=0&published=true')
       const data = await response.json()
 
-      if (data.items) {
+      if (data.media) {
         // Filter for featured items only
-        const featured = data.items.filter((item: FeaturedMediaItem) => item.featured)
+        const featured = data.media.filter((item: FeaturedMediaItem) => item.featured)
         setFeaturedMediaItems(featured)
       }
     } catch (error) {
