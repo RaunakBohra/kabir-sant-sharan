@@ -236,23 +236,32 @@ export function EventsCalendar({ filters }: EventsCalendarProps) {
       >
       {/* Calendar Header with AD/BS Toggle */}
       <div className="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
-        <div className="flex items-center space-x-4 w-full sm:w-auto justify-between sm:justify-start">
+        <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-start">
           <button
             onClick={() => navigateMonth('prev')}
-            className="p-2 hover:bg-cream-200 rounded-md transition-colors duration-200"
+            className="p-2 hover:bg-cream-200 rounded-md transition-colors duration-200 touch-manipulation"
+            aria-label="Previous month"
           >
             <svg className="w-5 h-5 text-dark-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-dark-900">
+          <h2 className="text-lg sm:text-2xl font-bold text-dark-900">
             {currentMonthName} {displayYear}
           </h2>
 
           <button
+            onClick={() => setCurrentDate(new Date())}
+            className="hidden sm:block text-xs px-3 py-1 bg-cream-200 hover:bg-cream-300 rounded-md text-dark-700 font-medium transition-colors"
+          >
+            Today
+          </button>
+
+          <button
             onClick={() => navigateMonth('next')}
-            className="p-2 hover:bg-cream-200 rounded-md transition-colors duration-200"
+            className="p-2 hover:bg-cream-200 rounded-md transition-colors duration-200 touch-manipulation"
+            aria-label="Next month"
           >
             <svg className="w-5 h-5 text-dark-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

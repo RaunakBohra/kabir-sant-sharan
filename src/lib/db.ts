@@ -69,13 +69,24 @@ function initializeTables() {
 }
 
 export function getDatabase(env?: any) {
-  // Use local database for development
-  if (process.env.NODE_ENV !== 'production' || !env?.DB) {
-    return getLocalDatabase();
+  // Check if we're in Cloudflare Workers/Pages environment with D1 binding
+  if (env?.DB) {
+    console.log('Using Cloudflare D1 database');
+    return drizzle(env.DB, { schema });
   }
 
-  // Use D1 for production
-  return drizzle(env.DB, { schema });
+  // Check if we're in Next.js API route context with platform bindings
+  if (typeof globalThis !== 'undefined' && (globalThis as any).process?.env?.CF_PAGES) {
+    const cloudflareEnv = (globalThis as any).cloudflare?.env;
+    if (cloudflareEnv?.DB) {
+      console.log('Using Cloudflare D1 database from platform context');
+      return drizzle(cloudflareEnv.DB, { schema });
+    }
+  }
+
+  // Fall back to local SQLite for development
+  console.log('Using local SQLite database');
+  return getLocalDatabase();
 }
 
 // Initialize global database for session manager

@@ -63,7 +63,8 @@
       "Bash(npx drizzle-kit:*)",
       "Bash(for color in teal amber purple blue green yellow red)",
       "Bash(do echo -n \"$color: \")",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm update:*)"
     ],
     "deny": [],
     "ask": []
