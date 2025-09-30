@@ -196,7 +196,7 @@ function getClientIP(request: NextRequest): string {
   }
 
   // Fallback - this will be undefined in serverless environments
-  return request.ip || 'unknown';
+  return (request as any).ip || 'unknown';
 }
 
 /**

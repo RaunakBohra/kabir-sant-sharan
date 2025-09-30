@@ -92,7 +92,7 @@ export function EventsCalendar() {
         const url = `/api/events/`
         const response = await fetch(url)
         if (response.ok) {
-          const data = await response.json()
+          const data = await response.json() as { events?: any[] }
           // Transform API response to match component interface
           const transformedEvents = (data.events || []).map((event: any) => ({
             id: event.id,

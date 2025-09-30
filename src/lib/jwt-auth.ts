@@ -67,17 +67,25 @@ export function generateTokenPair(payload: {
   };
 
   // Generate tokens
-  const accessToken = jwt.sign(accessPayload, securityConfig.jwt.secret, {
-    expiresIn: securityConfig.jwt.accessExpiry,
-    issuer: securityConfig.jwt.issuer,
-    algorithm: securityConfig.jwt.algorithm as jwt.Algorithm
-  });
+  const accessToken = (jwt.sign as any)(
+    accessPayload,
+    securityConfig.jwt.secret,
+    {
+      expiresIn: securityConfig.jwt.accessExpiry,
+      issuer: securityConfig.jwt.issuer,
+      algorithm: securityConfig.jwt.algorithm as jwt.Algorithm
+    }
+  );
 
-  const refreshToken = jwt.sign(refreshPayload, securityConfig.jwt.refreshSecret, {
-    expiresIn: securityConfig.jwt.refreshExpiry,
-    issuer: securityConfig.jwt.issuer,
-    algorithm: securityConfig.jwt.algorithm as jwt.Algorithm
-  });
+  const refreshToken = (jwt.sign as any)(
+    refreshPayload,
+    securityConfig.jwt.refreshSecret,
+    {
+      expiresIn: securityConfig.jwt.refreshExpiry,
+      issuer: securityConfig.jwt.issuer,
+      algorithm: securityConfig.jwt.algorithm as jwt.Algorithm
+    }
+  );
 
   // Calculate expiration times
   const accessExpiresAt = now + parseExpiry(securityConfig.jwt.accessExpiry);

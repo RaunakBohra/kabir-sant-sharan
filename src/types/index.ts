@@ -48,6 +48,36 @@ export interface MediaContent {
   featuredImage?: string
 }
 
+export interface MediaFile {
+  id: string
+  title: string
+  description: string
+  type: MediaType
+  category: string
+  tags?: string
+  author: string
+  duration?: string
+  fileSize?: number
+  mimeType?: string
+  r2Key: string
+  r2Bucket: string
+  thumbnailKey?: string
+  streamingUrl?: string
+  downloadUrl?: string
+  transcription?: string
+  featured: boolean
+  published: boolean
+  views: number
+  downloads: number
+  likes: number
+  language: string
+  uploadedBy: string
+  publishedAt?: string
+  deletedAt?: string
+  createdAt: string
+  updatedAt: string
+}
+
 export interface User {
   id: string
   name: string
@@ -88,6 +118,7 @@ export type QuoteCategory =
 export type MediaType =
   | 'audio'
   | 'video'
+  | 'image'
   | 'document'
 
 export type MediaCategory =

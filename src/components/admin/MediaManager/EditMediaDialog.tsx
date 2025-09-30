@@ -4,36 +4,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/toast';
 import { Label } from '@/components/ui/label';
-
-interface MediaFile {
-  id: string;
-  title: string;
-  description: string;
-  type: 'audio' | 'video' | 'image' | 'document';
-  category: string;
-  tags?: string;
-  author: string;
-  duration?: string;
-  fileSize?: number;
-  mimeType?: string;
-  r2Key: string;
-  r2Bucket: string;
-  thumbnailKey?: string;
-  streamingUrl?: string;
-  downloadUrl?: string;
-  transcription?: string;
-  featured: boolean;
-  published: boolean;
-  views: number;
-  downloads: number;
-  likes: number;
-  language: string;
-  uploadedBy: string;
-  publishedAt?: string;
-  deletedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { MediaFile } from '@/types';
 
 interface EditMediaDialogProps {
   open: boolean;
@@ -102,7 +73,7 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
 
       if (!response.ok) throw new Error('Failed to update media');
 
-      const updatedMedia = await response.json();
+      const updatedMedia = await response.json() as MediaFile;
       onSave(updatedMedia);
       toast.success('Media metadata updated successfully');
       onOpenChange(false);
@@ -133,7 +104,7 @@ export function EditMediaDialog({ open, onOpenChange, media, onSave }: EditMedia
             <div className="flex items-center space-x-4">
               {media.type === 'image' ? (
                 <img
-                  src={media.url}
+                  src={media.streamingUrl || media.downloadUrl || ''}
                   alt={formData.title}
                   className="w-24 h-24 object-cover rounded-lg"
                 />

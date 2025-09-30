@@ -2,36 +2,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/toast';
-
-interface MediaFile {
-  id: string;
-  title: string;
-  description: string;
-  type: 'audio' | 'video' | 'image' | 'document';
-  category: string;
-  tags?: string;
-  author: string;
-  duration?: string;
-  fileSize?: number;
-  mimeType?: string;
-  r2Key: string;
-  r2Bucket: string;
-  thumbnailKey?: string;
-  streamingUrl?: string;
-  downloadUrl?: string;
-  transcription?: string;
-  featured: boolean;
-  published: boolean;
-  views: number;
-  downloads: number;
-  likes: number;
-  language: string;
-  uploadedBy: string;
-  publishedAt?: string;
-  deletedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { MediaFile } from '@/types';
 
 interface MediaPreviewDialogProps {
   open: boolean;

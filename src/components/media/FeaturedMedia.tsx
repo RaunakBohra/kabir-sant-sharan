@@ -38,7 +38,7 @@ export function FeaturedMedia() {
     try {
       setLoading(true)
       const response = await fetch('/api/media?limit=4&offset=0&published=true')
-      const data = await response.json()
+      const data = await response.json() as { media?: FeaturedMediaItem[] }
 
       if (data.media) {
         // Filter for featured items only

@@ -10,8 +10,8 @@ import validator from 'validator';
  * Configuration for different sanitization contexts
  */
 export interface SanitizationConfig {
-  allowedTags?: string[];
-  allowedAttributes?: Record<string, string[]>;
+  allowedTags?: string[] | readonly string[];
+  allowedAttributes?: Record<string, string[] | readonly string[]>;
   allowDataAttributes?: boolean;
   stripComments?: boolean;
   stripScripts?: boolean;
@@ -148,7 +148,7 @@ export class InputSanitizer {
     }
 
     // Sanitize with DOMPurify
-    sanitized = DOMPurify.sanitize(sanitized, purifyConfig);
+    sanitized = DOMPurify.sanitize(sanitized, purifyConfig) as unknown as string;
 
     // Additional manual cleaning for edge cases
     sanitized = this.additionalCleaning(sanitized);
@@ -275,7 +275,7 @@ export class InputSanitizer {
   /**
    * Flatten allowed attributes object into array for DOMPurify
    */
-  private flattenAllowedAttributes(allowedAttributes: Record<string, string[]>): string[] {
+  private flattenAllowedAttributes(allowedAttributes: Record<string, string[] | readonly string[]>): string[] {
     const flattened = new Set<string>();
     Object.values(allowedAttributes).forEach(attrs => {
       attrs.forEach(attr => flattened.add(attr));

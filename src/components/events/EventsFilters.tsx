@@ -31,7 +31,7 @@ export function EventsFilters({ selectedType, selectedTime, viewMode, onFiltersC
       try {
         const response = await fetch('/api/events/counts/')
         if (response.ok) {
-          const counts = await response.json()
+          const counts = await response.json() as { all: number; satsang: number; festival: number; workshop: number; meditation: number; }
           setEventCounts(counts)
         }
       } catch (error) {

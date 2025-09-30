@@ -133,7 +133,7 @@ export function createVersionedHandler<T = any>(handlers: {
     const handler = handlers[version];
 
     if (!handler) {
-      return createErrorResponse('UNSUPPORTED_API_VERSION', {
+      return createErrorResponse('VALIDATION_ERROR', {
         instance: new URL(request.url).pathname,
         detail: `API version ${version} is not supported for this endpoint`,
         metadata: {

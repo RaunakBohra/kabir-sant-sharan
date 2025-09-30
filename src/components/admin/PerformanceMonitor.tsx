@@ -153,8 +153,8 @@ export default function PerformanceMonitor() {
         liveResponse.json()
       ]);
 
-      setPerformanceData(performanceResult);
-      setLiveData(liveResult);
+      setPerformanceData(performanceResult as PerformanceData);
+      setLiveData(liveResult as LiveData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch performance data');
     } finally {

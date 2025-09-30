@@ -107,6 +107,46 @@ export const ErrorTemplates = {
     title: 'Database Error',
     status: 500,
     detail: 'A database operation failed. Please try again later.'
+  },
+  [ErrorTypes.MISSING_REQUIRED_FIELD]: {
+    title: 'Missing Required Field',
+    status: 400,
+    detail: 'A required field is missing from the request.'
+  },
+  [ErrorTypes.INVALID_INPUT_FORMAT]: {
+    title: 'Invalid Input Format',
+    status: 400,
+    detail: 'The input format is invalid.'
+  },
+  [ErrorTypes.DUPLICATE_RESOURCE]: {
+    title: 'Duplicate Resource',
+    status: 409,
+    detail: 'A resource with the same identifier already exists.'
+  },
+  [ErrorTypes.RESOURCE_CONFLICT]: {
+    title: 'Resource Conflict',
+    status: 409,
+    detail: 'The request conflicts with the current state of the resource.'
+  },
+  [ErrorTypes.UNSUPPORTED_MEDIA_TYPE]: {
+    title: 'Unsupported Media Type',
+    status: 415,
+    detail: 'The media type of the request is not supported.'
+  },
+  [ErrorTypes.PAYLOAD_TOO_LARGE]: {
+    title: 'Payload Too Large',
+    status: 413,
+    detail: 'The request payload is too large.'
+  },
+  [ErrorTypes.EXTERNAL_SERVICE_ERROR]: {
+    title: 'External Service Error',
+    status: 502,
+    detail: 'An external service is unavailable.'
+  },
+  [ErrorTypes.CONFIGURATION_ERROR]: {
+    title: 'Configuration Error',
+    status: 500,
+    detail: 'A configuration error occurred.'
   }
 } as const;
 

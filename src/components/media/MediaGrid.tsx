@@ -63,16 +63,16 @@ export function MediaGrid() {
 
       const currentOffset = loadMore ? offset : 0
       const response = await fetch(`/api/media?limit=${limit}&offset=${currentOffset}&published=true`)
-      const data = await response.json()
+      const data = await response.json() as { media?: MediaItem[] }
 
       if (data.media) {
         if (loadMore) {
-          setMediaItems(prev => [...prev, ...data.media])
+          setMediaItems(prev => [...prev, ...(data.media || [])])
         } else {
-          setMediaItems(data.media)
+          setMediaItems(data.media || [])
         }
-        setHasMore(data.media.length === limit)
-        setOffset(currentOffset + data.media.length)
+        setHasMore((data.media || []).length === limit)
+        setOffset(currentOffset + (data.media || []).length)
       }
     } catch (error) {
       console.error('Error fetching media:', error)

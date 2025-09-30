@@ -176,7 +176,7 @@ export function EventRegistrationModal({ event, isOpen, onClose, onSuccess }: Ev
       })
 
       if (!response.ok) {
-        const errorData = await response.json()
+        const errorData = await response.json() as { error?: string }
         throw new Error(errorData.error || 'Registration failed')
       }
 

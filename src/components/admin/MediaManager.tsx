@@ -7,41 +7,12 @@ import { EditMediaDialog } from './MediaManager/EditMediaDialog';
 import { toast } from '@/components/ui/toast';
 import { apiRequest } from '@/lib/api-client';
 import { extractProductNameFromR2Key, formatFileSize, formatDuration } from '@/lib/media-utils';
-
-interface MediaFile {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  category: string;
-  tags?: string;
-  author: string;
-  duration?: string;
-  fileSize?: number;
-  mimeType?: string;
-  r2Key: string;
-  r2Bucket: string;
-  thumbnailKey?: string;
-  streamingUrl?: string;
-  downloadUrl?: string;
-  transcription?: string;
-  featured: boolean;
-  published: boolean;
-  views: number;
-  downloads: number;
-  likes: number;
-  language: string;
-  uploadedBy: string;
-  publishedAt?: string;
-  deletedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { MediaFile, MediaType } from '@/types';
 
 export function MediaManager() {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedType, setSelectedType] = useState<'all' | 'audio' | 'video' | 'image' | 'document'>('all');
+  const [selectedType, setSelectedType] = useState<'all' | MediaType>('all');
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [previewMedia, setPreviewMedia] = useState<MediaFile | null>(null);
   const [editMedia, setEditMedia] = useState<MediaFile | null>(null);
@@ -60,7 +31,7 @@ export function MediaManager() {
       }
 
       const response = await apiRequest(`/api/media?${params}`);
-      const data = await response.json();
+      const data = await response.json() as { media?: any[] };
       setMediaFiles(data.media || []);
     } catch (error) {
       console.error('Failed to load media files:', error);

@@ -76,7 +76,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
           language: formData.language,
           published: saveAsDraft ? false : formData.published,
           featured: formData.featured,
-          tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean).join(','),
+          tags: formData.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean).join(','),
           slug: formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
           currentAttendees: event?.currentAttendees || 0,
           category: formData.type
@@ -84,7 +84,7 @@ export function EventForm({ event, isEdit = false }: EventFormProps) {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json() as { message?: string };
         throw new Error(error.message || `Failed to ${isEdit ? 'update' : 'create'} event`);
       }
 

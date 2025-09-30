@@ -400,7 +400,3 @@ export function withLogging<T extends any[], R>(
   };
 }
 
-/**
- * Export types for external use
- */
-export type { LogLevel, LogContext, LogEntry };

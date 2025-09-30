@@ -195,7 +195,7 @@ export function BlogList({ filters }: BlogListProps) {
           throw new Error('Failed to fetch teachings')
         }
 
-        const data = await response.json()
+        const data = await response.json() as { teachings?: any[] }
         const teachings = data.teachings || []
 
         // Convert to display format
@@ -208,7 +208,7 @@ export function BlogList({ filters }: BlogListProps) {
         // Fallback to sample data on error
         const fallbackPosts = samplePosts.map(post => ({
           ...post,
-          tags: typeof post.tags === 'string' ? post.tags.split(',') : post.tags
+          tags: post.tags
         }))
         setPosts(fallbackPosts as BlogPostDisplay[])
       } finally {

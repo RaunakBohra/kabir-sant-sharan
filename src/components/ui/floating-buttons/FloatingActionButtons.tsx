@@ -42,7 +42,7 @@ export function FloatingActionButtons({
           {actions.map((action, index) => (
             <Link
               key={action.id}
-              href={action.href}
+              href={action.href as any}
               onClick={() => setIsOpen(false)}
               className={`
                 flex items-center space-x-3 px-4 py-3 rounded-full shadow-lg

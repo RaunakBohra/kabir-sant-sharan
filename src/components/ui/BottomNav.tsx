@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import type { Route } from 'next';
 
 export interface NavItem {
   id: string;
   label: string;
-  href: string;
+  href: Route<string> | string;
   icon: React.ReactNode;
   activeIcon?: React.ReactNode;
 }
@@ -33,7 +34,7 @@ export function BottomNav({ items }: BottomNavProps) {
           return (
             <Link
               key={item.id}
-              href={item.href}
+              href={item.href as any}
               className={`flex flex-col items-center justify-center flex-1 h-full transition-all duration-200 touch-manipulation ${
                 active
                   ? 'text-dark-900'

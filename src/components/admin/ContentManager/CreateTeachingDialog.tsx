@@ -120,7 +120,7 @@ export function CreateTeachingDialog({ open, onOpenChange, onSuccess }: CreateTe
           throw new Error('Failed to upload image');
         }
 
-        const uploadData = await uploadResponse.json();
+        const uploadData = await uploadResponse.json() as { url: string };
         imageUrl = uploadData.url;
       }
 
@@ -139,7 +139,7 @@ export function CreateTeachingDialog({ open, onOpenChange, onSuccess }: CreateTe
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json() as { message?: string };
         throw new Error(error.message || 'Failed to create teaching');
       }
 

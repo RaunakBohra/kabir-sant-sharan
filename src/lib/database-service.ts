@@ -1,6 +1,6 @@
 // Database service for connecting to D1 and managing data
 import { getDatabase } from './db';
-import { eq, desc, gte, isNull, and, sql as drizzleSql } from 'drizzle-orm';
+import { eq, desc, gte, isNull, and, sql as drizzleSql, count, countDistinct } from 'drizzle-orm';
 import { teachings, events, newsletters, newsletterCampaigns, analytics, media } from '@/drizzle/schema';
 
 export interface Teaching {
@@ -494,7 +494,7 @@ export class DatabaseService {
       const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
       const visitorsResult = await db
-        .select({ count: drizzleSql<number>`COUNT(DISTINCT ${analytics.sessionId})` })
+        .select()
         .from(analytics)
         .where(and(
           eq(analytics.event, 'page_view'),
@@ -503,15 +503,16 @@ export class DatabaseService {
 
       // Get total page views in last 24 hours
       const pageViewsResult = await db
-        .select({ count: drizzleSql<number>`COUNT(*)` })
+        .select()
         .from(analytics)
         .where(and(
           eq(analytics.event, 'page_view'),
           gte(analytics.timestamp, oneDayAgo)
         ));
 
-      const totalVisitors = (visitorsResult[0] as any)?.count || 0;
-      const pageViews = (pageViewsResult[0] as any)?.count || 0;
+      const uniqueSessionIds = new Set(visitorsResult.map((r: any) => r.sessionId));
+      const totalVisitors = uniqueSessionIds.size;
+      const pageViews = pageViewsResult.length;
 
       return {
         totalVisitors,
@@ -537,20 +538,27 @@ export class DatabaseService {
       // Get top pages by view count in last 7 days
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-      const results = await db
-        .select({
-          path: analytics.resourceId,
-          views: drizzleSql<number>`COUNT(*)`
-        })
+      const allResults = await db
+        .select()
         .from(analytics)
         .where(and(
           eq(analytics.event, 'page_view'),
           eq(analytics.resourceType, 'page'),
           gte(analytics.timestamp, sevenDaysAgo)
-        ))
-        .groupBy(analytics.resourceId)
-        .orderBy(desc(drizzleSql`COUNT(*)`))
-        .limit(limit);
+        ));
+
+      // Group by resourceId and count views manually
+      const viewCounts = new Map<string, number>();
+      for (const result of allResults as any[]) {
+        const path = result.resourceId;
+        viewCounts.set(path, (viewCounts.get(path) || 0) + 1);
+      }
+
+      // Convert to array and sort by views descending
+      const results = Array.from(viewCounts.entries())
+        .map(([path, views]) => ({ path, views }))
+        .sort((a, b) => b.views - a.views)
+        .slice(0, limit);
 
       return results.map(r => ({
         path: r.path || '/',
@@ -587,7 +595,7 @@ export class DatabaseService {
         return {
           type: r.event === 'search' ? 'search' : 'visit' as 'visit' | 'search',
           page: r.resourceId || undefined,
-          query: r.event === 'search' ? r.metadata : undefined,
+          query: r.event === 'search' ? (r.metadata || undefined) : undefined,
           time: timeAgo
         };
       });
@@ -652,12 +660,12 @@ export class DatabaseService {
           .limit(limit)
           .offset(offset),
         db
-          .select({ count: drizzleSql<number>`count(*)` })
+          .select()
           .from(media)
           .where(whereClause)
       ]);
 
-      const total = (countResult[0] as any)?.count || 0;
+      const total = countResult.length;
 
       return {
         media: mediaData.map(this.transformMediaFromDB),

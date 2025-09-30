@@ -109,7 +109,7 @@ export function EventsList({ filters }: EventsListProps) {
           throw new Error('Failed to fetch events')
         }
 
-        const data = await response.json()
+        const data = await response.json() as { events?: any[] }
         // Transform API response to match component interface
         const transformedEvents = (data.events || []).map((event: any) => ({
           id: event.id,
@@ -327,7 +327,7 @@ export function EventsList({ filters }: EventsListProps) {
                   {event.registrationRequired ? (
                     <button
                       onClick={() => handleRegisterClick(event)}
-                      disabled={event.maxAttendees && event.currentAttendees >= event.maxAttendees}
+                      disabled={!!(event.maxAttendees && event.currentAttendees >= event.maxAttendees)}
                       className={`px-6 py-3 rounded-md transition-colors duration-200 font-medium ${
                         event.maxAttendees && event.currentAttendees >= event.maxAttendees
                           ? 'bg-gray-400 text-gray-200 cursor-not-allowed'

@@ -175,7 +175,7 @@ export function CreateEventDialog({ open, onOpenChange, onSuccess }: CreateEvent
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        const error = await response.json() as { message?: string };
         throw new Error(error.message || 'Failed to create event');
       }
 

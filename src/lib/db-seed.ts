@@ -7,6 +7,8 @@
 import { getDatabase } from './db';
 import { securityConfig, hashPassword } from './config';
 import { createId } from '@paralleldrive/cuid2';
+import { eq, sql } from 'drizzle-orm';
+import { users, teachings, events, media } from '@/drizzle/schema';
 
 interface SeedResult {
   success: boolean;
@@ -26,16 +28,16 @@ export async function seedAdminUser(env?: any): Promise<SeedResult> {
     const db = getDatabase(env);
 
     // Check if admin user already exists
-    const existingAdmin = await db.query(
-      'SELECT id FROM users WHERE email = ? AND role = ?',
-      [securityConfig.auth.adminEmail, 'admin']
-    );
+    const existingAdmin = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, securityConfig.auth.adminEmail));
 
-    if (existingAdmin.results.length > 0) {
+    if (existingAdmin.length > 0) {
       return {
         success: true,
         message: 'Admin user already exists',
-        adminUserId: existingAdmin.results[0].id as string
+        adminUserId: existingAdmin[0].id as string
       };
     }
 
@@ -51,26 +53,17 @@ export async function seedAdminUser(env?: any): Promise<SeedResult> {
     }
 
     // Insert admin user
-    const result = await db.query(`
-      INSERT INTO users (
-        id, email, name, role, password_hash,
-        language, email_verified, newsletter,
-        created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [
-      adminId,
-      securityConfig.auth.adminEmail,
-      'System Administrator',
-      'admin',
-      securityConfig.auth.adminPasswordHash,
-      'en',
-      1, // email verified
-      0, // not subscribed to newsletter
-      new Date().toISOString(),
-      new Date().toISOString()
-    ]);
+    const result = await db.insert(users).values({
+      id: adminId,
+      email: securityConfig.auth.adminEmail,
+      name: 'System Administrator',
+      role: 'admin',
+      language: 'en',
+      emailVerified: true,
+      newsletter: false
+    });
 
-    if (result.success) {
+    if (result) {
       return {
         success: true,
         message: 'Admin user created successfully',
@@ -106,7 +99,7 @@ export async function getAdminUser(env?: any): Promise<{
 
     const db = getDatabase(env);
 
-    const result = await db.query(
+    const result = await (db as any).query(
       'SELECT id, email, name, password_hash, role FROM users WHERE email = ? AND role = ?',
       [securityConfig.auth.adminEmail, 'admin']
     );
@@ -138,7 +131,7 @@ export async function updateAdminPassword(newPassword: string, env?: any): Promi
     const hashedPassword = await hashPassword(newPassword);
 
     // Update the admin user's password
-    const result = await db.query(
+    const result = await (db as any).query(
       'UPDATE users SET password_hash = ?, updated_at = ? WHERE email = ? AND role = ?',
       [hashedPassword, new Date().toISOString(), securityConfig.auth.adminEmail, 'admin']
     );
@@ -173,7 +166,7 @@ export async function seedSampleContent(env?: any): Promise<SeedResult> {
     const db = getDatabase(env);
 
     // Check if sample content already exists
-    const existingTeachings = await db.query('SELECT COUNT(*) as count FROM teachings');
+    const existingTeachings = await (db as any).query('SELECT COUNT(*) as count FROM teachings');
     if ((existingTeachings.results[0] as any).count > 0) {
       return {
         success: true,
@@ -222,7 +215,7 @@ The musk is in the deer's own navel, but it searches for it in the forest. Simil
     ];
 
     for (const teaching of teachings) {
-      await db.query(`
+      await (db as any).query(`
         INSERT INTO teachings (
           id, title, content, excerpt, slug, category, tags, author,
           published, featured, language, published_at, created_at, updated_at
@@ -292,7 +285,7 @@ export async function validateDatabaseSchema(env?: any): Promise<boolean> {
 
     for (const table of tables) {
       try {
-        await db.query(`SELECT 1 FROM ${table} LIMIT 1`);
+        await (db as any).query(`SELECT 1 FROM ${table} LIMIT 1`);
       } catch (error) {
         console.error(`Table ${table} not found or accessible:`, error);
         return false;
