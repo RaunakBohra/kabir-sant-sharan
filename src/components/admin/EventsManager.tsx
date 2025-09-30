@@ -91,47 +91,20 @@ export function EventsManager() {
         </button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-cream-200 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-dark-600">Total Events</p>
-              <p className="text-2xl font-bold text-dark-900">{events.length}</p>
-            </div>
+      {/* Stats - Compact Single Line */}
+      <div className="bg-cream-50 p-3 rounded-lg shadow-sm border border-cream-200">
+        <div className="flex items-center justify-around text-center divide-x divide-cream-200">
+          <div className="flex-1 px-4">
+            <p className="text-xs text-dark-600">Total</p>
+            <p className="text-lg font-bold text-dark-900">{events.length}</p>
           </div>
-        </div>
-
-        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-cream-200 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-dark-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-dark-600">Upcoming</p>
-              <p className="text-2xl font-bold text-dark-900">{upcomingCount}</p>
-            </div>
+          <div className="flex-1 px-4">
+            <p className="text-xs text-dark-600">Upcoming</p>
+            <p className="text-lg font-bold text-dark-900">{upcomingCount}</p>
           </div>
-        </div>
-
-        <div className="bg-cream-50 p-6 rounded-lg shadow-sm border border-cream-200">
-          <div className="flex items-center">
-            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-dark-600">Past Events</p>
-              <p className="text-2xl font-bold text-dark-900">{pastCount}</p>
-            </div>
+          <div className="flex-1 px-4">
+            <p className="text-xs text-dark-600">Past</p>
+            <p className="text-lg font-bold text-dark-900">{pastCount}</p>
           </div>
         </div>
       </div>
