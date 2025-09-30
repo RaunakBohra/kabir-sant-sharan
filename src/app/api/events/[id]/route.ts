@@ -42,9 +42,9 @@ export async function PUT(
     const updateData: any = {};
 
     // Filter out undefined values and convert dates to ISO strings
-    Object.keys(body).forEach(key => {
-      if (body[key] !== undefined && key !== 'id') {
-        updateData[key] = body[key];
+    Object.keys(body as Record<string, any>).forEach(key => {
+      if ((body as Record<string, any>)[key] !== undefined && key !== 'id') {
+        updateData[key] = (body as Record<string, any>)[key];
       }
     });
 

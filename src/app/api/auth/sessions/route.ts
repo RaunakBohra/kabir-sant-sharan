@@ -100,7 +100,7 @@ async function getSessionsHandler(request: AuthenticatedRequest): Promise<NextRe
     const currentSessionId = request.session?.id;
 
     if (!userId || !currentSessionId) {
-      return createErrorResponse('UNAUTHORIZED', {
+      return createErrorResponse('INVALID_TOKEN', {
         instance,
         detail: 'No active session found',
         metadata: { traceId }
@@ -144,7 +144,8 @@ async function getSessionsHandler(request: AuthenticatedRequest): Promise<NextRe
       userId: request.session?.userId,
       request: {
         method: request.method,
-        url: request.url
+        url: request.url,
+        headers: Object.fromEntries(request.headers.entries())
       }
     });
 
@@ -165,7 +166,7 @@ async function deleteSessionHandler(request: AuthenticatedRequest): Promise<Next
     const currentSessionId = request.session?.id;
 
     if (!userId || !currentSessionId) {
-      return createErrorResponse('UNAUTHORIZED', {
+      return createErrorResponse('INVALID_TOKEN', {
         instance,
         detail: 'No active session found',
         metadata: { traceId }
@@ -184,7 +185,7 @@ async function deleteSessionHandler(request: AuthenticatedRequest): Promise<Next
       });
     }
 
-    const { sessionId } = body;
+    const { sessionId } = body as { sessionId?: string };
 
     if (!sessionId || typeof sessionId !== 'string') {
       return createErrorResponse('VALIDATION_ERROR', {
@@ -199,7 +200,7 @@ async function deleteSessionHandler(request: AuthenticatedRequest): Promise<Next
     const sessionToDelete = userSessions.find(s => s.id === sessionId);
 
     if (!sessionToDelete) {
-      return createErrorResponse('NOT_FOUND', {
+      return createErrorResponse('RESOURCE_NOT_FOUND', {
         instance,
         detail: 'Session not found or does not belong to user',
         metadata: { traceId }
@@ -242,7 +243,8 @@ async function deleteSessionHandler(request: AuthenticatedRequest): Promise<Next
       userId: request.session?.userId,
       request: {
         method: request.method,
-        url: request.url
+        url: request.url,
+        headers: Object.fromEntries(request.headers.entries())
       }
     });
 

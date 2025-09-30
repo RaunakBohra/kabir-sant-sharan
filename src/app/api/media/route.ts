@@ -46,7 +46,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await request.json() as {
+      title: string;
+      description?: string;
+      type: string;
+      duration?: number;
+      r2Key: string;
+      streamingUrl: string;
+      tags?: string;
+      category?: string;
+      published?: boolean;
+      featured?: boolean;
+    };
     const { title, description, type, duration, r2Key, streamingUrl, tags, category, published = true, featured = false } = body;
 
     if (!title || !type || !r2Key || !streamingUrl) {

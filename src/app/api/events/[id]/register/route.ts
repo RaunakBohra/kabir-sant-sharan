@@ -94,7 +94,7 @@ export async function POST(
     }
 
     // Check capacity
-    const isWaitlist = event.max_attendees && existingRegistrations.length >= event.max_attendees;
+    const isWaitlist = event.maxAttendees && existingRegistrations.length >= event.maxAttendees;
 
     // Create registration
     const registration = {

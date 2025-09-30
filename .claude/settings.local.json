@@ -64,7 +64,9 @@
       "Bash(for color in teal amber purple blue green yellow red)",
       "Bash(do echo -n \"$color: \")",
       "Bash(grep:*)",
-      "Bash(npm update:*)"
+      "Bash(npm update:*)",
+      "Bash(awk:*)",
+      "WebFetch(domain:orm.drizzle.team)"
     ],
     "deny": [],
     "ask": []

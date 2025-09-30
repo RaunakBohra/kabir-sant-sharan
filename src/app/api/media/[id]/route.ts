@@ -47,7 +47,16 @@ export async function PUT(
     }
 
     const { id } = params;
-    const body = await request.json();
+    const body = await request.json() as {
+      title?: string;
+      description?: string;
+      author?: string;
+      category?: string;
+      tags?: string;
+      language?: string;
+      featured?: boolean;
+      published?: boolean;
+    };
     const { title, description, author, category, tags, language, featured, published } = body;
 
     // Use direct SQLite connection (not Drizzle ORM)

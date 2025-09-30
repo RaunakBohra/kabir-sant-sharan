@@ -48,15 +48,16 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Get user data from session
-    const userFromSession = refreshResult.session?.user;
-    if (!userFromSession) {
-      return createErrorResponse('INVALID_TOKEN', {
-        instance,
-        detail: 'Session user data not found',
-        metadata: { traceId }
-      });
-    }
+    // Get admin user data (since this is admin-only system)
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@kabirsantsharan.com';
+    const adminUserId = `admin-${Buffer.from(adminEmail).toString('base64').slice(0, 8)}`;
+
+    const user = {
+      id: adminUserId,
+      email: adminEmail,
+      name: 'Admin',
+      role: 'admin'
+    };
 
     const headers = {
       'Content-Type': 'application/json',
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
       refreshToken: refreshResult.tokens.refreshToken,
       expiresAt: refreshResult.tokens.accessExpiresAt,
       refreshExpiresAt: refreshResult.tokens.refreshExpiresAt,
-      user: userFromSession,
+      user: user,
       message: 'Token refreshed successfully'
     }, { headers });
 

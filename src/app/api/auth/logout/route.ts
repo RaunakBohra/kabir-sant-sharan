@@ -69,7 +69,7 @@ async function logoutHandler(request: AuthenticatedRequest): Promise<NextRespons
     // Parse request body for logout options
     let logoutAll = false;
     try {
-      const body = await request.json();
+      const body = await request.json() as { logoutAll?: boolean };
       logoutAll = body?.logoutAll === true;
     } catch {
       // Body parsing failed, use default values
